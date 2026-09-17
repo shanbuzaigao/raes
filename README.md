@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-**Status:** early development, v0.1. I am keeping this repository private until I have reviewed the first release.
+**Status:** early development, v0.3.0-rc.1. I am keeping this repository private until I have reviewed the first release.
 
 ## What this is
 
@@ -48,6 +48,27 @@ The goal and the eligibility rules come first, because everything else refers to
 
 The working manual is [PROTOCOL.md](PROTOCOL.md). It expands every stage of the figure in the same format. It is a draft.
 
+## What is in this repository
+
+| Where | What it is |
+|---|---|
+| [PROTOCOL.md](PROTOCOL.md) | The working manual, stage by stage |
+| [templates/](templates/README.md) | Files to fill in: plan memo, eligibility criteria, codebook, prompts, validation memo and settings, project folders |
+| [skills/](skills/README.md) | `codebook-author`, a skill that asks you questions and helps you write a codebook |
+| [examples/synthetic/](examples/synthetic/README.md) | A small invented example that runs the whole pipeline offline |
+| [raes_core/](docs/NUMERICAL_METHODS.md) | The small tools the example uses: effect sizes, stable row IDs, hash freezes |
+| [tests/](tests) and [tools/](tools) | Tests and helper commands |
+
+To try the example you only need Python 3.10 or newer:
+
+```sh
+python examples/synthetic/reproduce.py
+```
+
+Everything in the example is invented. It makes no API calls and needs no key. It shows a duplicate record, a paper that was wrongly screened out and then rescued by the audit, a missing SD, a failed model answer followed by a retry, and a coding error caught by the audit. To run all checks, use `python tools/check_repository.py`.
+
+A note on the name: a Python package called `raes` exists on PyPI. It is a different project and has nothing to do with this repository.
+
 ## Why I think this is needed
 
 Evidence-synthesis organizations now expect authors who use AI to keep human oversight and to show that AI does not compromise methodological rigor. This is the message of the RAISE recommendations (Thomas et al., 2025) and of the 2025 joint position statement by Cochrane, the Campbell Collaboration, JBI and the Collaboration for Environmental Evidence (Flemyng et al., 2025). These documents say what is expected. They do not say how to do it in practice. RAES is my attempt at one concrete, executable answer.
@@ -60,9 +81,9 @@ The first half of the pipeline follows PRISMA 2020 (Page et al., 2021). The two 
 
 | Layer | Question it answers | Form in this repository |
 |---|---|---|
-| Pipeline | What happens at each stage, in what order, producing which files | Protocol, project template, runners |
-| Authoring | How to write the plan, the codebook, the prompts and the validation design | Writing guide, skeleton files, agent skills |
-| Validation and provenance | Why others can trust the result | Validation runners, freeze and hash tools, release conventions |
+| Pipeline | What happens at each stage, in what order, producing which files | Protocol, project template, synthetic example |
+| Authoring | How to write the plan, the codebook, the prompts and the validation design | Templates, agent skills |
+| Validation and provenance | Why others can trust the result | The audit steps of the example, freeze and hash tools, release conventions |
 
 ## Principles
 
@@ -84,10 +105,8 @@ These are the rules I ended up following. Each one came from a problem I actuall
 ## What I plan to add
 
 - A Chinese version of the protocol.
-- Templates: codebook skeleton, prompt templates, validation configuration, project tree.
-- Agent skills: synthesis plan, codebook author, pilot and revise, validation designer, freeze and release.
-- Core utilities: stable row registry, effect-size engine, freeze and release tools.
-- A small synthetic example that runs the pipeline end to end.
+- A second skill, for designing the validation, once the first one has been tried on a real project.
+- Runners that call the model providers for the AI steps. They are not included yet.
 
 ## What will not be in this repository
 

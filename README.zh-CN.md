@@ -4,7 +4,7 @@
 
 本文件对应英文版 `README.md` v0.1（2026-09-17）。两者不一致时以英文为准。
 
-**状态：** 早期开发，v0.1。在我审核完第一个版本之前，这个仓库保持私有。
+**状态：** 早期开发，v0.3.0-rc.1。在我审核完第一个版本之前，这个仓库保持私有。
 
 ## 这是什么
 
@@ -50,6 +50,27 @@ flowchart TD
 
 完整的操作说明见 [PROTOCOL.md](PROTOCOL.md)，它按同一个格式把图里的每个阶段展开。目前是英文草稿，中文版稍后补上。
 
+## 仓库里有什么
+
+| 位置 | 内容 |
+|---|---|
+| [PROTOCOL.md](PROTOCOL.md) | 操作手册，逐阶段展开 |
+| [templates/](templates/README.zh-CN.md) | 要填写的文件：计划 memo、纳入标准、codebook、prompt、验证 memo 与配置、项目目录 |
+| [skills/](skills/README.zh-CN.md) | `codebook-author`：通过提问帮你一步步写出 codebook 的 skill |
+| [examples/synthetic/](examples/synthetic/README.zh-CN.md) | 一个编造的小例子，离线把整个流程跑一遍 |
+| [raes_core/](docs/NUMERICAL_METHODS.md) | 例子用到的小工具：效应量、稳定行编号、哈希冻结 |
+| [tests/](tests) 和 [tools/](tools) | 测试和辅助命令 |
+
+运行例子只需要 Python 3.10 或更新版本：
+
+```sh
+python examples/synthetic/reproduce.py
+```
+
+例子里的一切都是编造的，不调用任何 API，也不需要密钥。它演示了一条重复记录、一篇被误筛后由审计救回的论文、一处缺失的 SD、一次模型回答失败后的重试，以及一处被审计发现的编码错误。运行全部检查用 `python tools/check_repository.py`。
+
+关于名字：PyPI 上有一个叫 `raes` 的 Python 包，那是另一个项目，与本仓库无关。
+
 ## 我为什么觉得需要它
 
 证据整合领域的主要机构已经要求：使用 AI 的作者必须保持人工监督，并且能说明 AI 的使用不损害方法的严谨性。RAISE 建议（Thomas et al., 2025），以及 Cochrane、Campbell Collaboration、JBI 和环境证据协作组织 2025 年的联合立场声明（Flemyng et al., 2025），讲的都是这一点。这些文件说明了要求是什么，但没有说实际怎么做。RAES 是我给出的一种具体的、可执行的做法。
@@ -62,9 +83,9 @@ flowchart TD
 
 | 层 | 回答的问题 | 在仓库里的形式 |
 |---|---|---|
-| 流程 | 每个阶段做什么、按什么顺序、产出哪些文件 | Protocol、项目模板、运行器 |
-| 写作 | 计划、codebook、prompt 和验证方案怎么写 | 写作指南、骨架文件、agent skills |
-| 验证与可追溯 | 别人凭什么相信结果 | 验证运行器、冻结与哈希工具、发布约定 |
+| 流程 | 每个阶段做什么、按什么顺序、产出哪些文件 | Protocol、项目模板、合成例子 |
+| 写作 | 计划、codebook、prompt 和验证方案怎么写 | 模板、agent skills |
+| 验证与可追溯 | 别人凭什么相信结果 | 例子里的审计步骤、冻结与哈希工具、发布约定 |
 
 ## 原则
 
@@ -86,10 +107,8 @@ flowchart TD
 ## 我计划加入的内容
 
 - Protocol 的中文版。
-- 模板：codebook 骨架、prompt 模板、验证配置、项目目录。
-- Agent skills：整合计划、codebook 写作、试跑与修订、验证设计、冻结与发布。
-- 核心工具：稳定行编号、效应量引擎、冻结与发布工具。
-- 一个能把流程从头跑通的小型合成示例。
+- 第二个 skill，用来设计验证方案；等第一个在真实项目里试用过再做。
+- 调用各家模型的运行器，用于需要 AI 的环节。目前还没有包含。
 
 ## 不会进入本仓库的内容
 
