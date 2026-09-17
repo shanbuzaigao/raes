@@ -1,0 +1,140 @@
+{
+  "algorithm": "sha256",
+  "files": [
+    {
+      "path": "examples/synthetic/expected/results.json",
+      "sha256": "1b263e560c16848f271dd1fd6db274a9b7e86b325da305d07b8c2989e2cb5791",
+      "size": 12844
+    },
+    {
+      "path": "examples/synthetic/inputs/codebook.json",
+      "sha256": "bff028a48ad6d7fcd0c1f76eb716ef13508326bccc31ca8b5fba8f220f3617b6",
+      "size": 12071
+    },
+    {
+      "path": "examples/synthetic/inputs/eligibility.json",
+      "sha256": "7e8512f958b79ce286056b6985c5c51807ab78dccf16e35114278be37dfa2e41",
+      "size": 846
+    },
+    {
+      "path": "examples/synthetic/inputs/human_adjudications.json",
+      "sha256": "18878ae80bc9f618abeffe1c1111d3398de940e845749ed46019ddc4bae74473",
+      "size": 327
+    },
+    {
+      "path": "examples/synthetic/inputs/papers/SYN001-journal.md",
+      "sha256": "73e294392d877fd67125f943db323532de8ddcf39f920636e786a8c2ae4d6b25",
+      "size": 873
+    },
+    {
+      "path": "examples/synthetic/inputs/papers/SYN001-preprint.md",
+      "sha256": "c59f89a603650bf4418aa95459592e67e2ee227c3d7da953ef87b3b79f16a8ea",
+      "size": 875
+    },
+    {
+      "path": "examples/synthetic/inputs/papers/SYN002.md",
+      "sha256": "a65cfbe6e5a3913180eebb3a58d3f5db8303bd29be6bf1c22b7c707acf2ea66b",
+      "size": 734
+    },
+    {
+      "path": "examples/synthetic/inputs/papers/SYN003.md",
+      "sha256": "502dc9e10be90ef1bfbb441b93659722cff4a230e78dba1e278b995b4c2c4d42",
+      "size": 817
+    },
+    {
+      "path": "examples/synthetic/inputs/papers/SYN004.md",
+      "sha256": "e3128c6b2714b15a045975bdec67dd75cdde3c08f8a7de8106817c7e38868529",
+      "size": 462
+    },
+    {
+      "path": "examples/synthetic/inputs/papers/SYN005.md",
+      "sha256": "f6b525e25325788994668093c3a6b24aeffa3ae06ddc2b4eacd4ff759063adef",
+      "size": 416
+    },
+    {
+      "path": "examples/synthetic/inputs/papers/SYN006.md",
+      "sha256": "79bbc4fb449fc5327eccd269c6132613cc5a5ee55f4860d6566754c251614fe9",
+      "size": 833
+    },
+    {
+      "path": "examples/synthetic/inputs/registry.json",
+      "sha256": "e7c57cca5bccf85a3e4114b4eb6108dc548a46fab2b7176f3a147cae52648442",
+      "size": 1977
+    },
+    {
+      "path": "examples/synthetic/inputs/requests.jsonl",
+      "sha256": "e44cc052c1fa70ac0c2a67c6ba03b59505c71edc58c83d8437f8588e525950fd",
+      "size": 183871
+    },
+    {
+      "path": "examples/synthetic/inputs/responses.jsonl",
+      "sha256": "c603430eecf0ee93efc75ae357c7297cb378bb40cf012c00d78ea075b1b09931",
+      "size": 10718
+    },
+    {
+      "path": "examples/synthetic/inputs/search.json",
+      "sha256": "da39b44a0f515c5442b154e32a8d5bd59986be7b964dd459c6ea52da6e6adb32",
+      "size": 1892
+    },
+    {
+      "path": "examples/synthetic/inputs/task_instructions.json",
+      "sha256": "fff4f77e58e8ea064d6541dcf501fb3e81190fa3198e2cdca28c846a5c6c3bce",
+      "size": 1409
+    },
+    {
+      "path": "examples/synthetic/inputs/validation.json",
+      "sha256": "109b893d9d22d70f34e48909d26f0fe63c556fc644046a7e1bfe5e941ae0fad1",
+      "size": 264
+    },
+    {
+      "path": "examples/synthetic/inputs/validation_codebook.json",
+      "sha256": "5ae4644fa5e27b32839ce64f88b32f9ef12c6a0f82b600e6015e82b92d4513db",
+      "size": 935
+    },
+    {
+      "path": "examples/synthetic/pipeline.py",
+      "sha256": "bd0f8b00c79e7fcc4877a523beb75093d06dca821875d2487ad51717234db89a",
+      "size": 23176
+    },
+    {
+      "path": "examples/synthetic/reproduce.py",
+      "sha256": "e9b2eae6645a232a843e7f1354e736dff5f982d9c9c0062fe9a41d545d65f1aa",
+      "size": 3898
+    },
+    {
+      "path": "raes_core/__init__.py",
+      "sha256": "e8efed7315423483901e489dbbf9dd56348db890b20ab5452ffdd08b3fc8b544",
+      "size": 109
+    },
+    {
+      "path": "raes_core/effect_sizes.py",
+      "sha256": "adab4b8d4615c00f630618e14068b11f75c9c23d4867b6d483baf27bcde31ca4",
+      "size": 3826
+    },
+    {
+      "path": "raes_core/freeze.py",
+      "sha256": "f1e80bf3634d311de10cb1c8200717257584e1fcf5ff6099f116051a97457f51",
+      "size": 4383
+    },
+    {
+      "path": "raes_core/io.py",
+      "sha256": "fe751379400702a95e839bde04132dd32e272d6a52fadd23ffe72c3495e9a951",
+      "size": 1835
+    },
+    {
+      "path": "raes_core/registry.py",
+      "sha256": "b51b47ed3791fcd16986697b2b5c16fdffd87da1b296cf67cef3c79857ba17c7",
+      "size": 5142
+    },
+    {
+      "path": "skills/codebook-author/scripts/check_codebook.py",
+      "sha256": "553b1294f7e87334b06e21d9aafdbc1725ddff350dff7be2eee6ef4581e3142d",
+      "size": 12663
+    }
+  ],
+  "schema_version": 1,
+  "scopes": [
+    "examples/synthetic/inputs",
+    "examples/synthetic/expected"
+  ]
+}

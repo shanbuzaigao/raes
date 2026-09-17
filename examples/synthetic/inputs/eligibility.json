@@ -1,0 +1,21 @@
+{
+  "criteria": [
+    {
+      "clarifications": "Exclude children and narrative reviews; each adult is an independent unit.",
+      "id": "C1",
+      "text": "The study compares independent groups of adults."
+    },
+    {
+      "clarifications": "Step cards that give a structured list of task guidance count as structured feedback. Do not require that exact phrase.",
+      "id": "C2",
+      "text": "The treatment supplies structured task feedback and is compared with plain feedback."
+    },
+    {
+      "clarifications": "Include eligible conditions even if summary statistics needed for an effect are missing.",
+      "id": "C3",
+      "text": "The study measures task scores or task completion."
+    }
+  ],
+  "mixed_condition_rule": "Judge each condition separately; retain reasons for excluded conditions.",
+  "version": "1.0-synthetic"
+}

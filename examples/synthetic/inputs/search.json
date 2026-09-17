@@ -1,0 +1,58 @@
+[
+  {
+    "abstract": "Entirely synthetic export; inspect the linked fictional report.",
+    "record_id": "REC001",
+    "source_id": "SYN001-preprint.md",
+    "source_key": "synthetic:001-pre",
+    "title": "Feedback study, preprint"
+  },
+  {
+    "abstract": "Entirely synthetic export; inspect the linked fictional report.",
+    "record_id": "REC002",
+    "source_id": "SYN001-journal.md",
+    "source_key": "synthetic:001-journal",
+    "title": "Feedback study, journal"
+  },
+  {
+    "abstract": "Entirely synthetic export; inspect the linked fictional report.",
+    "record_id": "REC003",
+    "source_id": "SYN001-journal.md",
+    "source_key": "synthetic:001-journal",
+    "title": "Feedback study, journal"
+  },
+  {
+    "abstract": "Entirely synthetic export; inspect the linked fictional report.",
+    "record_id": "REC004",
+    "source_id": "SYN002.md",
+    "source_key": "synthetic:002",
+    "title": "Task completion under structured feedback"
+  },
+  {
+    "abstract": "Entirely synthetic export; inspect the linked fictional report.",
+    "record_id": "REC005",
+    "source_id": "SYN003.md",
+    "source_key": "synthetic:003",
+    "title": "Feedback effects with incomplete summary statistics"
+  },
+  {
+    "abstract": "Entirely synthetic export; inspect the linked fictional report.",
+    "record_id": "REC006",
+    "source_id": "SYN004.md",
+    "source_key": "synthetic:004",
+    "title": "Feedback for children"
+  },
+  {
+    "abstract": "Entirely synthetic export; inspect the linked fictional report.",
+    "record_id": "REC007",
+    "source_id": "SYN005.md",
+    "source_key": "synthetic:005",
+    "title": "A narrative review of feedback"
+  },
+  {
+    "abstract": "Entirely synthetic export; inspect the linked fictional report.",
+    "record_id": "REC008",
+    "source_id": "SYN006.md",
+    "source_key": "synthetic:006",
+    "title": "Step cards and task performance"
+  }
+]

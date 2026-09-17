@@ -1,0 +1,93 @@
+{
+  "entries": [
+    {
+      "identity": {
+        "Arm": "treatment",
+        "Condition_ID": "main",
+        "Outcome_Metric": "score",
+        "Study_ID": "SYN001"
+      },
+      "row_uid": "SYN-R000001",
+      "status": "active"
+    },
+    {
+      "identity": {
+        "Arm": "comparator",
+        "Condition_ID": "main",
+        "Outcome_Metric": "score",
+        "Study_ID": "SYN001"
+      },
+      "row_uid": "SYN-R000002",
+      "status": "active"
+    },
+    {
+      "identity": {
+        "Arm": "treatment",
+        "Condition_ID": "main",
+        "Outcome_Metric": "completion",
+        "Study_ID": "SYN002"
+      },
+      "row_uid": "SYN-R000003",
+      "status": "active"
+    },
+    {
+      "identity": {
+        "Arm": "comparator",
+        "Condition_ID": "main",
+        "Outcome_Metric": "completion",
+        "Study_ID": "SYN002"
+      },
+      "row_uid": "SYN-R000004",
+      "status": "active"
+    },
+    {
+      "identity": {
+        "Arm": "treatment",
+        "Condition_ID": "main",
+        "Outcome_Metric": "score",
+        "Study_ID": "SYN003"
+      },
+      "row_uid": "SYN-R000005",
+      "status": "active"
+    },
+    {
+      "identity": {
+        "Arm": "comparator",
+        "Condition_ID": "main",
+        "Outcome_Metric": "score",
+        "Study_ID": "SYN003"
+      },
+      "row_uid": "SYN-R000006",
+      "status": "active"
+    },
+    {
+      "identity": {
+        "Arm": "treatment",
+        "Condition_ID": "main",
+        "Outcome_Metric": "score",
+        "Study_ID": "SYN006"
+      },
+      "row_uid": "SYN-R000007",
+      "status": "active"
+    },
+    {
+      "identity": {
+        "Arm": "comparator",
+        "Condition_ID": "main",
+        "Outcome_Metric": "score",
+        "Study_ID": "SYN006"
+      },
+      "row_uid": "SYN-R000008",
+      "status": "active"
+    }
+  ],
+  "identity_fields": [
+    "Study_ID",
+    "Condition_ID",
+    "Arm",
+    "Outcome_Metric"
+  ],
+  "namespace": "SYN",
+  "next_id": 9,
+  "schema_version": 1
+}

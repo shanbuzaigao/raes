@@ -1,0 +1,5 @@
+* text=auto eol=lf
+_internal/ export-ignore
+_internal/** export-ignore
+source_reference/ export-ignore
+source_reference/** export-ignore

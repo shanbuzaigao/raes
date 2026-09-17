@@ -1,4 +1,4 @@
-# Internal notes: never committed, never published
+# Internal notes: keep untracked; ignores do NOT remove already tracked files
 _internal/
 
 # Credentials and local configuration
@@ -34,3 +34,7 @@ tmp/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# No private research sources in this framework repository
+source_reference/
+.claude/

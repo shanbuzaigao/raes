@@ -1,0 +1,555 @@
+{
+  "attempt_log.json": [
+    {
+      "attempt": 1,
+      "request_id": "REQ-f490a17ae9b418fe4da2",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-7fbd4e72f1718437b9aa",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-86448063883da803cf6f",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-ab2e508f869502001038",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-b2085caa52ca0e978b8b",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-c5e3548a0d7be0b2fe46",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-21503b927a06afc824d1",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "reason": "invalid_json_or_schema",
+      "request_id": "REQ-cd8cd9ba64975cc286a2",
+      "status": "INVALID_RESPONSE"
+    },
+    {
+      "attempt": 2,
+      "request_id": "REQ-cd8cd9ba64975cc286a2",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-727cb7aa734e623f430f",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-957114c6172151512357",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-9511711d4909d63a99ae",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-24cb8f8e1cdd58babaf4",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-cbdea2c5d104f4c832a9",
+      "status": "VALID"
+    },
+    {
+      "attempt": 1,
+      "request_id": "REQ-548b399b06ab637e55f1",
+      "status": "VALID"
+    }
+  ],
+  "coded_original.json": [
+    {
+      "Arm": "treatment",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 40,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000001",
+      "Source_Location": "SYN001-journal.md:L11",
+      "Study_ID": "SYN001",
+      "events": null,
+      "mean": 65.0,
+      "sd": 1.58,
+      "total": null
+    },
+    {
+      "Arm": "comparator",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 40,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000002",
+      "Source_Location": "SYN001-journal.md:L12",
+      "Study_ID": "SYN001",
+      "events": null,
+      "mean": 60.0,
+      "sd": 10.0,
+      "total": null
+    },
+    {
+      "Arm": "treatment",
+      "Condition_ID": "main",
+      "ES_Path": "events_total",
+      "N": 50,
+      "Outcome_Metric": "completion",
+      "Row_UID": "SYN-R000003",
+      "Source_Location": "SYN002.md:L11",
+      "Study_ID": "SYN002",
+      "events": 30.0,
+      "mean": null,
+      "sd": null,
+      "total": 50
+    },
+    {
+      "Arm": "comparator",
+      "Condition_ID": "main",
+      "ES_Path": "events_total",
+      "N": 50,
+      "Outcome_Metric": "completion",
+      "Row_UID": "SYN-R000004",
+      "Source_Location": "SYN002.md:L12",
+      "Study_ID": "SYN002",
+      "events": 20.0,
+      "mean": null,
+      "sd": null,
+      "total": 50
+    },
+    {
+      "Arm": "treatment",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 30,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000005",
+      "Source_Location": "SYN003.md:L11",
+      "Study_ID": "SYN003",
+      "events": null,
+      "mean": 70.0,
+      "sd": null,
+      "total": null
+    },
+    {
+      "Arm": "comparator",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 30,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000006",
+      "Source_Location": "SYN003.md:L12",
+      "Study_ID": "SYN003",
+      "events": null,
+      "mean": 66.0,
+      "sd": null,
+      "total": null
+    },
+    {
+      "Arm": "treatment",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 25,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000007",
+      "Source_Location": "SYN006.md:L11",
+      "Study_ID": "SYN006",
+      "events": null,
+      "mean": 52.0,
+      "sd": 5.0,
+      "total": null
+    },
+    {
+      "Arm": "comparator",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 25,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000008",
+      "Source_Location": "SYN006.md:L12",
+      "Study_ID": "SYN006",
+      "events": null,
+      "mean": 50.0,
+      "sd": 5.0,
+      "total": null
+    }
+  ],
+  "coded_reconciled.json": [
+    {
+      "Arm": "treatment",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 40,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000001",
+      "Source_Location": "SYN001-journal.md:L11",
+      "Study_ID": "SYN001",
+      "events": null,
+      "mean": 65.0,
+      "sd": 10.0,
+      "total": null
+    },
+    {
+      "Arm": "comparator",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 40,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000002",
+      "Source_Location": "SYN001-journal.md:L12",
+      "Study_ID": "SYN001",
+      "events": null,
+      "mean": 60.0,
+      "sd": 10.0,
+      "total": null
+    },
+    {
+      "Arm": "treatment",
+      "Condition_ID": "main",
+      "ES_Path": "events_total",
+      "N": 50,
+      "Outcome_Metric": "completion",
+      "Row_UID": "SYN-R000003",
+      "Source_Location": "SYN002.md:L11",
+      "Study_ID": "SYN002",
+      "events": 30.0,
+      "mean": null,
+      "sd": null,
+      "total": 50
+    },
+    {
+      "Arm": "comparator",
+      "Condition_ID": "main",
+      "ES_Path": "events_total",
+      "N": 50,
+      "Outcome_Metric": "completion",
+      "Row_UID": "SYN-R000004",
+      "Source_Location": "SYN002.md:L12",
+      "Study_ID": "SYN002",
+      "events": 20.0,
+      "mean": null,
+      "sd": null,
+      "total": 50
+    },
+    {
+      "Arm": "treatment",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 30,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000005",
+      "Source_Location": "SYN003.md:L11",
+      "Study_ID": "SYN003",
+      "events": null,
+      "mean": 70.0,
+      "sd": null,
+      "total": null
+    },
+    {
+      "Arm": "comparator",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 30,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000006",
+      "Source_Location": "SYN003.md:L12",
+      "Study_ID": "SYN003",
+      "events": null,
+      "mean": 66.0,
+      "sd": null,
+      "total": null
+    },
+    {
+      "Arm": "treatment",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 25,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000007",
+      "Source_Location": "SYN006.md:L11",
+      "Study_ID": "SYN006",
+      "events": null,
+      "mean": 52.0,
+      "sd": 5.0,
+      "total": null
+    },
+    {
+      "Arm": "comparator",
+      "Condition_ID": "main",
+      "ES_Path": "means_sd",
+      "N": 25,
+      "Outcome_Metric": "score",
+      "Row_UID": "SYN-R000008",
+      "Source_Location": "SYN006.md:L12",
+      "Study_ID": "SYN006",
+      "events": null,
+      "mean": 50.0,
+      "sd": 5.0,
+      "total": null
+    }
+  ],
+  "coding_audit.json": [
+    {
+      "Study_ID": "SYN001",
+      "challenges": [
+        {
+          "Row_UID": "SYN-R000001",
+          "evidence": {
+            "line": 11,
+            "quote": "Treatment: N = 40; mean = 65.0; SD = 10.0; SE = 1.58; outcome = task score.",
+            "source_id": "SYN001-journal.md"
+          },
+          "field": "sd",
+          "proposed": 10.0,
+          "rule": "SD_RULE"
+        }
+      ],
+      "checked_rows": [
+        "SYN-R000001",
+        "SYN-R000002"
+      ],
+      "domains": [
+        "inputs",
+        "pairing_and_path",
+        "moderators"
+      ],
+      "request_id": "REQ-9511711d4909d63a99ae",
+      "status": "CHALLENGE"
+    },
+    {
+      "Study_ID": "SYN002",
+      "challenges": [],
+      "checked_rows": [
+        "SYN-R000003",
+        "SYN-R000004"
+      ],
+      "domains": [
+        "inputs",
+        "pairing_and_path",
+        "moderators"
+      ],
+      "request_id": "REQ-cbdea2c5d104f4c832a9",
+      "status": "PASS"
+    },
+    {
+      "Study_ID": "SYN006",
+      "challenges": [],
+      "checked_rows": [
+        "SYN-R000007",
+        "SYN-R000008"
+      ],
+      "domains": [
+        "inputs",
+        "pairing_and_path",
+        "moderators"
+      ],
+      "request_id": "REQ-548b399b06ab637e55f1",
+      "status": "PASS"
+    }
+  ],
+  "computability.json": [
+    {
+      "Condition_ID": "main",
+      "Study_ID": "SYN001",
+      "computable": true,
+      "missing": []
+    },
+    {
+      "Condition_ID": "main",
+      "Study_ID": "SYN002",
+      "computable": true,
+      "missing": []
+    },
+    {
+      "Condition_ID": "main",
+      "Study_ID": "SYN003",
+      "computable": false,
+      "missing": [
+        {
+          "Row_UID": "SYN-R000005",
+          "field": "sd"
+        },
+        {
+          "Row_UID": "SYN-R000006",
+          "field": "sd"
+        }
+      ]
+    },
+    {
+      "Condition_ID": "main",
+      "Study_ID": "SYN006",
+      "computable": true,
+      "missing": []
+    }
+  ],
+  "corrections.json": [
+    {
+      "Row_UID": "SYN-R000001",
+      "adjudicator_request": "REQ-24cb8f8e1cdd58babaf4",
+      "auditor_request": "REQ-9511711d4909d63a99ae",
+      "evidence": {
+        "line": 11,
+        "quote": "Treatment: N = 40; mean = 65.0; SD = 10.0; SE = 1.58; outcome = task score.",
+        "source_id": "SYN001-journal.md"
+      },
+      "field": "sd",
+      "new": 10.0,
+      "old": 1.58,
+      "rule": "SD_RULE"
+    }
+  ],
+  "effect_sizes.json": [
+    {
+      "Study_ID": "SYN001",
+      "ci_high": 0.9402815668109733,
+      "ci_low": 0.050072130938222825,
+      "comparator_row": "SYN-R000002",
+      "continuity_correction": 0.0,
+      "g": 0.49517684887459806,
+      "method": "means_sd_project_approximation_v1",
+      "metric": "pooled_sd_hedges_g",
+      "se": 0.22709424384508942,
+      "treatment_row": "SYN-R000001"
+    },
+    {
+      "Study_ID": "SYN002",
+      "ci_high": 0.8814290819734579,
+      "ci_low": 0.005888734005227825,
+      "comparator_row": "SYN-R000004",
+      "continuity_correction": 0.0,
+      "g": 0.4436589079893429,
+      "method": "events_total_project_approximation_v1",
+      "metric": "log_or_derived_g",
+      "se": 0.22335212958373218,
+      "treatment_row": "SYN-R000003"
+    },
+    {
+      "Study_ID": "SYN006",
+      "ci_high": 0.9536557699470902,
+      "ci_low": -0.16622121497326808,
+      "comparator_row": "SYN-R000008",
+      "continuity_correction": 0.0,
+      "g": 0.39371727748691104,
+      "method": "means_sd_project_approximation_v1",
+      "metric": "pooled_sd_hedges_g",
+      "se": 0.2856829043164179,
+      "treatment_row": "SYN-R000007"
+    }
+  ],
+  "flow_counts.json": {
+    "FT_initial_excluded": 2,
+    "FT_initial_included": 4,
+    "FT_rescued": 1,
+    "TA_excluded": 1,
+    "audited_pre_g_arm_rows": 6,
+    "coded_arm_rows": 8,
+    "computed_effects": 3,
+    "confirmed_coding_corrections": 1,
+    "duplicates": 1,
+    "full_texts_assessed": 6,
+    "included_reports": 5,
+    "included_studies": 4,
+    "logical_requests": 14,
+    "saved_attempts": 15,
+    "screened_records": 7,
+    "search_records": 8,
+    "technical_failures": 1,
+    "uncomputed_comparisons": 1
+  },
+  "screening_audit.json": [
+    {
+      "final": "exclude",
+      "majority": "exclude",
+      "requests": [
+        "REQ-f490a17ae9b418fe4da2",
+        "REQ-7fbd4e72f1718437b9aa"
+      ],
+      "source_id": "SYN004.md",
+      "votes": [
+        "exclude",
+        "exclude"
+      ]
+    },
+    {
+      "final": "include",
+      "majority": "include",
+      "requests": [
+        "REQ-86448063883da803cf6f",
+        "REQ-ab2e508f869502001038",
+        "REQ-b2085caa52ca0e978b8b"
+      ],
+      "source_id": "SYN006.md",
+      "votes": [
+        "include",
+        "exclude",
+        "include"
+      ]
+    },
+    {
+      "final": "exclude",
+      "requests": [
+        "REQ-c5e3548a0d7be0b2fe46"
+      ],
+      "source_id": "SYN005.md",
+      "stage": "TA"
+    }
+  ],
+  "study_map.json": [
+    {
+      "Study_ID": "SYN001",
+      "record_id": "REC001",
+      "representative": false
+    },
+    {
+      "Study_ID": "SYN001",
+      "record_id": "REC002",
+      "representative": true
+    },
+    {
+      "Study_ID": "SYN002",
+      "record_id": "REC004",
+      "representative": true
+    },
+    {
+      "Study_ID": "SYN003",
+      "record_id": "REC005",
+      "representative": true
+    },
+    {
+      "Study_ID": "SYN006",
+      "record_id": "REC008",
+      "representative": true
+    }
+  ],
+  "unresolved_items.json": [
+    {
+      "Arm": "treatment",
+      "Study_ID": "SYN003",
+      "field": "sd",
+      "reason": "SD not reported; preserve eligible row and leave effect uncomputed."
+    },
+    {
+      "Arm": "comparator",
+      "Study_ID": "SYN003",
+      "field": "sd",
+      "reason": "SD not reported; preserve eligible row and leave effect uncomputed."
+    }
+  ]
+}

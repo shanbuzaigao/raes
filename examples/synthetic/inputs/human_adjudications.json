@@ -1,0 +1,11 @@
+{
+  "SYN006.md": {
+    "decision": "include",
+    "evidence": {
+      "line": 15,
+      "quote": "Definition: Step cards contain a structured list of feedback on the task. They satisfy C2 without using the screen's exact keyword.",
+      "source_id": "SYN006.md"
+    },
+    "provenance": "synthetic_adjudication_fixture"
+  }
+}

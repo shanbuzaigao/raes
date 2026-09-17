@@ -1,0 +1,274 @@
+{
+  "aggregation_rule": "No aggregation of repeated observations or different outcomes. Preprint and journal of the same study contribute once, using journal data.",
+  "approval": {
+    "basis": "Hand-authored teaching choices, not a real researcher approval or a live AI validation.",
+    "by": "synthetic_owner_fixture",
+    "date": "2026-09-17"
+  },
+  "columns": [
+    "Study_ID",
+    "Condition_ID",
+    "Arm",
+    "Outcome_Metric",
+    "ES_Path",
+    "N",
+    "mean",
+    "sd",
+    "events",
+    "total",
+    "Source_Location",
+    "Row_UID",
+    "g",
+    "SE_g"
+  ],
+  "direction_rule": "Treatment minus comparator for means, treatment versus comparator odds for binary completion. Do not pool the three teaching effects.",
+  "eligibility": {
+    "file": "eligibility.json",
+    "sha256": "7e8512f958b79ce286056b6985c5c51807ab78dccf16e35114278be37dfa2e41"
+  },
+  "outcome_map": [
+    {
+      "canonical_outcome": "score",
+      "direction": "Higher score is better performance.",
+      "scale_rule": "Use reported points; no within-study normalization.",
+      "source_measure": "task score"
+    },
+    {
+      "canonical_outcome": "completion",
+      "direction": "The event is successful task completion.",
+      "scale_rule": "Extract events and total; do not substitute failure counts.",
+      "source_measure": "completed task"
+    }
+  ],
+  "pairing_rule": "Match Study_ID, Condition_ID and Outcome_Metric; exactly one treatment and one comparator. No external comparator or cross-study borrowing.",
+  "project": {
+    "domain": "fabricated teaching example; not empirical evidence",
+    "id": "synthetic-feedback",
+    "question": "How does structured versus plain feedback change task outcomes in independent adult groups?",
+    "title": "Synthetic feedback comparison"
+  },
+  "provenance_fields": [
+    "Source_Location"
+  ],
+  "schema_version": "raes-codebook/1",
+  "source_precedence": [
+    "Journal report over a preprint of the identical printed Study-ID; contradictory reports require resolution, not automatic overwrite.",
+    "Printed arm result lines are authoritative for this fictional corpus."
+  ],
+  "status": "ready",
+  "unit": {
+    "identity_fields": [
+      "Study_ID",
+      "Condition_ID",
+      "Arm",
+      "Outcome_Metric"
+    ],
+    "independent_unit": "One adult independently assigned to one arm, with one final task outcome.",
+    "record": "One fictional search export record.",
+    "row": "One Study_ID x Condition_ID x Arm x Outcome_Metric.",
+    "study": "One printed Study-ID; preprint and journal reports can belong to the same study."
+  },
+  "unresolved_policy": "Keep eligible rows with null required statistics and a field-specific unresolved item; do not impute or count technical failures as decisions.",
+  "variables": [
+    {
+      "counterexample": "A changed mean never creates a new study ID.",
+      "description": "Stable study identity supplied in the request.",
+      "example": "SYN001",
+      "missing_rule": "Missing identity or provenance blocks a valid row; do not invent.",
+      "name": "Study_ID",
+      "nullable": false,
+      "owner": "executor",
+      "rule": "Copy the supplied stable Study-ID.",
+      "source_rule": "Use the supplied report only; retain an exact line and quote for every non-null numeric input.",
+      "type": "string"
+    },
+    {
+      "counterexample": "Do not split a condition by report version.",
+      "description": "Stable condition identity within the study.",
+      "example": "main",
+      "missing_rule": "Missing identity or provenance blocks a valid row; do not invent.",
+      "name": "Condition_ID",
+      "nullable": false,
+      "owner": "executor",
+      "rule": "This corpus has one eligible main condition per study; copy main.",
+      "source_rule": "Use the supplied report only; retain an exact line and quote for every non-null numeric input.",
+      "type": "string"
+    },
+    {
+      "allowed_values": [
+        "treatment",
+        "comparator"
+      ],
+      "counterexample": "Do not invert arms after seeing their scores.",
+      "description": "Arm identifier within a comparison.",
+      "example": "treatment",
+      "missing_rule": "Missing identity or provenance blocks a valid row; do not invent.",
+      "name": "Arm",
+      "nullable": false,
+      "owner": "executor",
+      "rule": "Use treatment for structured feedback and comparator for plain feedback.",
+      "source_rule": "Use the supplied report only; retain an exact line and quote for every non-null numeric input.",
+      "type": "string"
+    },
+    {
+      "allowed_values": [
+        "score",
+        "completion"
+      ],
+      "counterexample": "Do not code failure rate as completion without a defined conversion.",
+      "description": "Canonical outcome, not its source-specific label.",
+      "example": "score",
+      "missing_rule": "Missing identity or provenance blocks a valid row; do not invent.",
+      "name": "Outcome_Metric",
+      "nullable": false,
+      "owner": "executor",
+      "rule": "Use score for continuous task points, completion for binary success.",
+      "source_rule": "Use the supplied report only; retain an exact line and quote for every non-null numeric input.",
+      "type": "string"
+    },
+    {
+      "allowed_values": [
+        "means_sd",
+        "events_total"
+      ],
+      "counterexample": "Missing SD does not make the study ineligible.",
+      "description": "Declared computation route; null if unresolved.",
+      "example": "means_sd",
+      "missing_rule": "For an inapplicable path use null. For an absent required statistic keep null and add a field-specific unresolved item.",
+      "name": "ES_Path",
+      "nullable": true,
+      "owner": "executor",
+      "rule": "Use means_sd for continuous scores, events_total for completion. Path may be known even if a statistic is missing.",
+      "source_rule": "Use the supplied report only; retain an exact line and quote for every non-null numeric input.",
+      "type": "string"
+    },
+    {
+      "counterexample": "Do not count two reports of the same people twice.",
+      "description": "Number of independent units contributing to this arm.",
+      "example": 40,
+      "minimum": 2,
+      "missing_rule": "For an inapplicable path use null. For an absent required statistic keep null and add a field-specific unresolved item.",
+      "name": "N",
+      "nullable": true,
+      "owner": "executor",
+      "rule": "Copy independent adults in this arm, not combined N.",
+      "source_rule": "Use the supplied report only; retain an exact line and quote for every non-null numeric input.",
+      "type": "integer"
+    },
+    {
+      "counterexample": "Do not substitute the median or compute an effect.",
+      "description": "Reported or deterministically prepared mean.",
+      "example": 65.0,
+      "missing_rule": "For an inapplicable path use null. For an absent required statistic keep null and add a field-specific unresolved item.",
+      "name": "mean",
+      "nullable": true,
+      "owner": "executor",
+      "rule": "Copy the reported arm mean for means_sd; otherwise null.",
+      "source_rule": "Use the supplied report only; retain an exact line and quote for every non-null numeric input.",
+      "type": "number"
+    },
+    {
+      "counterexample": "SE 1.58 is not SD 10.0. See SD_RULE.",
+      "description": "Standard deviation, not a standard error.",
+      "example": 10.0,
+      "minimum": 0,
+      "missing_rule": "For an inapplicable path use null. For an absent required statistic keep null and add a field-specific unresolved item.",
+      "name": "sd",
+      "nullable": true,
+      "owner": "executor",
+      "rule": "Copy SD, never SE; do not convert inside this example. If SD absent, null and unresolved.",
+      "source_rule": "Use the supplied report only; retain an exact line and quote for every non-null numeric input.",
+      "type": "number"
+    },
+    {
+      "counterexample": "Total N is not a success count.",
+      "description": "Binary events, if that path is used.",
+      "example": null,
+      "minimum": 0,
+      "missing_rule": "For an inapplicable path use null. For an absent required statistic keep null and add a field-specific unresolved item.",
+      "name": "events",
+      "nullable": true,
+      "owner": "executor",
+      "rule": "Copy number of successful completions; otherwise null.",
+      "source_rule": "Use the supplied report only; retain an exact line and quote for every non-null numeric input.",
+      "type": "number"
+    },
+    {
+      "counterexample": "Do not apply a continuity correction during extraction.",
+      "description": "Binary denominator, if that path is used.",
+      "example": null,
+      "minimum": 2,
+      "missing_rule": "For an inapplicable path use null. For an absent required statistic keep null and add a field-specific unresolved item.",
+      "name": "total",
+      "nullable": true,
+      "owner": "executor",
+      "rule": "Copy the binary denominator; otherwise null.",
+      "source_rule": "Use the supplied report only; retain an exact line and quote for every non-null numeric input.",
+      "type": "integer"
+    },
+    {
+      "counterexample": "A citation to an unrelated paper does not support a value.",
+      "description": "Resolvable location of the supporting source.",
+      "example": "SYN001-journal.md:L11",
+      "missing_rule": "Missing identity or provenance blocks a valid row; do not invent.",
+      "name": "Source_Location",
+      "nullable": false,
+      "owner": "executor",
+      "rule": "Cite the exact source filename and line of this arm result.",
+      "source_rule": "Use the supplied report only; retain an exact line and quote for every non-null numeric input.",
+      "type": "string"
+    },
+    {
+      "counterexample": "Never generate an ID from a statistic or current row order.",
+      "description": "Issued from a stable registry, never by the executor.",
+      "example": "SYN-R000001",
+      "missing_rule": "Missing identity or provenance blocks a valid row; do not invent.",
+      "name": "Row_UID",
+      "nullable": false,
+      "owner": "code",
+      "rule": "Look up the exact structural identity in the frozen registry; code only.",
+      "source_rule": "Derived from reconciled inputs by deterministic code, not an extracted claim.",
+      "type": "string"
+    },
+    {
+      "counterexample": "The AI may not calculate g.",
+      "description": "Derived effect, computed only after audit reconciliation.",
+      "example": null,
+      "missing_rule": "For an inapplicable path use null. For an absent required statistic keep null and add a field-specific unresolved item.",
+      "name": "g",
+      "nullable": true,
+      "owner": "code",
+      "rule": "Code computes the documented effect after audit reconciliation; leave absent from executor rows.",
+      "source_rule": "Derived from reconciled inputs by deterministic code, not an extracted claim.",
+      "type": "number"
+    },
+    {
+      "counterexample": "Do not copy an original-paper p value as an SE.",
+      "description": "Derived standard error.",
+      "example": null,
+      "minimum": 0,
+      "missing_rule": "For an inapplicable path use null. For an absent required statistic keep null and add a field-specific unresolved item.",
+      "name": "SE_g",
+      "nullable": true,
+      "owner": "code",
+      "rule": "Code computes SE with the declared formula convention; leave absent from executor rows.",
+      "source_rule": "Derived from reconciled inputs by deterministic code, not an extracted claim.",
+      "type": "number"
+    }
+  ],
+  "version": "1.0-synthetic",
+  "worked_cases": [
+    {
+      "description": "Adults, independent arms, structured/plain feedback and task score: include and code both arms.",
+      "id": "positive"
+    },
+    {
+      "description": "SYN003 reports means and N but no SD: include, keep null, no computed effect.",
+      "id": "missing_sd"
+    },
+    {
+      "description": "Step cards are structured feedback by C2 even when a keyword screen misses them.",
+      "id": "boundary"
+    }
+  ]
+}

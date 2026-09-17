@@ -1,0 +1,8 @@
+{
+  "FT_routing": "two_primary_then_third_on_disagreement",
+  "FT_sample": "census_of_exclusions",
+  "TA_sample": "census_of_exclusions",
+  "coding_frame": "computable_pre_g_census",
+  "coding_routing": "AI2_then_blinded_AI3_on_challenge",
+  "schema_version": 1
+}

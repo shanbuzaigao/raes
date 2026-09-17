@@ -1,0 +1,22 @@
+{
+  "AI2": "Check all target rows in every domain; challenge exact coordinates only.",
+  "AI3": "Use the same rules and original targets; independently resolve only the supplied coordinate. Do not see the AI2 value or rationale.",
+  "domains": [
+    "inputs",
+    "pairing_and_path",
+    "moderators"
+  ],
+  "eligibility_sha256": "7e8512f958b79ce286056b6985c5c51807ab78dccf16e35114278be37dfa2e41",
+  "rule_ids": [
+    "SD_RULE",
+    "SOURCE_RULE",
+    "PAIR_RULE"
+  ],
+  "rules": {
+    "PAIR_RULE": "Match exact study, condition and outcome; do not change identities.",
+    "SD_RULE": "Extract a standard deviation, not a standard error.",
+    "SOURCE_RULE": "Values and their exact source locations must match the report."
+  },
+  "scope": "Computable pre-g arms only. Missing-data rows remain coded but are not audited in this census. No outcome/moderator besides those in the codebook is introduced.",
+  "version": "1.0-synthetic"
+}
