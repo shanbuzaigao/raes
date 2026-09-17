@@ -11,7 +11,7 @@ It is organized the way I would explain the workflow in person. Section 1 shows 
 ```mermaid
 flowchart TD
     S0["S0 Goal, eligibility rules<br/>question, scope, criteria"]
-    S1["S1 Search<br/>queries, dated snapshot"]
+    S1["S1 Search<br/>fixed terms, dated snapshot"]
     S2["S2 Remove duplicates<br/>optional rule pre-filter"]
     S3["S3 Title-abstract screen<br/>rule-based algorithm,<br/>written as code"]
     S4["S4 Full-text screen<br/>rule-based algorithm,<br/>written as code"]
@@ -41,13 +41,13 @@ The first half follows the PRISMA 2020 flow (Page et al., 2021): identification,
 | Stage | Done by | What it produces | PRISMA 2020 phase |
 |---|---|---|---|
 | S0 Goal and eligibility rules | Researcher | Research question, numbered eligibility criteria, outcome map | Before the search |
-| S1 Search | Researcher | Dated search snapshot with queries and counts | Identification |
+| S1 Search | Researcher | Fixed search terms, dated search snapshot with queries and counts | Identification |
 | S2 Remove duplicates | Researcher, in a reference manager | Deduplicated library exported as a text file, counts before and after, optional rule-based pre-filter | Identification |
 | S3 Title and abstract screening | Code | Decision and reason for every record | Screening |
 | S4 Full-text screening | Code | Criterion-by-criterion evidence and a decision for every retrieved paper | Screening |
 | S5 AI cross-validation of screening | AI auditors | Audited samples of exclusions, confirmed misses, records added back | Screening |
 | S6 Same-study check | Code | Groups of records that report the same study, one representative each | Included |
-| S7 Data preparation (optional) | Code | Per-paper data summary, matched comparison data, tracker | |
+| S7 Data preparation (optional) | Code, optionally with AI assistance | Per-paper data summary, matched comparison data, tracker | |
 | S8 AI coding | AI executor | Per-paper coded rows in a fixed column template | |
 | S9 AI cross-validation of coding | AI auditors | Audit result for every row that feeds the analysis | |
 | S10 Master table and effect sizes | Code | One table with stable row identifiers and computed effects | |
@@ -190,11 +190,13 @@ Each stage has the same four parts: who does it, what goes in and what comes out
 ### S1 Search
 
 **Done by:** the researcher.
-**In:** the criteria and search terms from S0. **Out:** a dated search snapshot: databases, exact query strings, date range, records per source, and the raw exports.
+**In:** the question and the eligibility criteria from S0. **Out:** the fixed search terms, and a dated search snapshot: databases, exact query strings, date range, records per source, and the raw exports.
 
-**What I do.** Record the databases, the exact query strings, the date range and the number of records from each source. Most databases export their results directly. A source without an export function needs a small script. I use one for arXiv, and it saves the results in a format the reference manager can import. Give each cumulative search a snapshot identifier such as `search_through_2026-04-30`. An update to the search is a new snapshot, and it restarts the audit history of S5.
+**What I do.** I fix the search terms before the first search and write them down. The same terms are used in every database, adapted only to each database's syntax, and in every later update of the search, where only the date range changes. My project searches three databases: Web of Science, EBSCOhost and arXiv.
 
-**Before moving on.** The raw exports are saved unchanged, and the counts per source can be regenerated from them.
+For each search I record the databases, the exact query strings, the date range and the number of records from each source. Most databases export their results directly. A source without an export function needs a small script. I use one for arXiv, and it saves the results in a format the reference manager can import. Give each cumulative search a snapshot identifier such as `search_through_2026-04-30`. An update to the search is a new snapshot, and it restarts the audit history of S5.
+
+**Before moving on.** The search terms are identical across databases and across updates. The raw exports are saved unchanged, and the counts per source can be regenerated from them.
 
 ### S2 Remove duplicates
 
@@ -263,10 +265,12 @@ The question here is narrow: did the screens exclude anything they should have k
 
 ### S7 Data preparation (optional)
 
-**Done by:** code, and the researcher for data requests.
+**Done by:** code, and the researcher for data requests. An AI can assist.
 **In:** the included studies and whatever data they provide. **Out:** a per-paper data summary, matched comparison data, and a tracker.
 
 **What I do.** This stage applies when a paper comes with data files or needs matched comparison data. A paper whose statistics are all in the text skips it. The reason for the stage is cost and accuracy: raw data files can be long, sending them to a model is expensive, and a model should not be doing arithmetic. So code reduces the data to a short summary, and the executor in S8 reads the summary.
+
+An AI can assist with this stage, for example by reading a repository and writing the processing script. When it does, it must be given the same eligibility criteria as the screening and coding stages, word for word, so that the conditions it prepares are exactly the eligible ones.
 
 1. Look for usable data: reported statistics, supplements, repositories. If there is none, record what is missing, send a data request, mark the paper as waiting, and move on. The paper stays in the coding queue.
 2. List the eligible conditions from the main text. Extra conditions that appear only in a repository are not included automatically.

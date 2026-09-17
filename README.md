@@ -19,7 +19,7 @@ All domain knowledge sits in a versioned codebook, so the workflow itself does n
 ```mermaid
 flowchart TD
     S0["S0 Goal, eligibility rules<br/>question, scope, criteria"]
-    S1["S1 Search<br/>queries, dated snapshot"]
+    S1["S1 Search<br/>fixed terms, dated snapshot"]
     S2["S2 Remove duplicates<br/>optional rule pre-filter"]
     S3["S3 Title-abstract screen<br/>rule-based algorithm,<br/>written as code"]
     S4["S4 Full-text screen<br/>rule-based algorithm,<br/>written as code"]
