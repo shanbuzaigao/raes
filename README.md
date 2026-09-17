@@ -14,6 +14,8 @@ It is meant for meta-analyses, systematic reviews and similar evidence syntheses
 
 All domain knowledge sits in a versioned codebook, so the workflow itself does not depend on the field. I developed it and used it end to end in a social-science project: a meta-analysis of how LLMs behave in classic economic games, covering 54 papers and 757 effect sizes.
 
+The working manual is [PROTOCOL.md](PROTOCOL.md). It is a first draft.
+
 ## Why I think this is needed
 
 Evidence-synthesis organizations now expect authors who use AI to keep human oversight and to show that AI does not compromise methodological rigor. This is the message of the RAISE recommendations and of the 2025 joint position statement by Cochrane, the Campbell Collaboration, JBI and the Collaboration for Environmental Evidence. These documents say what is expected. They do not say how to do it in practice. RAES is my attempt at one concrete, executable answer.
@@ -45,7 +47,7 @@ These are the rules I ended up following. Each one came from a problem I actuall
 
 ## What I plan to add
 
-- `PROTOCOL.md` v0.1: principles, stage-by-stage specification, authoring guide, validation design.
+- A Chinese version of the protocol.
 - Templates: codebook skeleton, prompt templates, validation configuration, project tree.
 - Agent skills: synthesis plan, codebook author, pilot and revise, validation designer, freeze and release.
 - Core utilities: stable row registry, effect-size engine, freeze and release tools.
