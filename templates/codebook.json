@@ -1,0 +1,255 @@
+{
+  "schema_version": "raes-codebook/1",
+  "project": {
+    "id": "{{PROJECT_ID}}",
+    "title": "{{TITLE}}",
+    "question": "{{QUESTION}}",
+    "domain": "{{DOMAIN}}"
+  },
+  "version": "0.1.0-draft",
+  "status": "draft",
+  "approval": {
+    "by": "{{OWNER}}",
+    "date": "{{YYYY-MM-DD}}",
+    "basis": "{{Reviewed rules, pilot evidence and unresolved decisions}}"
+  },
+  "unit": {
+    "record": "{{Search record}}",
+    "study": "{{How reports link to underlying studies}}",
+    "row": "{{One arm / condition / outcome}}",
+    "independent_unit": "{{Participant, cluster or other independent sampling unit}}",
+    "identity_fields": [
+      "Study_ID",
+      "Condition_ID",
+      "Arm",
+      "Outcome_Metric"
+    ]
+  },
+  "eligibility": {
+    "file": "eligibility.json",
+    "sha256": "{{SHA256_OF_ELIGIBILITY_FILE}}"
+  },
+  "variables": [
+    {
+      "name": "Study_ID",
+      "type": "string",
+      "nullable": false,
+      "owner": "executor",
+      "description": "Stable study identity supplied in the request.",
+      "rule": "{{Operational rule for Study_ID}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": "SYN001",
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}"
+    },
+    {
+      "name": "Condition_ID",
+      "type": "string",
+      "nullable": false,
+      "owner": "executor",
+      "description": "Stable condition identity within the study.",
+      "rule": "{{Operational rule for Condition_ID}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": "main",
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}"
+    },
+    {
+      "name": "Arm",
+      "type": "string",
+      "nullable": false,
+      "owner": "executor",
+      "description": "Arm identifier within a comparison.",
+      "rule": "{{Operational rule for Arm}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": "treatment",
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}"
+    },
+    {
+      "name": "Outcome_Metric",
+      "type": "string",
+      "nullable": false,
+      "owner": "executor",
+      "description": "Canonical outcome, not its source-specific label.",
+      "rule": "{{Operational rule for Outcome_Metric}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": "score",
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}"
+    },
+    {
+      "name": "ES_Path",
+      "type": "string",
+      "nullable": true,
+      "owner": "executor",
+      "description": "Declared computation route; null if unresolved.",
+      "rule": "{{Operational rule for ES_Path}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": "means_sd",
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}"
+    },
+    {
+      "name": "N",
+      "type": "integer",
+      "nullable": true,
+      "owner": "executor",
+      "description": "Number of independent units contributing to this arm.",
+      "rule": "{{Operational rule for N}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": 40,
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}",
+      "minimum": 2
+    },
+    {
+      "name": "mean",
+      "type": "number",
+      "nullable": true,
+      "owner": "executor",
+      "description": "Reported or deterministically prepared mean.",
+      "rule": "{{Operational rule for mean}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": 65.0,
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}"
+    },
+    {
+      "name": "sd",
+      "type": "number",
+      "nullable": true,
+      "owner": "executor",
+      "description": "Standard deviation, not a standard error.",
+      "rule": "{{Operational rule for sd}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": 10.0,
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}",
+      "minimum": 0
+    },
+    {
+      "name": "events",
+      "type": "number",
+      "nullable": true,
+      "owner": "executor",
+      "description": "Binary events, if that path is used.",
+      "rule": "{{Operational rule for events}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": null,
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}",
+      "minimum": 0
+    },
+    {
+      "name": "total",
+      "type": "integer",
+      "nullable": true,
+      "owner": "executor",
+      "description": "Binary denominator, if that path is used.",
+      "rule": "{{Operational rule for total}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": null,
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}",
+      "minimum": 2
+    },
+    {
+      "name": "Source_Location",
+      "type": "string",
+      "nullable": false,
+      "owner": "executor",
+      "description": "Resolvable location of the supporting source.",
+      "rule": "{{Operational rule for Source_Location}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": "SYN001.md:L006",
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}"
+    },
+    {
+      "name": "Row_UID",
+      "type": "string",
+      "nullable": false,
+      "owner": "code",
+      "description": "Issued from a stable registry, never by the executor.",
+      "rule": "{{Operational rule for Row_UID}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": "DEMO-R000001",
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}"
+    },
+    {
+      "name": "g",
+      "type": "number",
+      "nullable": true,
+      "owner": "code",
+      "description": "Derived effect, computed only after audit reconciliation.",
+      "rule": "{{Operational rule for g}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": null,
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}"
+    },
+    {
+      "name": "SE_g",
+      "type": "number",
+      "nullable": true,
+      "owner": "code",
+      "description": "Derived standard error.",
+      "rule": "{{Operational rule for SE_g}}",
+      "source_rule": "{{Permitted evidence and location}}",
+      "missing_rule": "{{When missing, null versus unresolved or not applicable}}",
+      "example": null,
+      "counterexample": "{{A plausible but incorrect coding and why it is incorrect}}",
+      "minimum": 0
+    }
+  ],
+  "columns": [
+    "Study_ID",
+    "Condition_ID",
+    "Arm",
+    "Outcome_Metric",
+    "ES_Path",
+    "N",
+    "mean",
+    "sd",
+    "events",
+    "total",
+    "Source_Location",
+    "Row_UID",
+    "g",
+    "SE_g"
+  ],
+  "provenance_fields": [
+    "Source_Location"
+  ],
+  "outcome_map": [
+    {
+      "source_measure": "{{REPORTED_MEASURE}}",
+      "canonical_outcome": "{{LABEL}}",
+      "direction": "{{Meaning of higher values}}",
+      "scale_rule": "{{Unit conversion with a documented denominator}}"
+    }
+  ],
+  "pairing_rule": "{{Exact comparator match and reuse rules; no guess if missing}}",
+  "aggregation_rule": "{{Independent units, repeated observations, and shared comparators}}",
+  "direction_rule": "{{Treatment minus comparator; sign rules fixed before results}}",
+  "source_precedence": [
+    "{{Authoritative source precedence and conflict handling}}"
+  ],
+  "unresolved_policy": "{{Do not invent; preserve null with evidence, reason and affected coordinate}}",
+  "worked_cases": [
+    {
+      "id": "case_include",
+      "description": "{{Positive case and expected coding}}"
+    },
+    {
+      "id": "case_missing",
+      "description": "{{Eligible but uncomputable case}}"
+    },
+    {
+      "id": "case_boundary",
+      "description": "{{Boundary or conflict, rule and expected response}}"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "version": "0.1.0-draft",
+  "criteria": [
+    {
+      "id": "C1",
+      "text": "{{Population and unit}}",
+      "clarifications": "{{Include, exclude and uncertainty cases}}"
+    },
+    {
+      "id": "C2",
+      "text": "{{Eligible design, intervention and comparator}}",
+      "clarifications": "{{What source evidence establishes this?}}"
+    },
+    {
+      "id": "C3",
+      "text": "{{Eligible outcome and timing}}",
+      "clarifications": "{{Missing statistics do not automatically mean ineligible}}"
+    }
+  ],
+  "mixed_condition_rule": "{{Apply criteria at the declared unit; preserve skipped conditions}}"
+}

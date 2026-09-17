@@ -1,0 +1,103 @@
+{
+  "schema_version": "raes-audit/1",
+  "version": "0.1.0-draft",
+  "production_codebook_version": "{{VERSION}}",
+  "canonical_eligibility": {
+    "file": "eligibility.json",
+    "sha256": "{{EXACT_BYTE_SHA256}}"
+  },
+  "scope": {
+    "frame": "{{FRAME_ID}}",
+    "units": "{{RECORDS_OR_ROW_UIDS}}",
+    "allowed_domains": [
+      "{{DOMAIN_1}}",
+      "{{DOMAIN_2}}"
+    ],
+    "prohibited_actions": [
+      "add rows",
+      "delete rows",
+      "change identity",
+      "reopen eligibility during coding audit",
+      "compute downstream effects"
+    ]
+  },
+  "modes": {
+    "screening": {
+      "inputs": [
+        "source",
+        "identical criteria"
+      ],
+      "hidden": [
+        "original decision",
+        "original reason",
+        "selection rank",
+        "downstream results"
+      ],
+      "response": [
+        "decision",
+        "criterion_id",
+        "evidence",
+        "unresolved_items"
+      ]
+    },
+    "AI2": {
+      "inputs": [
+        "original frozen pre-g target rows",
+        "sources",
+        "production codebook",
+        "this audit codebook"
+      ],
+      "hidden": [
+        "production rationale",
+        "prior audit output",
+        "g",
+        "SE_g",
+        "CI95_L",
+        "CI95_U"
+      ],
+      "response": [
+        "status",
+        "checked_Row_UIDs",
+        "domains",
+        "challenges",
+        "unresolved_items"
+      ]
+    },
+    "AI3": {
+      "inputs": [
+        "same original targets and sources",
+        "same production codebook",
+        "THIS SAME audit codebook",
+        "disputed coordinate only"
+      ],
+      "hidden": [
+        "AI2 proposed value",
+        "AI2 rationale",
+        "AI2 confidence",
+        "downstream effects"
+      ],
+      "response": [
+        "Row_UID",
+        "field",
+        "independent_value",
+        "rule_id",
+        "evidence",
+        "unresolved_items"
+      ]
+    }
+  },
+  "pass_rule": "{{What complete checked coverage and absence of unresolved evidence are required?}}",
+  "challenge_rule": "An exact coordinate, a source-supported alternative, a rule ID and a resolvable locator are required.",
+  "conflict_rule": "{{General source precedence or bounded human adjudication; do not invent}}",
+  "error_taxonomy": [
+    "technical_invalid",
+    "substantive_disagreement",
+    "confirmed_correction",
+    "unresolved_evidence"
+  ],
+  "evidence_contract": {
+    "source_id": "{{FILENAME_OR_STABLE_SOURCE_ID}}",
+    "locator": "{{PAGE_TABLE_LINE_CELL}}",
+    "quote_or_data_reference": "{{TRACEABLE_SUPPORT}}"
+  }
+}

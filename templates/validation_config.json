@@ -1,0 +1,67 @@
+{
+  "schema_version": "raes-validation-config/1",
+  "status": "draft_not_executable",
+  "live_enabled": false,
+  "stage": "{{S5_OR_S9}}",
+  "frame": {
+    "path": "{{FROZEN_FRAME_FILE}}",
+    "sha256": "{{SHA256}}",
+    "unit": "{{UNIT}}"
+  },
+  "rules": {
+    "production_codebook": "{{PATH}}",
+    "audit_codebook": "{{PATH_USED_BY_BOTH_AI2_AND_AI3}}",
+    "eligibility_sha256": "{{SHA256}}"
+  },
+  "reviewers": {
+    "executor": {
+      "provider": "{{PROVIDER}}",
+      "model_snapshot": "{{EXACT_MODEL_ID}}",
+      "settings": {}
+    },
+    "AI2": {
+      "provider": "{{DIFFERENT_PROVIDER_WHERE_POSSIBLE}}",
+      "model_snapshot": "{{EXACT_MODEL_ID}}",
+      "settings": {}
+    },
+    "AI3": {
+      "provider": "{{PROVIDER}}",
+      "model_snapshot": "{{EXACT_MODEL_ID}}",
+      "settings": {}
+    }
+  },
+  "sampling": {
+    "mode": "{{CENSUS_OR_DESIGNED_SAMPLE}}",
+    "strata": [],
+    "seed": null,
+    "round_size": null,
+    "stopping_rule": "{{APPROVED_RULE}}"
+  },
+  "routing": {
+    "screening": "{{TWO_PRIMARY_THEN_THIRD_IF_NEEDED_OR_STAGE_SPECIFIC_RULE}}",
+    "coding": "AI2 challenges -> blinded AI3 -> exact agreement or bounded human adjudication"
+  },
+  "payload_policy": {
+    "downstream_statistics_forbidden": true,
+    "source_text_is_untrusted_data": true,
+    "AI3_hides_AI2_proposal": true
+  },
+  "retries": {
+    "max_new_attempts_per_invocation": null,
+    "resume_global_attempt_ids": true,
+    "technical_failure_is_not_a_decision": true,
+    "request_identity_unchanged": true
+  },
+  "budget": {
+    "currency": "USD",
+    "approved_max": null,
+    "approval_record": null
+  },
+  "artifacts": {
+    "raw_responses": "{{PATH}}",
+    "normalized_responses": "{{PATH}}",
+    "reconciliation": "{{PATH}}",
+    "hash_manifest": "{{PATH}}"
+  },
+  "note": "This is a design skeleton, not a runnable multi-provider client. Fill and review before implementing live operation."
+}
