@@ -55,6 +55,10 @@ These are the rules I ended up following. Each one came from a problem I actuall
 
 Copyrighted paper PDFs, author-provided data, the research data from my own study, raw model responses that quote sources at length, and any credentials.
 
+## Use of AI tools
+
+I used AI coding and writing assistants while preparing the code and documentation in this repository. The workflow design, the rules, and all methodological decisions are my own, and I review everything before it is released. Any remaining errors are mine.
+
 ## License
 
 Code is released under the [MIT License](LICENSE). Documentation and templates are released under [CC BY 4.0](LICENSE-docs.md).
