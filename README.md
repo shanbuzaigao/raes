@@ -32,12 +32,7 @@ flowchart TD
     S11["S11 Analysis and checks<br/>deterministic code"]
     S12["S12 Release, reproduction<br/>frozen, hashed, offline"]
 
-    S0 --> S1 --> S2 --> S3 --> S4 --> S6 --> S7 --> S8 --> S10 --> S11 --> S12
-    S3 -. exclusions .-> S5
-    S4 -. exclusions .-> S5
-    S5 -. confirmed misses .-> S6
-    S8 -. coded rows .-> S9
-    S9 -. corrections .-> S10
+    S0 --> S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8 --> S9 --> S10 --> S11 --> S12
 
     classDef code fill:#F1EFE8,stroke:#5F5E5A,color:#2C2C2A
     classDef exec fill:#EEEDFE,stroke:#534AB7,color:#26215C
@@ -47,7 +42,7 @@ flowchart TD
     class S5,S9 audit
 ```
 
-Grey boxes are done by me or by deterministic code. The purple box is executed by an AI under the codebook. Green boxes are audits by independent AIs. Dotted arrows are audit paths. Stages S1 to S6 follow the PRISMA 2020 flow from identification to included studies, and the later stages carry the same discipline through coding, analysis and release.
+Grey boxes are done by me or by deterministic code. The purple box is executed by an AI under the codebook. Green boxes are audits by independent AIs. Stages S1 to S6 follow the PRISMA 2020 flow from identification to included studies, and the later stages carry the same discipline through coding, analysis and release.
 
 The goal and the eligibility rules come first, because everything else refers to them. Every step that calls an AI is then prepared in the same order: a plan, the codebook, the prompts, and only then the run.
 

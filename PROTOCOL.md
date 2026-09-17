@@ -24,12 +24,7 @@ flowchart TD
     S11["S11 Analysis and checks<br/>deterministic code"]
     S12["S12 Release, reproduction<br/>frozen, hashed, offline"]
 
-    S0 --> S1 --> S2 --> S3 --> S4 --> S6 --> S7 --> S8 --> S10 --> S11 --> S12
-    S3 -. exclusions .-> S5
-    S4 -. exclusions .-> S5
-    S5 -. confirmed misses .-> S6
-    S8 -. coded rows .-> S9
-    S9 -. corrections .-> S10
+    S0 --> S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7 --> S8 --> S9 --> S10 --> S11 --> S12
 
     classDef code fill:#F1EFE8,stroke:#5F5E5A,color:#2C2C2A
     classDef exec fill:#EEEDFE,stroke:#534AB7,color:#26215C
@@ -39,7 +34,7 @@ flowchart TD
     class S5,S9 audit
 ```
 
-Grey boxes are done by the researcher or by deterministic code. The purple box is executed by an AI under the codebook. Green boxes are audits by independent AIs. Solid arrows are the main flow. Dotted arrows are audit paths: exclusions and coded rows go out to the auditors, and confirmed misses and confirmed corrections come back.
+Grey boxes are done by the researcher or by deterministic code. The purple box is executed by an AI under the codebook. Green boxes are audits by independent AIs.
 
 The first half follows the PRISMA 2020 flow (Page et al., 2021): identification, screening, included studies. PRISMA's flow diagram ends there. The later stages apply the same discipline to coding, effect sizes, analysis and release.
 
