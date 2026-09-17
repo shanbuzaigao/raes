@@ -38,6 +38,8 @@ def main() -> int:
         shutil.copy2(ROOT/'templates/validation_memo.md',dest/'plans/VALIDATION_PLAN.md')
         (dest/'plans/DECISIONS.md').write_text('# Decisions\n\nNo operational choices have been approved. Replace placeholders after discussing them.\n',encoding='utf-8')
         for source in (ROOT/'templates/prompts').glob('*.md'):shutil.copy2(source,dest/'prompts'/source.name)
+        for source in (ROOT/'templates/screening').iterdir():
+            if source.is_file():shutil.copy2(source,dest/'screening'/source.name)
         cb=json.loads((dest/'codebook/codebook.json').read_text())
         for name,cols in [('columns.csv',cb['columns']),('executor_columns.csv',[v['name'] for v in cb['variables'] if v['owner']=='executor'])]:
             with (dest/'codebook'/name).open('w',encoding='utf-8',newline='') as f:csv.writer(f,lineterminator='\n').writerow(cols)

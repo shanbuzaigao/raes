@@ -18,6 +18,16 @@ Coding adjudicator: the same audit codebook + original targets + the disputed fi
 hide the auditor's proposed value, rationale and confidence. The adjudicator knows
 which field was challenged; say so when describing the design.
 
+## Screening audit only (S5)
+Order: the full-text screen is audited first, then the title-and-abstract screen,
+because a "retain" from the abstract audit is a candidate that goes through the
+frozen full-text screen. {{CONFIRM_OR_ADJUST}}
+Near miss: {{DEFINITION, e.g. failed exactly one criterion}}; strata: {{NEAR_MISS_AND_OTHER_STRATA}}.
+Abstract rounds: {{ROUND_SIZE_AND_STRATIFICATION_BY_SEARCH_BATCH}}.
+Candidate resolution: retrieve full text, run the frozen full-text screen, then the
+independent auditors read the papers that pass. {{CONFIRM_OR_ADJUST}}
+Confirmed miss: added back to the included set; {{WHEN_A_SYSTEMATIC_FAILURE_REVIEW_IS_TRIGGERED}}.
+
 ## Routing and application
 {{WHEN_A_SECOND_OR_THIRD_REVIEWER_IS_CALLED}}
 {{HOW_EXACT_AGREEMENT_OR_DISAGREEMENT_IS_HANDLED}}

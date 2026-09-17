@@ -34,9 +34,11 @@ No third-party package is needed. On Windows, use the Python launcher you normal
 | [validation_codebook.json](validation_codebook.json) | S5 and S9 | The rules auditors follow. One file covers the screening audit, the coding audit and the adjudication, each as its own mode |
 | [validation_config.json](validation_config.json) | S5 and S9 | The operational settings of an audit: frame, models, sampling, routing, retries, budget. Live requests stay off until the file is complete and approved |
 | [prompts/](prompts/coding_system.md) | S8: `coding_system`, `coding_paper`. S9: `coding_audit`, `coding_adjudicator`. S5: `screening_audit` | Five prompt templates |
+| [screening/screening_rules.md](screening/screening_rules.md) | S3 and S4 | The screening rules in words: one rule per criterion, the decision logic of each phase, the checks before a run, the version log |
+| [screening/screen_rules_template.py](screening/screen_rules_template.py) | S3 and S4 | The same rules as a runnable program: term lists per criterion, a decision and a reason for every record, criterion-level evidence for the audit |
 | [project/](project/README.md) | All | The starting files of a new project folder |
 
-There is no template yet for the screening rules themselves (S3 and S4). In my project those rules are a Python program written from the eligibility criteria.
+The screening program is a skeleton in the spirit of Robleto and Shehadeh (2025): edit the term lists at the top so that each entry mirrors one criterion of `eligibility.json`, try it on the papers you already know should be included, then freeze it with a version. `python templates/screening/screen_rules_template.py --help` shows the two phases.
 
 The variable skeleton uses arm-level effect inputs (mean, SD, N, events, total) as an illustration. Remove what does not apply and say why. Do not add outcomes because the template shows them. `columns` lists every variable in order; the executor list leaves out every field owned by code. `Row_UID`, `g`, `SE_g` and the confidence limits always belong to code.
 

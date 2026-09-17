@@ -34,9 +34,11 @@ python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json --r
 | [validation_codebook.json](validation_codebook.json) | S5 和 S9 | 审计者遵守的规则。一个文件覆盖筛选审计、编码审计和裁决，各为一种模式 |
 | [validation_config.json](validation_config.json) | S5 和 S9 | 一次审计的运行设置：抽样框、模型、抽样、流转、重试、预算。文件填完并批准之前，不发出真实请求 |
 | [prompts/](prompts/coding_system.md) | S8：`coding_system`、`coding_paper`。S9：`coding_audit`、`coding_adjudicator`。S5：`screening_audit` | 五个 prompt 模板 |
+| [screening/screening_rules.md](screening/screening_rules.md) | S3 和 S4 | 用文字写的筛选规则：每条标准一条规则、两个阶段各自的判定逻辑、运行前的检查、版本记录 |
+| [screening/screen_rules_template.py](screening/screen_rules_template.py) | S3 和 S4 | 同一套规则的可运行程序：每条标准一组词表，每条记录一个判断和理由，逐条标准的证据供审计使用 |
 | [project/](project/README.md) | 全部 | 新项目文件夹的起始文件 |
 
-筛选规则本身（S3、S4）目前还没有模板。在我的项目里，这些规则是根据纳入标准写成的一个 Python 程序。
+筛选程序是一个骨架，思路和 Robleto and Shehadeh (2025) 一样：改文件开头的词表，让每一项对应 `eligibility.json` 里的一条标准；先在你已知应该纳入的论文上试，再定版本冻结。`python templates/screening/screen_rules_template.py --help` 显示两个阶段的用法。
 
 变量骨架以实验组层面的效应量输入（均值、SD、N、事件数、总数）为例。不适用的删掉，并写明原因。不要因为模板里有某个结果指标就增设它。`columns` 按顺序列出全部变量；执行模型的列表去掉所有由程序负责的字段。`Row_UID`、`g`、`SE_g` 和置信区间永远由程序填写。
 
