@@ -12,7 +12,7 @@ RAES is the workflow I built for my own meta-analysis, where I used large langua
 
 It is meant for meta-analyses, systematic reviews and similar evidence syntheses. It is not another auto-screening tool. Tools that rank abstracts or extract fields automate one task. RAES is about how the whole synthesis is run, so that someone else can check it.
 
-All domain knowledge sits in a versioned codebook, so the workflow itself does not depend on the field. I developed it and used it end to end in a social-science project: a meta-analysis of how LLMs behave in classic economic games, covering 54 papers and 757 effect sizes.
+All domain knowledge sits in a versioned codebook, so the workflow itself does not depend on the field. I developed it and used it end to end in a social-science project, the meta-analysis in my working paper *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments*. That meta-analysis covers 54 papers and 757 effect sizes on how LLMs behave in classic economic games.
 
 ## The pipeline at a glance
 
@@ -23,11 +23,11 @@ flowchart TD
     S2["S2 Remove duplicates<br/>optional rule pre-filter"]
     S3["S3 Title-abstract screen<br/>rule-based algorithm,<br/>written as code"]
     S4["S4 Full-text screen<br/>rule-based algorithm,<br/>written as code"]
-    S5["S5 AI cross-validation<br/>3 blinded AI auditors<br/>full text, then abstracts"]
+    S5["S5 AI cross-validation<br/>independent blinded<br/>AI auditors"]
     S6["S6 Same-study check<br/>group records into studies"]
     S7["S7 Data preparation<br/>optional, done by code"]
     S8["S8 AI coding<br/>one paper per request"]
-    S9["S9 AI cross-validation<br/>audit, then adjudication"]
+    S9["S9 AI cross-validation<br/>independent blinded<br/>AI auditors"]
     S10["S10 Table and effect sizes<br/>deterministic code"]
     S11["S11 Analysis and checks<br/>deterministic code"]
     S12["S12 Release, reproduction<br/>frozen, hashed, offline"]

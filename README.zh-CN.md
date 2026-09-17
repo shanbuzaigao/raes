@@ -14,7 +14,7 @@ RAES 是我为自己的 meta-analysis 搭的一套工作流程。当时文献增
 
 它面向 meta-analysis、系统综述和类似的证据整合工作。它不是又一个自动筛文献的工具。给摘要排序、抽取字段的工具自动化的是单个任务；RAES 关心的是整个整合过程怎样运行，让别人能够核查。
 
-所有领域知识都放在带版本号的 codebook 里，所以流程本身不依赖具体领域。我是在一个社会科学项目里把它做出来并完整用过一遍的：一项关于大语言模型在经典经济博弈中行为的 meta-analysis，覆盖 54 篇论文、757 个效应量。
+所有领域知识都放在带版本号的 codebook 里，所以流程本身不依赖具体领域。我是在一个社会科学项目里把它做出来并完整用过一遍的，也就是我的 working paper *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments* 里的 meta-analysis。这项 meta-analysis 研究大语言模型在经典经济博弈中的行为，覆盖 54 篇论文、757 个效应量。
 
 ## 流程总览
 
@@ -25,11 +25,11 @@ flowchart TD
     S2["S2 去重<br/>可选：规则预筛"]
     S3["S3 题目摘要筛选<br/>规则算法，写成代码"]
     S4["S4 全文筛选<br/>规则算法，写成代码"]
-    S5["S5 AI 交叉验证<br/>3 个 AI 盲审<br/>先全文，后题目摘要"]
+    S5["S5 AI 交叉验证<br/>独立 AI 盲审"]
     S6["S6 同研究判重<br/>把记录归并为研究"]
     S7["S7 数据准备<br/>可选，由代码完成"]
     S8["S8 AI 编码<br/>一篇论文一次请求"]
-    S9["S9 AI 交叉验证<br/>审计，再盲法裁决"]
+    S9["S9 AI 交叉验证<br/>独立 AI 盲审"]
     S10["S10 主表与效应量<br/>确定性程序"]
     S11["S11 分析与核查<br/>确定性程序"]
     S12["S12 发布与复现<br/>冻结、哈希、离线重建"]
