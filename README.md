@@ -14,11 +14,52 @@ It is meant for meta-analyses, systematic reviews and similar evidence syntheses
 
 All domain knowledge sits in a versioned codebook, so the workflow itself does not depend on the field. I developed it and used it end to end in a social-science project: a meta-analysis of how LLMs behave in classic economic games, covering 54 papers and 757 effect sizes.
 
-The working manual is [PROTOCOL.md](PROTOCOL.md). It is a first draft.
+## The pipeline at a glance
+
+```mermaid
+flowchart TD
+    S0["S0 Goal, eligibility rules<br/>question, scope, criteria"]
+    S1["S1 Search<br/>queries, dated snapshot"]
+    S2["S2 Remove duplicates<br/>optional rule pre-filter"]
+    S3["S3 Title-abstract screen<br/>rule-based algorithm"]
+    S4["S4 Full-text screen<br/>rule-based, by criterion"]
+    S5["S5 AI cross-validation<br/>3 blinded AI auditors<br/>full text, then abstracts"]
+    S6["S6 Same-study check<br/>group records into studies"]
+    S7["S7 Data preparation<br/>optional, done by code"]
+    S8["S8 AI coding<br/>one paper per request"]
+    S9["S9 AI cross-validation<br/>audit, then adjudication"]
+    S10["S10 Table and effect sizes<br/>deterministic code"]
+    S11["S11 Analysis and checks<br/>deterministic code"]
+    S12["S12 Release, reproduction<br/>frozen, hashed, offline"]
+
+    S0 --> S1 --> S2 --> S3 --> S4 --> S6 --> S7 --> S8 --> S10 --> S11 --> S12
+    S3 -. exclusions .-> S5
+    S4 -. exclusions .-> S5
+    S5 -. confirmed misses .-> S6
+    S8 -. coded rows .-> S9
+    S9 -. corrections .-> S10
+
+    classDef code fill:#F1EFE8,stroke:#5F5E5A,color:#2C2C2A
+    classDef exec fill:#EEEDFE,stroke:#534AB7,color:#26215C
+    classDef audit fill:#E1F5EE,stroke:#0F6E56,color:#04342C
+    class S0,S1,S2,S3,S4,S6,S7,S10,S11,S12 code
+    class S8 exec
+    class S5,S9 audit
+```
+
+Grey boxes are done by me or by deterministic code. The purple box is executed by an AI under the codebook. Green boxes are audits by independent AIs. Dotted arrows are audit paths. Stages S1 to S6 follow the PRISMA 2020 flow from identification to included studies, and the later stages carry the same discipline through coding, analysis and release.
+
+The goal and the eligibility rules come first, because everything else refers to them. Every step that calls an AI is then prepared in the same order: a plan, the codebook, the prompts, and only then the run.
+
+The working manual is [PROTOCOL.md](PROTOCOL.md). It expands every stage of the figure in the same format. It is a draft.
 
 ## Why I think this is needed
 
-Evidence-synthesis organizations now expect authors who use AI to keep human oversight and to show that AI does not compromise methodological rigor. This is the message of the RAISE recommendations and of the 2025 joint position statement by Cochrane, the Campbell Collaboration, JBI and the Collaboration for Environmental Evidence. These documents say what is expected. They do not say how to do it in practice. RAES is my attempt at one concrete, executable answer.
+Evidence-synthesis organizations now expect authors who use AI to keep human oversight and to show that AI does not compromise methodological rigor. This is the message of the RAISE recommendations (Thomas et al., 2025) and of the 2025 joint position statement by Cochrane, the Campbell Collaboration, JBI and the Collaboration for Environmental Evidence (Flemyng et al., 2025). These documents say what is expected. They do not say how to do it in practice. RAES is my attempt at one concrete, executable answer.
+
+## What it builds on
+
+The first half of the pipeline follows PRISMA 2020 (Page et al., 2021). The two screening stages follow Robleto and Shehadeh (2025), who show that screening criteria defined by the researcher can be executed as transparent Python rules, first on titles and abstracts and then on full texts, with AI used only to help write the code. They validate the rules by reading samples of excluded records by hand, and they name a more rigorous, quantitative validation as the next step. RAES takes that step: frozen rules, a sample specified in advance, blinded AI auditors from different vendors, and a fixed stopping rule. It then carries the same discipline past screening, into the same-study check, AI coding under a codebook, cross-validation of the coded rows, effect sizes computed only by code, and releases that can be rebuilt offline.
 
 ## Three layers
 
@@ -60,6 +101,13 @@ Copyrighted paper PDFs, author-provided data, the research data from my own stud
 ## Use of AI tools
 
 I used AI coding and writing assistants while preparing the code and documentation in this repository. The workflow design, the rules, and all methodological decisions are my own, and I review everything before it is released. Any remaining errors are mine.
+
+## References
+
+- Flemyng, E., Noel-Storr, A., Macura, B., et al. (2025). Position statement on artificial intelligence (AI) use in evidence synthesis across Cochrane, the Campbell Collaboration, JBI and the Collaboration for Environmental Evidence 2025. *Environmental Evidence*. https://doi.org/10.1186/s13750-025-00374-5
+- Page, M. J., McKenzie, J. E., Bossuyt, P. M., et al. (2021). The PRISMA 2020 statement: An updated guideline for reporting systematic reviews. *BMJ*, 372, n71. https://doi.org/10.1136/bmj.n71
+- Robleto, E., & Shehadeh, L. A. (2025). Accelerating systematic reviews: A novel 1-wk screening protocol using rule-based automation with AI-assisted Python coding. *American Journal of Physiology-Heart and Circulatory Physiology*, 329(5), H1391–H1413. https://doi.org/10.1152/ajpheart.00374.2025
+- Thomas, J., Flemyng, E., Noel-Storr, A., et al. (2025). *Responsible use of AI in evidence SynthEsis (RAISE): Recommendations and guidance*. Open Science Framework. https://doi.org/10.17605/OSF.IO/FWAUD
 
 ## License
 

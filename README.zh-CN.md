@@ -16,11 +16,52 @@ RAES 是我为自己的 meta-analysis 搭的一套工作流程。当时文献增
 
 所有领域知识都放在带版本号的 codebook 里，所以流程本身不依赖具体领域。我是在一个社会科学项目里把它做出来并完整用过一遍的：一项关于大语言模型在经典经济博弈中行为的 meta-analysis，覆盖 54 篇论文、757 个效应量。
 
-完整的操作说明见 [PROTOCOL.md](PROTOCOL.md)。目前是英文初稿，中文版稍后补上。
+## 流程总览
+
+```mermaid
+flowchart TD
+    S0["S0 目标与纳入标准<br/>研究问题、范围、标准"]
+    S1["S1 检索<br/>检索式、带日期的快照"]
+    S2["S2 去重<br/>可选：规则预筛"]
+    S3["S3 题目摘要筛选<br/>规则算法，写成代码"]
+    S4["S4 全文筛选<br/>规则算法，逐条标准"]
+    S5["S5 AI 交叉验证<br/>3 个 AI 盲审<br/>先全文，后题目摘要"]
+    S6["S6 同研究判重<br/>把记录归并为研究"]
+    S7["S7 数据准备<br/>可选，由代码完成"]
+    S8["S8 AI 编码<br/>一篇论文一次请求"]
+    S9["S9 AI 交叉验证<br/>审计，再盲法裁决"]
+    S10["S10 主表与效应量<br/>确定性程序"]
+    S11["S11 分析与核查<br/>确定性程序"]
+    S12["S12 发布与复现<br/>冻结、哈希、离线重建"]
+
+    S0 --> S1 --> S2 --> S3 --> S4 --> S6 --> S7 --> S8 --> S10 --> S11 --> S12
+    S3 -. 被排除的记录 .-> S5
+    S4 -. 被排除的论文 .-> S5
+    S5 -. 确认的漏筛 .-> S6
+    S8 -. 编码行 .-> S9
+    S9 -. 确认的更正 .-> S10
+
+    classDef code fill:#F1EFE8,stroke:#5F5E5A,color:#2C2C2A
+    classDef exec fill:#EEEDFE,stroke:#534AB7,color:#26215C
+    classDef audit fill:#E1F5EE,stroke:#0F6E56,color:#04342C
+    class S0,S1,S2,S3,S4,S6,S7,S10,S11,S12 code
+    class S8 exec
+    class S5,S9 audit
+```
+
+灰色的格子由我本人或确定性程序完成。紫色的格子由 AI 在 codebook 约束下执行。绿色的格子是独立 AI 的审计。虚线是审计路径。S1 到 S6 沿用 PRISMA 2020 的流程，从检索识别到最终纳入；后面的阶段把同样的要求延伸到编码、分析和发布。
+
+研究目标和纳入标准最先确定，因为后面每一步都要引用它们。每个调用 AI 的环节都按同一个顺序准备：先写计划，再写 codebook，再写 prompt，最后才运行。
+
+完整的操作说明见 [PROTOCOL.md](PROTOCOL.md)，它按同一个格式把图里的每个阶段展开。目前是英文草稿，中文版稍后补上。
 
 ## 我为什么觉得需要它
 
-证据整合领域的主要机构已经要求：使用 AI 的作者必须保持人工监督，并且能说明 AI 的使用不损害方法的严谨性。RAISE 建议，以及 Cochrane、Campbell Collaboration、JBI 和环境证据协作组织 2025 年的联合立场声明，讲的都是这一点。这些文件说明了要求是什么，但没有说实际怎么做。RAES 是我给出的一种具体的、可执行的做法。
+证据整合领域的主要机构已经要求：使用 AI 的作者必须保持人工监督，并且能说明 AI 的使用不损害方法的严谨性。RAISE 建议（Thomas et al., 2025），以及 Cochrane、Campbell Collaboration、JBI 和环境证据协作组织 2025 年的联合立场声明（Flemyng et al., 2025），讲的都是这一点。这些文件说明了要求是什么，但没有说实际怎么做。RAES 是我给出的一种具体的、可执行的做法。
+
+## 它建立在什么之上
+
+流程的前半段沿用 PRISMA 2020（Page et al., 2021）。两个筛选阶段沿用 Robleto 和 Shehadeh（2025）的做法：他们说明，研究者自己定的筛选标准可以写成透明的 Python 规则来执行，先筛题目摘要，再筛全文，AI 只帮忙写代码。他们靠人工抽读被排除的记录来验证规则，并且把更严格的定量验证列为下一步。RAES 做的就是这一步：规则冻结，样本事先定好，由不同厂商的 AI 盲审，停止规则事先写定。之后 RAES 把同样的要求延伸到筛选之后：同研究判重、codebook 约束下的 AI 编码、对编码结果的交叉验证、只由程序计算的效应量，以及可以离线重建的发布。
 
 ## 三层结构
 
@@ -62,6 +103,13 @@ RAES 是我为自己的 meta-analysis 搭的一套工作流程。当时文献增
 ## 关于 AI 工具的使用
 
 本仓库的代码和文档在准备过程中使用了 AI 编程与写作助手。流程设计、规则以及所有方法上的决定都出自我本人，每个版本发布前我都会审核全部内容。如有错误，责任在我。
+
+## 参考文献
+
+- Flemyng, E., Noel-Storr, A., Macura, B., et al. (2025). Position statement on artificial intelligence (AI) use in evidence synthesis across Cochrane, the Campbell Collaboration, JBI and the Collaboration for Environmental Evidence 2025. *Environmental Evidence*. https://doi.org/10.1186/s13750-025-00374-5
+- Page, M. J., McKenzie, J. E., Bossuyt, P. M., et al. (2021). The PRISMA 2020 statement: An updated guideline for reporting systematic reviews. *BMJ*, 372, n71. https://doi.org/10.1136/bmj.n71
+- Robleto, E., & Shehadeh, L. A. (2025). Accelerating systematic reviews: A novel 1-wk screening protocol using rule-based automation with AI-assisted Python coding. *American Journal of Physiology-Heart and Circulatory Physiology*, 329(5), H1391–H1413. https://doi.org/10.1152/ajpheart.00374.2025
+- Thomas, J., Flemyng, E., Noel-Storr, A., et al. (2025). *Responsible use of AI in evidence SynthEsis (RAISE): Recommendations and guidance*. Open Science Framework. https://doi.org/10.17605/OSF.IO/FWAUD
 
 ## 许可证
 

@@ -1,10 +1,67 @@
 # RAES Protocol
 
-Version 0.1, draft. 2026-09-17.
+Version 0.2, draft. 2026-09-17.
 
 This document describes how I run an AI-assisted evidence synthesis so that another researcher can check every step. The [README](README.md) gives the short version. This is the working manual. It is written from one completed project, a social-science meta-analysis, and I note where a choice was specific to that project.
 
-## 1. Scope and roles
+It is organized the way I would explain the workflow in person. Section 1 shows the whole pipeline in one figure. Sections 2 to 4 say who does what, what the workflow builds on, and which principles hold throughout. Section 5 gives the order I follow whenever a step calls an AI. Section 6 then expands every stage of the figure in the same format.
+
+## 1. The pipeline at a glance
+
+```mermaid
+flowchart TD
+    S0["S0 Goal, eligibility rules<br/>question, scope, criteria"]
+    S1["S1 Search<br/>queries, dated snapshot"]
+    S2["S2 Remove duplicates<br/>optional rule pre-filter"]
+    S3["S3 Title-abstract screen<br/>rule-based algorithm"]
+    S4["S4 Full-text screen<br/>rule-based, by criterion"]
+    S5["S5 AI cross-validation<br/>3 blinded AI auditors<br/>full text, then abstracts"]
+    S6["S6 Same-study check<br/>group records into studies"]
+    S7["S7 Data preparation<br/>optional, done by code"]
+    S8["S8 AI coding<br/>one paper per request"]
+    S9["S9 AI cross-validation<br/>audit, then adjudication"]
+    S10["S10 Table and effect sizes<br/>deterministic code"]
+    S11["S11 Analysis and checks<br/>deterministic code"]
+    S12["S12 Release, reproduction<br/>frozen, hashed, offline"]
+
+    S0 --> S1 --> S2 --> S3 --> S4 --> S6 --> S7 --> S8 --> S10 --> S11 --> S12
+    S3 -. exclusions .-> S5
+    S4 -. exclusions .-> S5
+    S5 -. confirmed misses .-> S6
+    S8 -. coded rows .-> S9
+    S9 -. corrections .-> S10
+
+    classDef code fill:#F1EFE8,stroke:#5F5E5A,color:#2C2C2A
+    classDef exec fill:#EEEDFE,stroke:#534AB7,color:#26215C
+    classDef audit fill:#E1F5EE,stroke:#0F6E56,color:#04342C
+    class S0,S1,S2,S3,S4,S6,S7,S10,S11,S12 code
+    class S8 exec
+    class S5,S9 audit
+```
+
+Grey boxes are done by the researcher or by deterministic code. The purple box is executed by an AI under the codebook. Green boxes are audits by independent AIs. Solid arrows are the main flow. Dotted arrows are audit paths: exclusions and coded rows go out to the auditors, and confirmed misses and confirmed corrections come back.
+
+The first half follows the PRISMA 2020 flow (Page et al., 2021): identification, screening, included studies. PRISMA's flow diagram ends there. The later stages apply the same discipline to coding, effect sizes, analysis and release.
+
+| Stage | Done by | What it produces | PRISMA 2020 phase |
+|---|---|---|---|
+| S0 Goal and eligibility rules | Researcher | Research question, numbered eligibility criteria, outcome map | Before the search |
+| S1 Search | Researcher, code | Dated search snapshot with queries and counts | Identification |
+| S2 Remove duplicates | Code | Record list for screening, log of removals, optional rule-based pre-filter | Identification |
+| S3 Title and abstract screening | Code | Decision and reason for every record | Screening |
+| S4 Full-text screening | Code | Criterion-by-criterion evidence and a decision for every retrieved paper | Screening |
+| S5 AI cross-validation of screening | AI auditors | Audited samples of exclusions, confirmed misses, records added back | Screening |
+| S6 Same-study check | Code | Groups of records that report the same study, one representative each | Included |
+| S7 Data preparation (optional) | Code | Per-paper data summary, matched comparison data, tracker | |
+| S8 AI coding | AI executor | Per-paper coded rows in a fixed column template | |
+| S9 AI cross-validation of coding | AI auditors | Audit result for every row that feeds the analysis | |
+| S10 Master table and effect sizes | Code | One table with stable row identifiers and computed effects | |
+| S11 Analysis and statistical validation | Code | Results, robustness checks, independent numerical checks | |
+| S12 Release and reproduction | Code | Immutable releases, pointers, offline reproduction entry | |
+
+Two things run through the whole figure. The goal and the eligibility rules are fixed first (S0), because every later stage refers to them. And every step that calls an AI is prepared in the same order: plan, codebook, prompts, operate. Section 5 describes that order.
+
+## 2. Scope and roles
 
 RAES covers projects that screen a literature against written criteria and then code information from the included studies: meta-analyses, systematic reviews, and literature databases built for later analysis. It does not tell you how to design a search strategy or which statistical model to use. It tells you how to run those steps so that they can be audited and reproduced.
 
@@ -17,7 +74,17 @@ There are four roles.
 
 The rule of thumb I use: if a step can be written as code, it is code. If it needs reading comprehension, the executor does it under a written rule. If it needs a judgment that no rule covers, I stop and write the rule first.
 
-## 2. Principles
+## 3. What RAES builds on
+
+**PRISMA 2020** (Page et al., 2021). Stages S1 to S6 follow its flow from identification to included studies, use its distinction between records, reports and studies, and produce the counts its flow diagram asks for.
+
+**Rule-based screening** (Robleto and Shehadeh, 2025). Their protocol shows that screening criteria defined by the researcher can be executed as transparent Python rules in two phases, first on titles and abstracts and then on full texts, with AI used only as a coding assistant and never as the decision maker. S3 and S4 follow this design. Their paper validates the rules by testing them on known relevant papers and by reading a random sample of excluded records, and it names a more rigorous, quantitative validation as the next step. S5 is my attempt at that step: frozen rules and sampling frame, strata that concentrate on near misses, blinded auditors from different vendors, a stopping rule written in advance, and confirmed misses added back.
+
+**Guidance on AI in evidence synthesis.** The RAISE recommendations (Thomas et al., 2025) and the joint position statement of Cochrane, the Campbell Collaboration, JBI and the Collaboration for Environmental Evidence (Flemyng et al., 2025) expect human oversight, transparency and validation of AI output. They state what is expected. RAES is one concrete way of doing it.
+
+What comes after screening is my own addition and came out of my project: the same-study check, AI coding under a codebook, cross-validation of the coded rows, effect sizes computed only by code, and immutable releases that can be rebuilt offline.
+
+## 4. Principles
 
 **1. Codebook first.** Every substantive judgment goes into a versioned codebook before any formal run. Prompts are generated from the codebook. When a run exposes an ambiguity, I fix the rule and bump the version. I do not patch the output by hand.
 
@@ -43,115 +110,24 @@ The rule of thumb I use: if a step can be written as code, it is code. If it nee
 
 **12. Say what each validation shows and what it does not.** A clean audit of sampled exclusions supports the screening rule for that snapshot of the search. It is not proof that no eligible study was missed.
 
-## 3. The pipeline
+## 5. The order I follow at every step that calls an AI
 
-| Stage | What it produces |
-|---|---|
-| S0 Protocol and scope | Research question, numbered eligibility criteria, outcome map |
-| S1 Search | Dated search snapshot with queries, counts and deduplication log |
-| S2 Title and abstract screening | Decision and reason for every record |
-| S3 Full-text screening | Criterion-by-criterion evidence and a decision for every retrieved paper |
-| S4 Screening validation | Audited samples of exclusions, confirmed misses, backfilled records |
-| S5 Same-study check | Groups of records that report the same study, one representative each |
-| S6 Data preparation | Per-paper data summary, matched comparison data, tracker |
-| S7 Coding | Per-paper coded rows in a fixed column template |
-| S8 Coding validation | Audit result for every row that feeds the analysis |
-| S9 Master table and effect sizes | One table with stable row identifiers and computed effects |
-| S10 Analysis and statistical validation | Results, robustness checks, independent numerical checks |
-| S11 Release and reproduction | Immutable releases, pointers, offline reproduction entry |
+```mermaid
+flowchart LR
+    P["1 Plan<br/>stage memo"] --> C["2 Codebook<br/>rules and variables"] --> Q["3 Prompts<br/>built from the codebook"] --> O["4 Operate<br/>pilot, freeze, run"]
+    classDef exec fill:#EEEDFE,stroke:#534AB7,color:#26215C
+    class P,C,Q,O exec
+```
 
-### S0 Protocol and scope
+In my project three stages call an AI: the cross-validation of screening (S5), the coding (S8) and the cross-validation of coding (S9). If your screening criteria cannot be written as code, S3 and S4 would call one too. Each time I prepare the step in the same order, and nothing is sent to a provider until the first three items exist in writing.
 
-Write the research question, the eligibility criteria and the map from each study design to the outcome you will code. Number the criteria, because every later stage refers to them by number. My project has five: the type of task, who makes the decision, the kind of outcome, how the outcome is measured, and the absence of instructions that steer behavior. Each criterion gets operational clarifications as the project goes on: concrete failing cases, cases that look like failures but are not, and a rule for papers that contain both eligible and ineligible conditions.
+### 5.1 Plan
 
-### S1 Search
-
-Record the databases, the exact query strings, the date range, the number of records from each source, the duplicates removed and the records removed for document type. Give each cumulative search a snapshot identifier such as `search_through_2026-04-30`. An update to the search is a new snapshot, and it restarts the audit history of S4.
-
-### S2 Title and abstract screening
-
-The goal is high recall. Every record receives a decision and a reason. In my project this stage is a deterministic program, so the same record always receives the same decision and the rule can be versioned like code. If your criteria cannot be expressed that way, the executor can screen under the codebook. The audit in S4 is the same in both cases.
-
-One practical point: keep the full text of titles and abstracts in a lossless format. A spreadsheet silently truncated one long abstract in my project, and the preflight check now requires exact equality between the screened text and the parsed source.
-
-### S3 Full-text screening
-
-Parse each PDF, retrieve the passages relevant to each criterion, and record for every criterion whether it is supported, together with the evidence. The decision follows from the criteria. Keep the criterion-level record, because S4 uses it to find near misses.
-
-### S4 Screening validation
-
-The question here is narrow: did the screens exclude anything they should have kept? Validate the full-text stage first, then the title-and-abstract stage, because the second audit relies on the first.
-
-*Full-text audit.* Sample from the full-text exclusions, concentrating on near misses, which I define as papers that failed exactly one criterion. Two primary auditors from different vendors each receive only the record identifier, the title and the complete PDF. A third auditor receives the same inputs only when both primary outputs are valid and disagree. The majority decision is computed by code. A record goes to human adjudication only when the AI majority says it should be included, and a false exclusion is confirmed only when the human decision agrees and cites the page.
-
-*Title-and-abstract audit.* Draw rounds of previously unaudited exclusions, stratified by search batch. One blinded auditor receives the identifier, the title and the abstract. A "retain" answer is a candidate, not an error. The candidate's full text is retrieved and run through the frozen full-text screen, and papers that pass are then read by the independent auditors.
-
-*Stopping.* A round in which no candidate passes the full-text screen ends the audit. Rounds in which candidates pass the screen but are all excluded by the independent auditors count toward a cumulative total, and three such rounds end the audit. A confirmed miss is added back to the included set, and the audit continues. Every third confirmed miss triggers a review for systematic failure.
-
-*Rules stay fixed during an audit.* If inspection shows that a rule should change, the change is versioned, the current run is archived, and a fresh sample is frozen under the new rule. Records from a run that actually started are withheld from later samples within the same snapshot.
-
-### S5 Same-study check
-
-Preprints, conference versions and journal versions of one study appear as separate records. Group them with a written rule, choose a representative version with a written rule, and keep the mapping from records to studies. In my project 85 included records correspond to 72 studies.
-
-### S6 Data preparation
-
-Before coding, establish for each paper which conditions are eligible and where the numbers will come from.
-
-1. Look for usable data: reported statistics, supplements, repositories. If there is none, record what is missing, send a data request, mark the paper as waiting, and move on. The paper stays in the coding queue.
-2. List the eligible conditions from the main text. Extra conditions that appear only in a repository are not included automatically.
-3. Match comparison data with a fixed hierarchy. Mine is: data from the same paper, then a source the paper names, then a project-wide bank of baselines. Finding no match is allowed. The row is kept and its effect size is left uncomputed.
-4. Aggregate within independent units and write a per-paper summary file. Repeated rounds are not independent observations.
-5. Verify counts, sample sizes and matches independently.
-
-Track four states separately: materials reviewed, data available, preparation complete, coding run. Prepared does not mean coded.
-
-### S7 Coding
-
-One paper per request. The executor receives the main PDF, supplements, the prepared data summary, the full codebook, the column template, the bank of comparison data and the entity cache. It returns one JSON object containing:
-
-- the coded rows, each with exactly the template's columns;
-- a short statement of which rows have enough information for an effect size;
-- notes that justify every judgment-based moderator;
-- the conditions it skipped, each with the criterion that failed;
-- warnings and unresolved items;
-- a self-check against the codebook.
-
-Rows are created even when statistics are missing. The numeric fields are `null` and the gap is listed as unresolved. The executor never computes effect sizes.
-
-The runner does not overwrite earlier output, saves the raw response, and reports token usage. A separate step validates the JSON and writes the rows. If a long table is cut off, I change how the output is delivered, for example as a file, and I never fill in missing rows by hand. A rerun needs a documented reason, and the earlier output is archived.
-
-### S8 Coding validation
-
-Freeze the full set of rows that will feed the analysis, with the effect-size fields blank and hidden from auditors. An auditor from a different vendor checks each paper in three domains: effect-size inputs, the pairing of each row with its comparison row and the chosen computation path, and the moderators.
-
-The auditor returns a pass unless the sources and the frozen rules support a specific correction at an exact row and field. Each such challenge goes to a second, blinded adjudicator who does not see the proposed value. Exact agreement confirms the correction. Anything else goes to restricted human adjudication. Auditors cannot add, delete, split or merge rows, and they cannot reopen eligibility. After a codebook clarification, only the affected papers are audited again, and earlier passes keep the codebook version they were obtained under.
-
-### S9 Master table and effect sizes
-
-Code builds the master table from the per-paper outputs. Each row receives a stable identifier from a registry. Normal builds are read-only and fail if they meet an unregistered row; allocating new identifiers requires an explicit flag; retired identifiers are never reused.
-
-A deterministic engine computes the effect sizes. Mine has three paths: means and standard deviations, event counts, and a reported paired test statistic. Every effect is recomputed independently, and pooled results are cross-checked in a second statistical package.
-
-### S10 Analysis and statistical validation
-
-Analysis scripts read the frozen master table and nothing else. Alongside the main analysis I run checks that ask whether a conclusion depends on a construction choice: dependence among effects from the same paper, alternative ways of constructing effect sizes and moderators, sensitivity to the source of comparison data, publication-bias diagnostics, and design power. Each block ends with an independent numerical check of the reported values.
-
-### S11 Release and reproduction
-
-Each completed stage is saved as a dated, immutable release with a manifest of hashes. A `CURRENT` file names the active release, and an activation record documents what changed in the working copies. The project status file records completed work as complete and does not attach inferred next steps.
-
-An offline entry point copies the formal inputs to a fresh location, blocks network access, and rebuilds the results from saved responses. Software environments and disposable caches live outside synchronized folders.
-
-## 4. Writing the governing documents
-
-### 4.1 Order
-
-Plan memo, eligibility criteria, codebook, column template, prompts, a small pilot, a log of ambiguities, minimal clarifications with a new version, freeze, then the validation codebook and workflow configuration, and finally an implementation-ready memo that a collaborator could execute without asking me questions.
+A short memo for the stage. It fixes the question the step answers, the unit of judgment, what the model will see and what it must not see, the output it must return, which models play which role, the frame or the sample, the rules for retries and for stopping, the expected cost, and what counts as done. For a small step this is one page. For the screening audit in my project it grew into a full pre-specified protocol.
 
 I let a model draft the plan memo and the first codebook from my description of the project. I then read every line, because the codebook is the one document the rest of the project is built on.
 
-### 4.2 Anatomy of a codebook
+### 5.2 Codebook
 
 The codebook is a JSON file. For every variable it gives the name, a description, the allowed values, an example and notes. The notes carry most of the value:
 
@@ -161,7 +137,7 @@ The codebook is a JSON file. For every variable it gives the name, a description
 - a list of things not to do;
 - how to document the source of each number.
 
-Beyond the variable table, my codebook contains the eligibility criteria with operational clarifications, the hierarchy for choosing comparison data, rules for aggregating across opponents or sampling settings, a statement of which fields the model fills and which fields code computes, the cache-first rule for entity attributes, and a version string.
+Beyond the variable table, my coding codebook contains the eligibility criteria with operational clarifications, the hierarchy for choosing comparison data, rules for aggregating across opponents or sampling settings, a statement of which fields the model fills and which fields code computes, the cache-first rule for entity attributes, and a version string.
 
 A generic example of one entry:
 
@@ -179,19 +155,198 @@ A generic example of one entry:
 }
 ```
 
-### 4.3 Prompts
+An audit step has its own, smaller codebook. The validation codebook quotes the eligibility criteria or the coding rules verbatim, tells auditors what to decide, and fixes the exact fields they must return.
 
-The system prompt states the role, says that the codebook and template are the only source of truth, forbids invented values, reserves the deterministic fields for code, and lists the self-check. The paper prompt supplies the metadata, the inputs, the eligibility criteria verbatim, the task, the distinction between creating a row and being able to compute an effect, the required notes, the output structure, and guidance on how many rows to expect. Prompts contain no rule that is not in the codebook.
+### 5.3 Prompts
 
-### 4.4 Pilot, clarify, version
+Prompts are built from the codebook and contain no rule that is not in it.
 
-Run a few papers. Read the unresolved items, warnings and skipped conditions before reading the rows. When the executor did something I did not intend, the question is which rule allowed it. Clarifications should be minimal and general: they state how the existing criterion applies to a recurring pattern, and they do not decide individual papers. Every clarification changes the version string, and I record which papers must be rerun because of it.
+For coding, the system prompt states the role, says that the codebook and template are the only source of truth, forbids invented values, reserves the deterministic fields for code, and lists the self-check. The paper prompt supplies the metadata, the inputs, the eligibility criteria verbatim, the task, the distinction between creating a row and being able to compute an effect, the required notes, the output structure, and guidance on how many rows to expect.
 
-### 4.5 Validation codebook and workflow configuration
+For an audit, the prompt gives the auditor the source material and the rules and nothing else. What it must not contain is listed in Section 7.
 
-The validation codebook tells auditors what to decide and how to report it. The workflow configuration is a separate file that fixes the operational side: the auditors and their settings, how files are delivered, how disagreement is routed, the sampling design and seed, the retry policy, and a confirmation token without which no live request is sent. Runners validate everything offline by default and need an explicit flag to contact a provider.
+### 5.4 Operate
 
-## 5. Validation in more detail
+*Pilot.* Run a few items. Read the unresolved items, warnings and skipped conditions before reading the rows. When the executor did something I did not intend, the question is which rule allowed it.
+
+*Clarify and version.* Clarifications should be minimal and general: they state how the existing criterion applies to a recurring pattern, and they do not decide individual papers. Every clarification changes the version string, and I record which papers must be rerun because of it.
+
+*Freeze.* Before the formal run, the rules, prompts, configuration, code and inputs are recorded with hashes.
+
+*Run.* The workflow configuration is a separate file that fixes the operational side: the models and their settings, how files are delivered, how disagreement is routed, the sampling design and seed, the retry policy, and a confirmation token without which no live request is sent. Runners validate everything offline by default and need an explicit flag to contact a provider. They never overwrite earlier output, they save every raw response, and they can resume after an interruption without resubmitting finished items.
+
+### 5.5 Order across the whole project
+
+Goal and eligibility criteria, plan memo, coding codebook, column template, prompts, a small pilot, a log of ambiguities, minimal clarifications with a new version, freeze, then the validation codebooks and workflow configurations, and finally an implementation-ready memo that a collaborator could execute without asking me questions.
+
+## 6. The stages, one by one
+
+Each stage has the same four parts: who does it, what goes in and what comes out, what I do, and what I check before moving on. Stages that call an AI describe what I do in the order of Section 5.
+
+### S0 Goal and eligibility rules
+
+**Done by:** the researcher.
+**In:** the research idea. **Out:** a short statement of the question and scope, numbered eligibility criteria, and a map from each study design to the outcome that will be coded.
+
+**What I do.** This comes before any search. I write down what is being studied and for what purpose, then the eligibility rules, then the outcome map. I number the criteria, because every later stage refers to them by number. My project has five: the type of task, who makes the decision, the kind of outcome, how the outcome is measured, and the absence of instructions that steer behavior. Each criterion gets operational clarifications as the project goes on: concrete failing cases, cases that look like failures but are not, and a rule for papers that contain both eligible and ineligible conditions.
+
+**Before moving on.** Each criterion can be decided from what a paper reports. The criteria carry a version, since the screening rules, the audit codebooks and the coding codebook all quote them verbatim.
+
+### S1 Search
+
+**Done by:** the researcher, with code to parse the exports.
+**In:** the criteria and search terms from S0. **Out:** a dated search snapshot: databases, exact query strings, date range, records per source, and the raw exports.
+
+**What I do.** Record the databases, the exact query strings, the date range and the number of records from each source. Give each cumulative search a snapshot identifier such as `search_through_2026-04-30`. An update to the search is a new snapshot, and it restarts the audit history of S5.
+
+**Before moving on.** The raw exports are saved unchanged, and the counts per source can be regenerated from them.
+
+### S2 Remove duplicates
+
+**Done by:** code, after the reference manager's own duplicate check if you use one.
+**In:** the raw exports. **Out:** the record list that enters screening, and a log of every removed record with the reason.
+
+**What I do.** Remove duplicate records. Optionally, remove records that plainly fail an eligibility rule on a field that needs no reading, such as document type. For example, if the synthesis needs studies that report data, records whose title marks them as a review can be removed here by a one-line rule. In the PRISMA 2020 flow diagram these removals are reported under "records removed before screening", which has one line for duplicates and one for records marked as ineligible by automation tools.
+
+Keep titles and abstracts in a lossless format from here on. A spreadsheet silently truncated one long abstract in my project, and the preflight check of S3 now requires exact equality between the screened text and the parsed source.
+
+**Before moving on.** Records identified equals records removed plus records passed to screening. A pre-filter rule is kept only if I would defend every single removal it makes. Anything less clear is left to S3, where it receives a reason and can be audited.
+
+### S3 Title and abstract screening
+
+**Done by:** deterministic code, a rule-based algorithm.
+**In:** the titles and abstracts of the records from S2. **Out:** a decision and a reason for every record.
+
+**What I do.** I follow the rule-based approach of Robleto and Shehadeh (2025). I define the screening rules from the eligibility criteria, and they are written as a Python program. An AI coding assistant can help write and debug that program, but it makes no screening decision. The goal at this stage is high recall. Because the screen is a program, the same record always receives the same decision, and the rule can be versioned like code. If your criteria cannot be expressed that way, the executor can screen under a codebook, prepared in the order of Section 5. The audit in S5 is the same in both cases.
+
+**Before moving on.** Every record has a decision and a reason. The preflight check confirms that the screened text is exactly the parsed source text.
+
+### S4 Full-text screening
+
+**Done by:** deterministic code.
+**In:** the full texts of the records that passed S3. **Out:** criterion-by-criterion evidence and a decision for every retrieved paper.
+
+**What I do.** This is the second phase of the same rule-based design. The program parses each PDF, retrieves the passages relevant to each criterion, and records for every criterion whether it is supported, together with the evidence. The decision follows from the criteria.
+
+**Before moving on.** Keep the criterion-level record, because S5 uses it to find near misses. Full texts that could not be retrieved are counted separately from eligibility exclusions, as the PRISMA flow diagram requires.
+
+### S5 AI cross-validation of screening
+
+**Done by:** independent AI auditors, three in my project; code for sampling, validation of responses and majority decisions; the researcher for a bounded adjudication.
+**In:** the exclusions of S3 and S4 for one search snapshot. **Out:** audited samples, confirmed misses, and the records added back to the included set.
+
+The question here is narrow: did the screens exclude anything they should have kept? Robleto and Shehadeh (2025) recommend reading a random sample of excluded records by hand. This stage turns that spot check into an audit that is specified in advance.
+
+**Plan.** The validation memo fixes the target, which is false exclusion, and the order: the full-text stage is validated first and the title-and-abstract stage second, because the second audit resolves its candidates through the frozen full-text screen. It also fixes the sampling frame, the strata, the round size, the seed, the auditors and their routing, the stopping rules and the retry policy.
+
+**Codebook.** The validation codebook quotes the eligibility criteria and their operational clarifications verbatim and fixes the fields an auditor must return.
+
+**Prompts.** Full-text auditors receive only the record identifier, the title and the complete PDF. The abstract auditor receives the identifier, the title and the abstract. Nobody sees the original decision or its reason.
+
+**Operate.**
+
+*Full-text audit.* Sample from the full-text exclusions, concentrating on near misses, which I define as papers that failed exactly one criterion. Two primary auditors from different vendors work independently. A third auditor receives the same inputs only when both primary outputs are valid and disagree. The majority decision is computed by code. A record goes to human adjudication only when the AI majority says it should be included, and a false exclusion is confirmed only when the human decision agrees and cites the page.
+
+*Title-and-abstract audit.* Draw rounds of previously unaudited exclusions, stratified by search batch. One blinded auditor reads each record. A "retain" answer is a candidate, not an error. The candidate's full text is retrieved and run through the frozen full-text screen, and papers that pass are then read by the independent auditors.
+
+*Stopping.* A round in which no candidate passes the full-text screen ends the audit. Rounds in which candidates pass the screen but are all excluded by the independent auditors count toward a cumulative total, and three such rounds end the audit. A confirmed miss is added back to the included set, and the audit continues. Every third confirmed miss triggers a review for systematic failure.
+
+*If the audit finds a problem, the rule changes, not the sample.* Rules stay fixed during an audit. If inspection shows that a rule should change, the change is versioned, the current run is archived, and a fresh sample is frozen under the new rule. Records from a run that actually started are withheld from later samples within the same snapshot.
+
+**Before moving on.** The stopping rule has been met under the current rule versions, and every confirmed miss is in the included set.
+
+### S6 Same-study check
+
+**Done by:** code, with the researcher confirming unclear pairs from the sources.
+**In:** the included records after S5. **Out:** groups of records that report the same study, one representative for each, and the mapping from records to studies.
+
+**What I do.** The unit of a synthesis is the study, not the report (Lefebvre et al., 2025, Section 4.6; PRISMA 2020 draws the same line between records, reports and studies). Preprints, conference versions and journal versions of one study appear as separate records. A program compares every pair of included records on title similarity, author lists, and the similarity and relative length of the full texts, against written thresholds. It groups the matches and chooses a representative with a written rule: the published version first, then the later version. In my project 85 included records correspond to 72 studies.
+
+**Before moving on.** Every record belongs to exactly one group and every group has exactly one representative. If a threshold changes, the earlier result is kept and the new rule is rerun on all pairs. No pair is merged by hand.
+
+### S7 Data preparation (optional)
+
+**Done by:** code, and the researcher for data requests.
+**In:** the included studies and whatever data they provide. **Out:** a per-paper data summary, matched comparison data, and a tracker.
+
+**What I do.** This stage applies when a paper comes with data files or needs matched comparison data. A paper whose statistics are all in the text skips it. The reason for the stage is cost and accuracy: raw data files can be long, sending them to a model is expensive, and a model should not be doing arithmetic. So code reduces the data to a short summary, and the executor in S8 reads the summary.
+
+1. Look for usable data: reported statistics, supplements, repositories. If there is none, record what is missing, send a data request, mark the paper as waiting, and move on. The paper stays in the coding queue.
+2. List the eligible conditions from the main text. Extra conditions that appear only in a repository are not included automatically.
+3. Match comparison data with a fixed hierarchy. Mine is: data from the same paper, then a source the paper names, then a project-wide bank of baselines. Finding no match is allowed. The row is kept and its effect size is left uncomputed.
+4. Aggregate within independent units and write a per-paper summary file. Repeated rounds are not independent observations.
+
+**Before moving on.** Counts, sample sizes and matches have been verified independently. The tracker keeps four states apart: materials reviewed, data available, preparation complete, coding run. Prepared does not mean coded.
+
+### S8 AI coding
+
+**Done by:** the AI executor under the codebook; code validates the response and writes the rows.
+**In:** for each paper, the main PDF, supplements, the prepared data summary, the full codebook, the column template, the bank of comparison data and the entity cache. **Out:** per-paper coded rows in a fixed column template.
+
+**Plan.** One paper per request. The unit of coding is the condition. The memo fixes the inputs listed above, the output contract, the model and its settings, the pilot set, the expected cost and the rule for reruns.
+
+**Codebook.** The coding codebook described in Section 5.2.
+
+**Prompts.** The system prompt and the paper prompt described in Section 5.3.
+
+**Operate.** Pilot, clarify, version and freeze as in Section 5.4, then run. The executor returns one JSON object containing:
+
+- the coded rows, each with exactly the template's columns;
+- a short statement of which rows have enough information for an effect size;
+- notes that justify every judgment-based moderator;
+- the conditions it skipped, each with the criterion that failed;
+- warnings and unresolved items;
+- a self-check against the codebook.
+
+Rows are created even when statistics are missing. The numeric fields are `null` and the gap is listed as unresolved. The executor never computes effect sizes.
+
+The runner does not overwrite earlier output, saves the raw response, and reports token usage. A separate step validates the JSON and writes the rows. If a long table is cut off, I change how the output is delivered, for example as a file, and I never fill in missing rows by hand. A rerun needs a documented reason, and the earlier output is archived.
+
+**Before moving on.** Every paper in the queue has either validated rows or a recorded reason for waiting.
+
+### S9 AI cross-validation of coding
+
+**Done by:** an AI auditor from a vendor other than the executor's, a second blinded AI adjudicator, and the researcher for a restricted adjudication.
+**In:** the frozen set of rows that will feed the analysis. **Out:** an audit result for every row, and the confirmed corrections.
+
+**Plan.** Freeze the full set of rows that will feed the analysis, with the effect-size fields blank and hidden from auditors. Each paper is checked in three domains: effect-size inputs, the pairing of each row with its comparison row and the chosen computation path, and the moderators. Auditors cannot add, delete, split or merge rows, and they cannot reopen eligibility.
+
+**Codebook.** The auditor returns a pass unless the sources and the frozen rules support a specific correction at an exact row and field.
+
+**Prompts.** The auditor sees the sources, the frozen rules and the rows. The adjudicator of a challenge sees the same material but not the value the auditor proposed.
+
+**Operate.** Each challenge goes to the blinded adjudicator. Exact agreement confirms the correction. Anything else goes to restricted human adjudication. The audit runner never touches the production rows. Confirmed corrections are propagated in a separate, controlled step. After a codebook clarification, only the affected papers are audited again, and earlier passes keep the codebook version they were obtained under.
+
+**Before moving on.** Every row in the frozen frame has an audit result.
+
+### S10 Master table and effect sizes
+
+**Done by:** code.
+**In:** the per-paper outputs and the confirmed corrections. **Out:** one table with stable row identifiers and computed effects.
+
+**What I do.** Code builds the master table from the per-paper outputs. Each row receives a stable identifier from a registry. Normal builds are read-only and fail if they meet an unregistered row; allocating new identifiers requires an explicit flag; retired identifiers are never reused. A deterministic engine computes the effect sizes. Mine has three paths: means and standard deviations, event counts, and a reported paired test statistic.
+
+**Before moving on.** Every effect is recomputed independently, and pooled results are cross-checked in a second statistical package.
+
+### S11 Analysis and statistical validation
+
+**Done by:** code.
+**In:** the frozen master table and nothing else. **Out:** results, robustness checks, and independent numerical checks.
+
+**What I do.** Alongside the main analysis I run checks that ask whether a conclusion depends on a construction choice: dependence among effects from the same paper, alternative ways of constructing effect sizes and moderators, sensitivity to the source of comparison data, publication-bias diagnostics, and design power.
+
+**Before moving on.** Each block ends with an independent numerical check of the reported values.
+
+### S12 Release and reproduction
+
+**Done by:** code.
+**In:** every completed stage. **Out:** immutable releases, pointers, and an offline reproduction entry.
+
+**What I do.** Each completed stage is saved as a dated, immutable release with a manifest of hashes. A `CURRENT` file names the active release, and an activation record documents what changed in the working copies. The project status file records completed work as complete and does not attach inferred next steps.
+
+**Before moving on.** An offline entry point copies the formal inputs to a fresh location, blocks network access, and rebuilds the results from saved responses. Software environments and disposable caches live outside synchronized folders.
+
+## 7. Rules that apply to every audit
 
 **Blinding.** An auditor's input is the source material plus the rules. It excludes the original decision and reason, the sampling rank, the batch, keyword flags and downstream results. The adjudicator of a coding challenge does not see the value the first auditor proposed.
 
@@ -201,7 +356,7 @@ The validation codebook tells auditors what to decide and how to report it. The 
 
 **What a pass means.** For screening: no confirmed false exclusion in the audited sample, under the frozen rules, for that search snapshot. For coding: the audited rows are consistent with the sources and the frozen rules. It does not audit papers or conditions that were never coded, and it is not a second full coding of the literature.
 
-## 6. What I report in the paper
+## 8. What I report in the paper
 
 - The executor and auditor models, their versions and settings, and the dates of the runs.
 - The versions of the codebook and prompts, and where to find them.
@@ -213,13 +368,13 @@ The validation codebook tells auditors what to decide and how to report it. The 
 - The reproduction entry point and what it covers.
 - What each validation does not establish.
 
-## 7. Adapting RAES to another field
+## 9. Adapting RAES to another field
 
-Replace the content: eligibility criteria, outcome map, codebook variables, comparison data, entity cache and screening rules. Keep the structure: the roles, the principles, the stage order, the validation design and the release conventions. A reasonable first milestone in a new field is a codebook that survives a pilot of five to ten papers without a new clarification.
+Replace the content: eligibility criteria, outcome map, codebook variables, comparison data, entity cache and screening rules. Keep the structure: the roles, the principles, the stage order, the four-step preparation of every AI step, the validation design and the release conventions. A reasonable first milestone in a new field is a codebook that survives a pilot of five to ten papers without a new clarification.
 
-## 8. Limits
+## 10. Limits
 
-The validations are targeted checks, not proof of zero error. Auditors from different vendors can still share blind spots. Writing rules takes real effort before any paper is coded, and the approach pays off only when the literature is large or will be updated. Models change, so versions must be pinned and recorded. Copyrighted sources and author-provided data cannot be shared, which limits how much of a run an outsider can repeat from scratch.
+The validations are targeted checks, not proof of zero error. Auditors from different vendors can still share blind spots. Rule-based screening depends on the terms the rules look for, which is why S3 aims for recall and S5 audits the exclusions. Writing rules takes real effort before any paper is coded, and the approach pays off only when the literature is large or will be updated. Models change, so versions must be pinned and recorded. Copyrighted sources and author-provided data cannot be shared, which limits how much of a run an outsider can repeat from scratch.
 
 ## Appendix A. Glossary
 
@@ -227,6 +382,7 @@ The validations are targeted checks, not proof of zero error. Auditors from diff
 - **Condition:** one experimental arm, role and outcome within a paper; the unit of eligibility and coding.
 - **Executor:** the model that applies the codebook.
 - **Auditor:** an independent model that checks a decision blind.
+- **Cross-validation:** in this document, a blinded audit of a program's or a model's decisions by independent models. It is unrelated to k-fold cross-validation in machine learning.
 - **Near miss:** a full-text exclusion that failed exactly one criterion.
 - **Snapshot:** one cumulative state of the search, with its own identifier and audit history.
 - **Frozen frame:** the fixed set of rows or records a validation refers to.
@@ -248,5 +404,17 @@ analysis/                scripts, releases, validation releases
 archive/                 superseded material with manifests
 CURRENT_STATUS.md        completed work and current scope
 ```
+
+## References
+
+Flemyng, E., Noel-Storr, A., Macura, B., Gartlehner, G., Thomas, J., Meerpohl, J. J., Jordan, Z., Minx, J., Eisele-Metzger, A., Hamel, C., Jemioło, P., Porritt, K., & Grainger, M. (2025). Position statement on artificial intelligence (AI) use in evidence synthesis across Cochrane, the Campbell Collaboration, JBI and the Collaboration for Environmental Evidence 2025. *Environmental Evidence*. https://doi.org/10.1186/s13750-025-00374-5 (co-published in the *Cochrane Database of Systematic Reviews*, *Campbell Systematic Reviews* and *JBI Evidence Synthesis*)
+
+Lefebvre, C., Glanville, J., Briscoe, S., Featherstone, R., Littlewood, A., Metzendorf, M.-I., Noel-Storr, A., Paynter, R., Rader, T., Thomas, J., & Wieland, L. S. (2025). Chapter 4: Searching for and selecting studies. In J. P. T. Higgins, J. Thomas, J. Chandler, M. Cumpston, T. Li, M. J. Page, & V. A. Welch (Eds.), *Cochrane Handbook for Systematic Reviews of Interventions* (version 6.5.1). Cochrane.
+
+Page, M. J., McKenzie, J. E., Bossuyt, P. M., Boutron, I., Hoffmann, T. C., Mulrow, C. D., et al. (2021). The PRISMA 2020 statement: An updated guideline for reporting systematic reviews. *BMJ*, 372, n71. https://doi.org/10.1136/bmj.n71
+
+Robleto, E., & Shehadeh, L. A. (2025). Accelerating systematic reviews: A novel 1-wk screening protocol using rule-based automation with AI-assisted Python coding. *American Journal of Physiology-Heart and Circulatory Physiology*, 329(5), H1391–H1413. https://doi.org/10.1152/ajpheart.00374.2025
+
+Thomas, J., Flemyng, E., Noel-Storr, A., et al. (2025). *Responsible use of AI in evidence SynthEsis (RAISE): Recommendations and guidance*. Open Science Framework. https://doi.org/10.17605/OSF.IO/FWAUD
 
 This document is released under CC BY 4.0. See [LICENSE-docs.md](LICENSE-docs.md).
