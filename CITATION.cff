@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use RAES, please cite it as below."
+title: "RAES: Reproducible AI-assisted Evidence Synthesis"
+type: software
+authors:
+  - family-names: "Zhu"
+    given-names: "Qijun"
+    affiliation: "George Mason University"
+version: "0.1.0"
+date-released: "2026-09-17"
+license: MIT
+repository-code: "https://github.com/shanbuzaigao/raes"
+abstract: "A rule-governed workflow for meta-analyses, systematic reviews and other evidence syntheses that use large language models for screening and coding. Humans write the rules, AI executes them, independent AIs audit the execution, every number is computed by deterministic code, and the whole run can be reproduced offline."
+keywords:
+  - evidence synthesis
+  - meta-analysis
+  - systematic review
+  - large language models
+  - reproducibility
+  - codebook

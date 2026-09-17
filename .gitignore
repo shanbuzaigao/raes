@@ -1,0 +1,36 @@
+# Internal notes: never committed, never published
+_internal/
+
+# Credentials and local configuration
+.env
+.env.*
+*.key
+api.txt
+secrets/
+
+# Software environments and caches stay outside the repository
+node_modules/
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.Rhistory
+.RData
+.Rproj.user/
+
+# Build and preview outputs
+build/
+dist/
+*.egg-info/
+tmp/
+*.tmp
+
+# Office lock files and OS files
+~$*
+.DS_Store
+Thumbs.db
+desktop.ini
