@@ -41,8 +41,8 @@ The first half follows the PRISMA 2020 flow (Page et al., 2021): identification,
 | Stage | Done by | What it produces | PRISMA 2020 phase |
 |---|---|---|---|
 | S0 Goal and eligibility rules | Researcher | Research question, numbered eligibility criteria, outcome map | Before the search |
-| S1 Search | Researcher, code | Dated search snapshot with queries and counts | Identification |
-| S2 Remove duplicates | Code | Record list for screening, log of removals, optional rule-based pre-filter | Identification |
+| S1 Search | Researcher | Dated search snapshot with queries and counts | Identification |
+| S2 Remove duplicates | Researcher, in a reference manager | Deduplicated library exported as a text file, counts before and after, optional rule-based pre-filter | Identification |
 | S3 Title and abstract screening | Code | Decision and reason for every record | Screening |
 | S4 Full-text screening | Code | Criterion-by-criterion evidence and a decision for every retrieved paper | Screening |
 | S5 AI cross-validation of screening | AI auditors | Audited samples of exclusions, confirmed misses, records added back | Screening |
@@ -62,7 +62,7 @@ RAES covers projects that screen a literature against written criteria and then 
 
 There are four roles.
 
-- **The researcher** writes the rules, makes a small number of bounded adjudications, and is responsible for the result.
+- **The researcher** writes the rules, makes a small number of bounded adjudications, and is responsible for the result. In my project that is me, so wherever this document says "I", it is the researcher speaking.
 - **The executor** is the model that applies the rules, for example when coding a paper.
 - **The auditors** are independent models that check the work blind. Where possible they come from vendors other than the executor's.
 - **Deterministic code** does everything that can be computed: rule-based screening where feasible, validation of model output, table assembly, effect sizes and statistics.
@@ -185,34 +185,36 @@ Each stage has the same four parts: who does it, what goes in and what comes out
 
 **What I do.** This comes before any search. I write down what is being studied and for what purpose, then the eligibility rules, then the outcome map. I number the criteria, because every later stage refers to them by number. My project has five: the type of task, who makes the decision, the kind of outcome, how the outcome is measured, and the absence of instructions that steer behavior. Each criterion gets operational clarifications as the project goes on: concrete failing cases, cases that look like failures but are not, and a rule for papers that contain both eligible and ineligible conditions.
 
-**Before moving on.** Each criterion can be decided from what a paper reports. The criteria carry a version, since the screening rules, the audit codebooks and the coding codebook all quote them verbatim.
+**Before moving on.** I check two things. First, every criterion can be answered by reading the paper: I can point to the passage that shows whether it is met. A criterion that depends on something papers do not report cannot be screened or audited. Second, the criteria have a version number. The screening rules, the audit codebooks and the coding codebook all copy the criteria word for word, so when a criterion changes, the version tells me which files must be updated and which runs used the old wording.
 
 ### S1 Search
 
-**Done by:** the researcher, with code to parse the exports.
+**Done by:** the researcher.
 **In:** the criteria and search terms from S0. **Out:** a dated search snapshot: databases, exact query strings, date range, records per source, and the raw exports.
 
-**What I do.** Record the databases, the exact query strings, the date range and the number of records from each source. Give each cumulative search a snapshot identifier such as `search_through_2026-04-30`. An update to the search is a new snapshot, and it restarts the audit history of S5.
+**What I do.** Record the databases, the exact query strings, the date range and the number of records from each source. Most databases export their results directly. A source without an export function needs a small script. I use one for arXiv, and it saves the results in a format the reference manager can import. Give each cumulative search a snapshot identifier such as `search_through_2026-04-30`. An update to the search is a new snapshot, and it restarts the audit history of S5.
 
 **Before moving on.** The raw exports are saved unchanged, and the counts per source can be regenerated from them.
 
 ### S2 Remove duplicates
 
-**Done by:** code, after the reference manager's own duplicate check if you use one.
-**In:** the raw exports. **Out:** the record list that enters screening, and a log of every removed record with the reason.
+**Done by:** the researcher, in a reference manager. I use EndNote.
+**In:** the raw exports from every source. **Out:** one deduplicated library, exported as a text file that the screening program reads, and the record counts before and after.
 
-**What I do.** Remove duplicate records. Optionally, remove records that plainly fail an eligibility rule on a field that needs no reading, such as document type. For example, if the synthesis needs studies that report data, records whose title marks them as a review can be removed here by a one-line rule. In the PRISMA 2020 flow diagram these removals are reported under "records removed before screening", which has one line for duplicates and one for records marked as ineligible by automation tools.
+**What I do.** I import the search results from every source into EndNote, remove the duplicates there, and export the library as a text file. The screening program in S3 parses that file. I write down how many records came in and how many duplicates were removed, because the PRISMA flow diagram reports both.
 
-Keep titles and abstracts in a lossless format from here on. A spreadsheet silently truncated one long abstract in my project, and the preflight check of S3 now requires exact equality between the screened text and the parsed source.
+An optional step can follow: a one-line rule that removes records which plainly fail an eligibility rule on a field that needs no reading, such as document type. For example, if the synthesis needs studies that report data, records whose title marks them as a review can be removed here. In the PRISMA 2020 flow diagram these removals are reported under "records removed before screening", which has one line for duplicates and one for records marked as ineligible by automation tools.
+
+The exported text file is the source from here on, and spreadsheets are only for viewing. A spreadsheet silently truncated one long abstract in my project, and the preflight check of S3 now requires exact equality between the screened text and the parsed source.
 
 **Before moving on.** Records identified equals records removed plus records passed to screening. A pre-filter rule is kept only if I would defend every single removal it makes. Anything less clear is left to S3, where it receives a reason and can be audited.
 
 ### S3 Title and abstract screening
 
 **Done by:** deterministic code, a rule-based algorithm.
-**In:** the titles and abstracts of the records from S2. **Out:** a decision and a reason for every record.
+**In:** the text file exported in S2. **Out:** a decision and a reason for every record.
 
-**What I do.** The screen is rule-based, as in Robleto and Shehadeh (2025). I define the screening rules from the eligibility criteria, and they are written as a Python program. The goal at this stage is high recall. Because the screen is a program, the same record always receives the same decision, and the rule can be versioned like code. If your criteria cannot be expressed that way, the executor can screen under a codebook, prepared in the order of Section 5. The audit in S5 is the same in both cases.
+**What I do.** The screen is rule-based, as in Robleto and Shehadeh (2025). I define the screening rules from the eligibility criteria, and they are written as a Python program. The program parses the exported text file into records and screens the title and abstract of each one. The goal at this stage is high recall. Because the screen is a program, the same record always receives the same decision, and the rule can be versioned like code. If your criteria cannot be expressed that way, the executor can screen under a codebook, prepared in the order of Section 5. The audit in S5 is the same in both cases.
 
 **Before moving on.** Every record has a decision and a reason. The preflight check confirms that the screened text is exactly the parsed source text.
 
