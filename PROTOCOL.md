@@ -78,7 +78,7 @@ The rule of thumb I use: if a step can be written as code, it is code. If it nee
 
 **PRISMA 2020** (Page et al., 2021). Stages S1 to S6 follow its flow from identification to included studies, use its distinction between records, reports and studies, and produce the counts its flow diagram asks for.
 
-**Rule-based screening** (Robleto and Shehadeh, 2025). Their protocol shows that screening criteria defined by the researcher can be executed as transparent Python rules in two phases, first on titles and abstracts and then on full texts, with AI used only as a coding assistant and never as the decision maker. S3 and S4 follow this design. Their paper validates the rules by testing them on known relevant papers and by reading a random sample of excluded records, and it names a more rigorous, quantitative validation as the next step. S5 is my attempt at that step: frozen rules and sampling frame, strata that concentrate on near misses, blinded auditors from different vendors, a stopping rule written in advance, and confirmed misses added back.
+**Rule-based screening** (Robleto and Shehadeh, 2025). Their protocol screens with transparent Python rules in two phases, first on titles and abstracts and then on full texts. S3 and S4 are rule-based in the same way. Their paper validates the rules by testing them on known relevant papers and by reading a random sample of excluded records, and it names a more rigorous, quantitative validation as the next step. S5 is my attempt at that step: frozen rules and sampling frame, strata that concentrate on near misses, blinded auditors from different vendors, a stopping rule written in advance, and confirmed misses added back.
 
 **Guidance on AI in evidence synthesis.** The RAISE recommendations (Thomas et al., 2025) and the joint position statement of Cochrane, the Campbell Collaboration, JBI and the Collaboration for Environmental Evidence (Flemyng et al., 2025) expect human oversight, transparency and validation of AI output. They state what is expected. RAES is one concrete way of doing it.
 
@@ -217,7 +217,7 @@ Keep titles and abstracts in a lossless format from here on. A spreadsheet silen
 **Done by:** deterministic code, a rule-based algorithm.
 **In:** the titles and abstracts of the records from S2. **Out:** a decision and a reason for every record.
 
-**What I do.** I follow the rule-based approach of Robleto and Shehadeh (2025). I define the screening rules from the eligibility criteria, and they are written as a Python program. An AI coding assistant can help write and debug that program, but it makes no screening decision. The goal at this stage is high recall. Because the screen is a program, the same record always receives the same decision, and the rule can be versioned like code. If your criteria cannot be expressed that way, the executor can screen under a codebook, prepared in the order of Section 5. The audit in S5 is the same in both cases.
+**What I do.** The screen is rule-based, as in Robleto and Shehadeh (2025). I define the screening rules from the eligibility criteria, and they are written as a Python program. The goal at this stage is high recall. Because the screen is a program, the same record always receives the same decision, and the rule can be versioned like code. If your criteria cannot be expressed that way, the executor can screen under a codebook, prepared in the order of Section 5. The audit in S5 is the same in both cases.
 
 **Before moving on.** Every record has a decision and a reason. The preflight check confirms that the screened text is exactly the parsed source text.
 
@@ -235,7 +235,7 @@ Keep titles and abstracts in a lossless format from here on. A spreadsheet silen
 **Done by:** independent AI auditors, three in my project; code for sampling, validation of responses and majority decisions; the researcher for a bounded adjudication.
 **In:** the exclusions of S3 and S4 for one search snapshot. **Out:** audited samples, confirmed misses, and the records added back to the included set.
 
-The question here is narrow: did the screens exclude anything they should have kept? Robleto and Shehadeh (2025) recommend reading a random sample of excluded records by hand. This stage turns that spot check into an audit that is specified in advance.
+The question here is narrow: did the screens exclude anything they should have kept? Robleto and Shehadeh (2025) recommend reading a random sample of excluded records by hand. This stage turns that spot check into an audit that is specified in advance and carried out by independent AIs.
 
 **Plan.** The validation memo fixes the target, which is false exclusion, and the order: the full-text stage is validated first and the title-and-abstract stage second, because the second audit resolves its candidates through the frozen full-text screen. It also fixes the sampling frame, the strata, the round size, the seed, the auditors and their routing, the stopping rules and the retry policy.
 

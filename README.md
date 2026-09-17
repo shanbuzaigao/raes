@@ -59,7 +59,7 @@ Evidence-synthesis organizations now expect authors who use AI to keep human ove
 
 ## What it builds on
 
-The first half of the pipeline follows PRISMA 2020 (Page et al., 2021). The two screening stages follow Robleto and Shehadeh (2025), who show that screening criteria defined by the researcher can be executed as transparent Python rules, first on titles and abstracts and then on full texts, with AI used only to help write the code. They validate the rules by reading samples of excluded records by hand, and they name a more rigorous, quantitative validation as the next step. RAES takes that step: frozen rules, a sample specified in advance, blinded AI auditors from different vendors, and a fixed stopping rule. It then carries the same discipline past screening, into the same-study check, AI coding under a codebook, cross-validation of the coded rows, effect sizes computed only by code, and releases that can be rebuilt offline.
+The first half of the pipeline follows PRISMA 2020 (Page et al., 2021). The two screening stages are rule-based, as in Robleto and Shehadeh (2025), who screen with transparent Python rules, first on titles and abstracts and then on full texts. They validate the rules by reading samples of excluded records by hand, and they name a more rigorous, quantitative validation as the next step. RAES takes that step: frozen rules, a sample specified in advance, blinded AI auditors from different vendors, and a fixed stopping rule. It then carries the same discipline past screening, into the same-study check, AI coding under a codebook, cross-validation of the coded rows, effect sizes computed only by code, and releases that can be rebuilt offline.
 
 ## Three layers
 
