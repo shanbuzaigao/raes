@@ -10,7 +10,7 @@ version: "0.1.0"
 date-released: "2026-09-17"
 license: MIT
 repository-code: "https://github.com/shanbuzaigao/raes"
-abstract: "A rule-governed workflow for meta-analyses, systematic reviews and other evidence syntheses that use large language models for screening and coding. Humans write the rules, AI executes them, independent AIs audit the execution, every number is computed by deterministic code, and the whole run can be reproduced offline."
+abstract: "A rule-governed workflow for meta-analyses, systematic reviews and other evidence syntheses that use large language models for screening and coding. Humans write the rules, AI executes them, independent AIs audit the execution, every number is computed by deterministic code or extracted directly from the literature, and the whole run can be reproduced offline."
 keywords:
   - evidence synthesis
   - meta-analysis

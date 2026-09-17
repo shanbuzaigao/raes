@@ -52,7 +52,7 @@ The first half follows the PRISMA 2020 flow (Page et al., 2021): identification,
 | S9 AI cross-validation of coding | AI auditors | Audit result for every row that feeds the analysis | |
 | S10 Master table and effect sizes | Code | One table with stable row identifiers and computed effects | |
 | S11 Analysis and statistical validation | Code | Results, robustness checks, independent numerical checks | |
-| S12 Release and reproduction | Code | Immutable releases, pointers, offline reproduction entry | |
+| S12 Release and reproduction | Code | Immutable releases, pointers, one-command offline rebuild | |
 
 Two things run through the whole figure. The goal and the eligibility rules are fixed first (S0), because every later stage refers to them. And every step that calls an AI is prepared in the same order: plan, codebook, prompts, operate. Section 5 describes that order.
 
@@ -89,17 +89,17 @@ What comes after screening is my own addition and came out of my project: the sa
 
 **4. Deterministic wherever possible.** Effect sizes, standard errors and confidence intervals are computed by code from coded inputs. The executor only selects the computation path. The same holds for table assembly, identifiers and every statistic in the analysis.
 
-**5. Independent blinded audit.** Auditors see the sources and the rules. They do not see the earlier decision, its reason, the sampling information or downstream results. Two primary auditors work independently, and a third is called only when the two disagree. Human adjudication is limited to defined cases and must cite page-level evidence.
+**5. Independent audit, with limits on what each auditor sees.** A screening auditor sees the paper and the rules. It does not see the earlier decision or the reason for it. A coding auditor must see the coded values, because those are what it checks. It does not see the executor's reasoning or any result computed later. In the full-text audit, two auditors work independently and a third is called only when they disagree. In the coding audit, one auditor checks every paper, and a second auditor is called only when a value is challenged. The second auditor does not see what the first one proposed. Human adjudication is limited to defined cases and must cite the page.
 
 **6. A technical failure is not a decision.** Refusals, malformed output, schema failures and timeouts are retried under an unchanged request. They never count as an exclusion, a pass or a vote.
 
 **7. Sampling and stopping rules are fixed in advance.** The sampling frame, strata, random seed and stopping conditions of each validation are written down before the first request is sent.
 
-**8. Everything that enters a formal run is frozen and hashed.** Rules, prompts, configuration, code and input files are recorded with hashes before the run. If any of them changes, the run cannot continue. The change gets a new version and the validation gets a fresh sample.
+**8. Everything that enters a formal run is frozen and hashed.** Rules, prompts, configuration, code and input files are recorded with hashes before the run. If one of them changes in a way that could change a decision, the run stops. The change gets a new version and a note on what it affects. The affected items are validated again. Results that are not affected can be kept, but only after checking that their inputs, identities and rules are exactly the same. They keep their original version and date.
 
 **9. Releases are immutable; pointers move.** A finished stage is saved as a dated release that is never edited. A small `CURRENT` file points to the active release. Superseded material is archived with a manifest, not deleted.
 
-**10. Offline reproducibility.** A single entry point rebuilds every result from the saved model responses with network access blocked. Collecting new responses is a separate, explicitly authorized action.
+**10. Offline reproducibility.** Every model response is saved. One command rebuilds all results from those saved responses, with the internet switched off. It does not search the databases again and it does not ask the models again. Collecting new responses is a separate step that needs explicit approval.
 
 **11. Cached attributes keep entities consistent across studies.** When the same entity appears in many studies, its coded attributes are looked up in a cache before anything is scored again. In my project the entities are AI models, and the attributes are measures such as model strength and openness.
 
@@ -341,15 +341,15 @@ The runner does not overwrite earlier output, saves the raw response, and report
 ### S12 Release and reproduction
 
 **Done by:** code.
-**In:** every completed stage. **Out:** immutable releases, pointers, and an offline reproduction entry.
+**In:** every completed stage. **Out:** immutable releases, pointers, and one command that rebuilds the results offline.
 
 **What I do.** Each completed stage is saved as a dated, immutable release with a manifest of hashes. A `CURRENT` file names the active release, and an activation record documents what changed in the working copies. The project status file records completed work as complete and does not attach inferred next steps.
 
-**Before moving on.** An offline entry point copies the formal inputs to a fresh location, blocks network access, and rebuilds the results from saved responses. Software environments and disposable caches live outside synchronized folders.
+**Before moving on.** One command copies the formal inputs to a fresh location, switches off network access, and rebuilds the results from the saved responses. Software environments and disposable caches live outside synchronized folders.
 
 ## 7. Rules that apply to every audit
 
-**Blinding.** An auditor's input is the source material plus the rules. It excludes the original decision and reason, the sampling rank, the batch, keyword flags and downstream results. The adjudicator of a coding challenge does not see the value the first auditor proposed.
+**Blinding.** Screening auditors get the source and the rules. They do not get the original decision or its reason, the sampling rank, the batch, keyword flags or any later result. Coding auditors get the source, the rules and the coded rows, but not the executor's reasoning or any computed effect. When a coded value is challenged, the second auditor sees the same material and the challenged field, but not the value the first auditor proposed.
 
 **Staged execution.** Auditors run in a fixed order with a checkpoint after each. The pauses exist to catch schema failures and provider errors before every reviewer has been paid for. They are not an opportunity to choose which records continue. No record may be added to or removed from the queue for the next reviewer.
 
@@ -366,7 +366,7 @@ The runner does not overwrite earlier output, saves the raw response, and report
 - The number of technical failures and how they were handled.
 - The number and scope of human adjudications.
 - Every rule change, with its timing relative to the results it could have affected.
-- The reproduction entry point and what it covers.
+- The command that rebuilds the results, and what it covers.
 - What each validation does not establish.
 
 ## 9. Adapting RAES to another field

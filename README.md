@@ -8,7 +8,7 @@
 
 RAES is the workflow I built for my own meta-analysis, where I used large language models to help screen and code a literature that was growing faster than I could read it. I wanted the AI to do the heavy lifting, but I did not want to ask readers to simply trust it. So the whole workflow follows one idea:
 
-> I write the rules. The AI executes them. Independent AIs audit the execution. Every number is computed by deterministic code, and the whole run can be reproduced offline.
+> I write the rules. The AI executes them. Independent AIs audit the execution. Every number is computed by deterministic code or extracted directly from the literature, and the whole run can be reproduced offline.
 
 It is meant for meta-analyses, systematic reviews and similar evidence syntheses. It is not another auto-screening tool. Tools that rank abstracts or extract fields automate one task. RAES is about how the whole synthesis is run, so that someone else can check it.
 
@@ -72,12 +72,12 @@ These are the rules I ended up following. Each one came from a problem I actuall
 2. **The AI executes rules; it does not set scope.** The model may not rewrite, relax or replace criteria. Missing evidence becomes `null` plus an unresolved item, never an invented value.
 3. **The unit of judgment is the condition, not the paper.** Eligibility and coding are decided per experimental condition, role and outcome.
 4. **Deterministic wherever possible.** Screening rules are code when feasible. Effect sizes, standard errors and intervals are computed by deterministic code; the model only selects the computation path.
-5. **Independent blinded audit.** Auditors come from different vendors and see only sources and rules, never earlier decisions. A third reviewer is called only on disagreement. Human adjudication is bounded and requires page-linked evidence.
+5. **Independent audit.** Auditors come from different vendors. A screening auditor never sees the earlier decision. A coding auditor sees the coded values it has to check, but not the reasoning behind them. A further auditor is called only on disagreement or challenge. Human adjudication is limited and requires page-linked evidence.
 6. **A technical failure is not a decision.** Refusals, malformed output and timeouts are retried under an unchanged request identity and never become an exclusion or a pass.
 7. **Sampling and stopping rules are fixed in advance.** Strata, seeds and clean-round stopping conditions are written before validation starts.
-8. **Everything that enters a formal run is frozen and hashed.** Any change to rules, prompts, configuration, code or inputs means a new version and a fresh sample.
+8. **Everything that enters a formal run is frozen and hashed.** A change that could affect decisions means a new version. Affected items are validated again, and unaffected results are kept only after an exact check.
 9. **Releases are immutable; pointers move.** Dated releases stay as they are, a `CURRENT` pointer names the active one, and history is never silently rewritten.
-10. **Offline reproducibility.** One entry point reproduces all results from saved responses without calling any API.
+10. **Offline reproducibility.** One command rebuilds all results from the saved responses, without calling any API.
 11. **Cached attributes keep entities consistent across studies.** The same entity receives the same coded attributes wherever it appears.
 12. **Say what each validation shows and what it does not.**
 
