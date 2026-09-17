@@ -48,13 +48,13 @@ flowchart TD
 
 研究目标和纳入标准最先确定，因为后面每一步都要引用它们。每个调用 AI 的环节都按同一个顺序准备：先写计划，再写 codebook，再写 prompt，最后才运行。
 
-完整的操作说明见 [PROTOCOL.md](PROTOCOL.md)，它按同一个格式把图里的每个阶段展开。目前是英文草稿，中文版稍后补上。
+完整的操作说明见 [PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md)（英文版是 [PROTOCOL.md](PROTOCOL.md)），它按同一个格式把图里的每个阶段展开。目前是草稿。
 
 ## 仓库里有什么
 
 | 位置 | 内容 |
 |---|---|
-| [PROTOCOL.md](PROTOCOL.md) | 操作手册，逐阶段展开 |
+| [PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md) | 操作手册，逐阶段展开 |
 | [templates/](templates/README.zh-CN.md) | 要填写的文件：计划 memo、纳入标准、codebook、prompt、验证 memo 与配置、项目目录 |
 | [skills/](skills/README.zh-CN.md) | `codebook-author`：通过提问帮你一步步写出 codebook 的 skill |
 | [examples/synthetic/](examples/synthetic/README.zh-CN.md) | 一个编造的小例子，离线把整个流程跑一遍 |
@@ -106,7 +106,6 @@ python examples/synthetic/reproduce.py
 
 ## 我计划加入的内容
 
-- Protocol 的中文版。
 - 第二个 skill，用来设计验证方案；等第一个在真实项目里试用过再做。
 - 调用各家模型的运行器，用于需要 AI 的环节。目前还没有包含。
 

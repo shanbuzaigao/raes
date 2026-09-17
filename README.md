@@ -52,7 +52,7 @@ The working manual is [PROTOCOL.md](PROTOCOL.md). It expands every stage of the 
 
 | Where | What it is |
 |---|---|
-| [PROTOCOL.md](PROTOCOL.md) | The working manual, stage by stage |
+| [PROTOCOL.md](PROTOCOL.md) ([中文](PROTOCOL.zh-CN.md)) | The working manual, stage by stage |
 | [templates/](templates/README.md) | Files to fill in: plan memo, eligibility criteria, codebook, prompts, validation memo and settings, project folders |
 | [skills/](skills/README.md) | `codebook-author`, a skill that asks you questions and helps you write a codebook |
 | [examples/synthetic/](examples/synthetic/README.md) | A small invented example that runs the whole pipeline offline |
@@ -104,7 +104,6 @@ These are the rules I ended up following. Each one came from a problem I actuall
 
 ## What I plan to add
 
-- A Chinese version of the protocol.
 - A second skill, for designing the validation, once the first one has been tried on a real project.
 - Runners that call the model providers for the AI steps. They are not included yet.
 

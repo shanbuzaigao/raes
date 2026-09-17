@@ -2,6 +2,8 @@
 
 Version 0.2, draft. 2026-09-17.
 
+[English](PROTOCOL.md) | [简体中文](PROTOCOL.zh-CN.md)
+
 This document describes how I run an AI-assisted evidence synthesis so that another researcher can check every step. The [README](README.md) gives the short version. This is the working manual. It is written from one completed project, a social-science meta-analysis, and I note where a choice was specific to that project.
 
 It is organized the way I would explain the workflow in person. Section 1 shows the whole pipeline in one figure. Sections 2 to 4 say who does what, what the workflow builds on, and which principles hold throughout. Section 5 gives the order I follow whenever a step calls an AI. Section 6 then expands every stage of the figure in the same format.
