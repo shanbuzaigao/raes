@@ -25,16 +25,18 @@ No third-party package is needed. On Windows, use the Python launcher you normal
 
 ## What to fill in, in this order
 
-| File | What it holds |
-|---|---|
-| [plan_memo.md](plan_memo.md) | The plan for one stage: question, unit of judgment, inputs and outputs, what the model may and may not see, pilot, what counts as done, approval |
-| [eligibility.json](eligibility.json) | The eligibility criteria, numbered, each with its clarifications. One file for the whole project |
-| [codebook.json](codebook.json) | The variables: type, whether null is allowed, who fills the field (executor or code), the rule, the permitted evidence, what to do when a value is missing, an example and a counterexample. Then the outcome map, the pairing, aggregation and direction rules, source precedence and worked cases |
-| [validation_memo.md](validation_memo.md) | The design of an audit: target, frame, unit, census or sample, strata and seed, stopping rule, what each auditor sees, routing, reporting |
-| [validation_codebook.json](validation_codebook.json) | The rules auditors follow. One file covers the screening audit, the coding audit and the adjudication, each as its own mode |
-| [validation_config.json](validation_config.json) | The operational settings of an audit: frame, models, sampling, routing, retries, budget. Live requests stay off until the file is complete and approved |
-| [prompts/](prompts/coding_system.md) | Five prompt templates: the coding system prompt, the coding paper prompt, the coding audit, the adjudication and the screening audit |
-| [project/](project/README.md) | The starting files of a new project folder |
+| File | Stage | What it holds |
+|---|---|---|
+| [plan_memo.md](plan_memo.md) | Any stage that calls an AI: S5, S8, S9, and S3 or S4 if a model screens | The plan for one stage: question, unit of judgment, inputs and outputs, what the model may and may not see, pilot, what counts as done, approval |
+| [eligibility.json](eligibility.json) | S0; read by every later stage | The eligibility criteria, numbered, each with its clarifications. One file for the whole project |
+| [codebook.json](codebook.json) | S8 coding | The variables: type, whether null is allowed, who fills the field (executor or code), the rule, the permitted evidence, what to do when a value is missing, an example and a counterexample. Then the outcome map, the pairing, aggregation and direction rules, source precedence and worked cases |
+| [validation_memo.md](validation_memo.md) | S5 and S9 | The design of an audit: target, frame, unit, census or sample, strata and seed, stopping rule, what each auditor sees, routing, reporting |
+| [validation_codebook.json](validation_codebook.json) | S5 and S9 | The rules auditors follow. One file covers the screening audit, the coding audit and the adjudication, each as its own mode |
+| [validation_config.json](validation_config.json) | S5 and S9 | The operational settings of an audit: frame, models, sampling, routing, retries, budget. Live requests stay off until the file is complete and approved |
+| [prompts/](prompts/coding_system.md) | S8: `coding_system`, `coding_paper`. S9: `coding_audit`, `coding_adjudicator`. S5: `screening_audit` | Five prompt templates |
+| [project/](project/README.md) | All | The starting files of a new project folder |
+
+There is no template yet for the screening rules themselves (S3 and S4). In my project those rules are a Python program written from the eligibility criteria.
 
 The variable skeleton uses arm-level effect inputs (mean, SD, N, events, total) as an illustration. Remove what does not apply and say why. Do not add outcomes because the template shows them. `columns` lists every variable in order; the executor list leaves out every field owned by code. `Row_UID`, `g`, `SE_g` and the confidence limits always belong to code.
 

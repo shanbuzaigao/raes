@@ -25,16 +25,18 @@ python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json --r
 
 ## 按什么顺序填
 
-| 文件 | 内容 |
-|---|---|
-| [plan_memo.md](plan_memo.md) | 一个阶段的计划：问题、判断单位、输入和输出、模型能看什么和不能看什么、试跑、完成标准、批准 |
-| [eligibility.json](eligibility.json) | 纳入标准，带编号，每条附澄清。整个项目只有这一个文件 |
-| [codebook.json](codebook.json) | 变量：类型、能否为空、由谁填（执行模型还是程序）、规则、允许的证据、缺失时怎么办、例子和反例。之后是结果指标对应表、配对规则、合并规则、方向规则、来源优先级和 worked cases |
-| [validation_memo.md](validation_memo.md) | 一次审计的设计：目标、抽样框、单位、全查还是抽样、分层和种子、停止规则、每位审计者能看什么、分歧怎么流转、怎样报告 |
-| [validation_codebook.json](validation_codebook.json) | 审计者遵守的规则。一个文件覆盖筛选审计、编码审计和裁决，各为一种模式 |
-| [validation_config.json](validation_config.json) | 一次审计的运行设置：抽样框、模型、抽样、流转、重试、预算。文件填完并批准之前，不发出真实请求 |
-| [prompts/](prompts/coding_system.md) | 五个 prompt 模板：编码的 system prompt、编码的 paper prompt、编码审计、裁决、筛选审计 |
-| [project/](project/README.md) | 新项目文件夹的起始文件 |
+| 文件 | 用在哪个阶段 | 内容 |
+|---|---|---|
+| [plan_memo.md](plan_memo.md) | 任何调用 AI 的阶段：S5、S8、S9；如果由模型做筛选，也包括 S3、S4 | 一个阶段的计划：问题、判断单位、输入和输出、模型能看什么和不能看什么、试跑、完成标准、批准 |
+| [eligibility.json](eligibility.json) | S0；之后每个阶段都读它 | 纳入标准，带编号，每条附澄清。整个项目只有这一个文件 |
+| [codebook.json](codebook.json) | S8 编码 | 变量：类型、能否为空、由谁填（执行模型还是程序）、规则、允许的证据、缺失时怎么办、例子和反例。之后是结果指标对应表、配对规则、合并规则、方向规则、来源优先级和 worked cases |
+| [validation_memo.md](validation_memo.md) | S5 和 S9 | 一次审计的设计：目标、抽样框、单位、全查还是抽样、分层和种子、停止规则、每位审计者能看什么、分歧怎么流转、怎样报告 |
+| [validation_codebook.json](validation_codebook.json) | S5 和 S9 | 审计者遵守的规则。一个文件覆盖筛选审计、编码审计和裁决，各为一种模式 |
+| [validation_config.json](validation_config.json) | S5 和 S9 | 一次审计的运行设置：抽样框、模型、抽样、流转、重试、预算。文件填完并批准之前，不发出真实请求 |
+| [prompts/](prompts/coding_system.md) | S8：`coding_system`、`coding_paper`。S9：`coding_audit`、`coding_adjudicator`。S5：`screening_audit` | 五个 prompt 模板 |
+| [project/](project/README.md) | 全部 | 新项目文件夹的起始文件 |
+
+筛选规则本身（S3、S4）目前还没有模板。在我的项目里，这些规则是根据纳入标准写成的一个 Python 程序。
 
 变量骨架以实验组层面的效应量输入（均值、SD、N、事件数、总数）为例。不适用的删掉，并写明原因。不要因为模板里有某个结果指标就增设它。`columns` 按顺序列出全部变量；执行模型的列表去掉所有由程序负责的字段。`Row_UID`、`g`、`SE_g` 和置信区间永远由程序填写。
 
