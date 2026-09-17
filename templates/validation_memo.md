@@ -12,11 +12,11 @@ implemented validation-designer Skill and does not choose a sample size for you.
 
 ## Information by reviewer
 Screening: source + criteria; hide earlier decision/reason and selection information.
-Coding AI2: source + original target rows + coding and audit rules; hide original
-rationale, earlier audit output, sampling information and downstream effects.
-Coding AI3: SAME audit codebook + original targets + disputed coordinate; hide AI2's
-proposed value, rationale and confidence. A coordinate-targeted audit is not wholly
-blind to selection of that coordinate; state this information boundary accurately.
+Coding auditor: source + original target rows + coding and audit rules; hide the
+executor's rationale, earlier audit output, sampling information and downstream effects.
+Coding adjudicator: the same audit codebook + original targets + the disputed field;
+hide the auditor's proposed value, rationale and confidence. The adjudicator knows
+which field was challenged; say so when describing the design.
 
 ## Routing and application
 {{WHEN_A_SECOND_OR_THIRD_REVIEWER_IS_CALLED}}

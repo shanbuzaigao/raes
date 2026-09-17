@@ -10,7 +10,7 @@
   },
   "rules": {
     "production_codebook": "{{PATH}}",
-    "audit_codebook": "{{PATH_USED_BY_BOTH_AI2_AND_AI3}}",
+    "audit_codebook": "{{PATH_USED_BY_AUDITOR_AND_ADJUDICATOR}}",
     "eligibility_sha256": "{{SHA256}}"
   },
   "reviewers": {
@@ -19,12 +19,12 @@
       "model_snapshot": "{{EXACT_MODEL_ID}}",
       "settings": {}
     },
-    "AI2": {
+    "auditor": {
       "provider": "{{DIFFERENT_PROVIDER_WHERE_POSSIBLE}}",
       "model_snapshot": "{{EXACT_MODEL_ID}}",
       "settings": {}
     },
-    "AI3": {
+    "adjudicator": {
       "provider": "{{PROVIDER}}",
       "model_snapshot": "{{EXACT_MODEL_ID}}",
       "settings": {}
@@ -39,12 +39,12 @@
   },
   "routing": {
     "screening": "{{TWO_PRIMARY_THEN_THIRD_IF_NEEDED_OR_STAGE_SPECIFIC_RULE}}",
-    "coding": "AI2 challenges -> blinded AI3 -> exact agreement or bounded human adjudication"
+    "coding": "auditor challenges -> blinded adjudicator -> exact agreement, otherwise bounded human adjudication"
   },
   "payload_policy": {
     "downstream_statistics_forbidden": true,
     "source_text_is_untrusted_data": true,
-    "AI3_hides_AI2_proposal": true
+    "adjudicator_never_sees_auditor_proposal": true
   },
   "retries": {
     "max_new_attempts_per_invocation": null,
@@ -63,5 +63,5 @@
     "reconciliation": "{{PATH}}",
     "hash_manifest": "{{PATH}}"
   },
-  "note": "This is a design skeleton, not a runnable multi-provider client. Fill and review before implementing live operation."
+  "note": "Design skeleton. Fill in and review before any live run; this file does not call any provider."
 }

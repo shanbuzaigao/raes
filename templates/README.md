@@ -1,93 +1,67 @@
-# Authoring templates
+# Templates
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-These are the **how-to-write** layer, not a ready-made scientific protocol. Start
-with the question and approved eligibility wording, not the sample column list.
-Every `{{...}}` is a decision to fill; the skeleton intentionally fails `--ready`.
-No template is an instruction to collect data, contact a provider or spend money.
+These files are the "how to write" layer of RAES. They give each document of the protocol a fixed shape: the plan memo, the eligibility criteria, the codebook, the validation design and the prompts. Every `{{...}}` marks a decision the researcher has to make. A skeleton with placeholders passes the draft check and fails the `--ready` check, on purpose.
 
-## Create a project
+## Start a project
 
-From the RAES repository root, choose a NEW location outside this repository:
+From the RAES folder, choose a new folder outside it:
 
 ```sh
 python tools/new_project.py ../my-evidence-project
 python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json
 ```
 
-The second command accepts a structurally valid draft and lists its placeholders.
-After filling the files, obtaining real owner approval, setting `status` to `ready`
-and recording the exact SHA-256 of `eligibility.json`, run:
+The first command creates the project folders, each with a short README, copies the templates in, and writes two column lists from the codebook: all columns, and the columns the executor fills. The second command checks the codebook and lists the placeholders that are still open.
+
+When the codebook is complete and approved, set `status` to `ready`, record the approval, put the SHA-256 of `eligibility.json` into the codebook, and run:
 
 ```sh
 python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json --ready
 ```
 
-On Windows, `python` may be replaced by your configured Python launcher. Use the
-same interpreter consistently. No third-party packages are required.
+No third-party package is needed. On Windows, use the Python launcher you normally use.
 
-## Files to fill, in order
+## What to fill in, in this order
 
-| File | What to write |
+| File | What it holds |
 |---|---|
-| [plan_memo.md](plan_memo.md) | Question, unit, inputs, outputs, information boundaries, pilot, completion and authorization |
-| [eligibility.json](eligibility.json) | One canonical, numbered set of criteria and clarifications |
-| [codebook.json](codebook.json) | Variables, types, ownership, nulls, operational rules, sources and counterexamples |
-| [validation_memo.md](validation_memo.md) | Target error, frame, design, stopping, routing, limits and corrections |
-| [validation_codebook.json](validation_codebook.json) | Shared AI2/AI3 rules, distinct task modes, coverage and evidence |
-| [validation_config.json](validation_config.json) | Draft frame, reviewer settings, sampling and retry/authorization choices |
-| [Prompt templates](prompts/coding_system.md) | Build coding and audit instructions from the canonical rules |
-| [Project directory](project/README.md) | Initial folder responsibilities and status file |
+| [plan_memo.md](plan_memo.md) | The plan for one stage: question, unit of judgment, inputs and outputs, what the model may and may not see, pilot, what counts as done, approval |
+| [eligibility.json](eligibility.json) | The eligibility criteria, numbered, each with its clarifications. One file for the whole project |
+| [codebook.json](codebook.json) | The variables: type, whether null is allowed, who fills the field (executor or code), the rule, the permitted evidence, what to do when a value is missing, an example and a counterexample. Then the outcome map, the pairing, aggregation and direction rules, source precedence and worked cases |
+| [validation_memo.md](validation_memo.md) | The design of an audit: target, frame, unit, census or sample, strata and seed, stopping rule, what each auditor sees, routing, reporting |
+| [validation_codebook.json](validation_codebook.json) | The rules auditors follow. One file covers the screening audit, the coding audit and the adjudication, each as its own mode |
+| [validation_config.json](validation_config.json) | The operational settings of an audit: frame, models, sampling, routing, retries, budget. Live requests stay off until the file is complete and approved |
+| [prompts/](prompts/coding_system.md) | Five prompt templates: the coding system prompt, the coding paper prompt, the coding audit, the adjudication and the screening audit |
+| [project/](project/README.md) | The starting files of a new project folder |
 
-The variable skeleton uses arm-level effect inputs as an illustration. Remove
-irrelevant fields explicitly for another kind of synthesis. Do not create research
-outcomes because a template contains them. The `columns` list matches all variable
-names in order; the executor subset excludes every variable owned by `code`.
-`Row_UID`, `g`, `SE_g`, `CI95_L` and `CI95_U`, when present, remain code-owned.
+The variable skeleton uses arm-level effect inputs (mean, SD, N, events, total) as an illustration. Remove what does not apply and say why. Do not add outcomes because the template shows them. `columns` lists every variable in order; the executor list leaves out every field owned by code. `Row_UID`, `g`, `SE_g` and the confidence limits always belong to code.
 
-`worked_cases` are written positive, missing and boundary examples. The checker
-requires them but does not judge their substantive correctness or execute their
-natural-language expectations. Review them with a researcher and a bounded pilot.
+`worked_cases` are three written examples: a positive case, a missing-data case and a boundary case. The checker requires them but does not judge their content. That is what the pilot is for.
 
-## Keep criteria identical
+## Keep the criteria identical everywhere
 
-The codebook references the eligibility file, rather than paraphrasing it. Compute
-its **file-byte** SHA-256 after editing it (including line endings). For example:
+The eligibility criteria live in one file. The codebook does not copy their text; it records the file's SHA-256, computed on the exact bytes, line endings included:
 
 ```sh
 python -c "import hashlib,pathlib; print(hashlib.sha256(pathlib.Path('../my-evidence-project/codebook/eligibility.json').read_bytes()).hexdigest())"
 ```
 
-Place the printed digest in `eligibility.sha256`. Keep the same approved text in
-screening, coding, preparation and auditing. A changed digest requires version and
-impact review, not just replacing the digest to make a check pass.
+Put the digest in `eligibility.sha256`. Screening, coding, data preparation and every audit then use the same text. When the criteria change, the digest changes. The right response is a new version with a note on what it affects, not a new digest alone.
 
-## Render a prompt locally
+## Render a prompt
 
-Prepare a context JSON containing only the template's additional fields, such as
-`PAPER_ID` and `SOURCES_JSON`; for a system prompt with no extra fields use `{}`.
-The renderer reads `CODEBOOK_JSON`, `ELIGIBILITY_JSON` and executor columns itself,
-so context cannot override them.
+The renderer reads the codebook, the eligibility file and the executor columns itself, so nobody can alter them by hand inside a prompt. A context file supplies only the fields a template asks for, such as `PAPER_ID` and `SOURCES_JSON`; for the system prompt it is `{}`.
 
 ```sh
 python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codebook.json --template templates/prompts/coding_system.md --context ../my-evidence-project/context.json --output ../my-evidence-project/coding_system_rendered.md
 ```
 
-Use `--draft` only for an explicitly unfinished preview. The command refuses an
-existing output file and makes no request. Render the appropriate paper or audit
-message separately. AI2 and AI3 share one `AUDIT_CODEBOOK_JSON`; AI3 must receive
-only the challenged coordinate, original target rows and sources, not AI2's proposal.
-The generated prompt is not proof that a future caller preserved that boundary.
+Use `--draft` to preview an unfinished codebook. The command refuses to overwrite an existing output and sends nothing anywhere. The auditor and the adjudicator share one audit codebook. The adjudicator receives the challenged field, the original target rows and the sources, never the value the auditor proposed.
 
-## What checks mean
+## What the checker does and does not do
 
-The checker recognizes `raes-codebook/1`: required sections; variable/column identity;
-valid examples/types/ranges; missing/derived ownership; criterion IDs; and the
-eligibility digest. It does **not** validate arbitrary JSON Schema, sample-size
-adequacy, causal identification, the truth of source evidence, or complete coverage
-of a literature. It is not an automatic approver.
+The checker knows the `raes-codebook/1` layout. It verifies the required sections, that variables and columns agree, that examples match their types and ranges, that missing-value and ownership rules are declared, that criterion IDs resolve, and that the eligibility digest matches. It does not judge whether the rules are scientifically right, whether the sample is large enough, or whether the evidence is true. That remains the researcher's job.
 
-The [filled synthetic codebook](../examples/synthetic/inputs/codebook.json) is a
-complete small example. Its approval entry is explicitly fictional; never copy that
-entry as a real approval.
+The [filled codebook of the synthetic example](../examples/synthetic/inputs/codebook.json) shows a complete small case. Its approval entry is fictional; never copy it as a real approval.

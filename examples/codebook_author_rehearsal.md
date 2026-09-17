@@ -30,9 +30,9 @@ The test corpus contains one vocabulary near miss and one missing-SD study.
 Questions: How are reported numbers supported? Which fields are computed? What is shown
 to the audit roles?
 Supplied answers: exact source lines for inputs; do not mistake SE for SD; code alone
-assigns IDs and computes effects. AI2 sees pre-g targets, AI3 sees original targets
-and the disputed coordinate, neither sees downstream effects, and AI3 does not see
-the proposed correction. They use the same audit codebook.
+assigns IDs and computes effects. The auditor sees the coded target rows; the
+adjudicator sees the original targets and the disputed field; neither sees downstream
+effects, and the adjudicator does not see the proposed correction. They use the same audit codebook.
 
 Result: complete source rules, code ownership and role boundaries. The fictional
 approval is labeled `synthetic_owner_fixture`, not attributed to a real person.

@@ -29,8 +29,8 @@ researcher without flagging it as a proposal.
 ## Round 6: what must the audit not see?
 Screening reviewers need no original decision or reason. Targeted coding auditors
 need frozen target coordinates/values, but not original reasoning or downstream
-estimates. AI3 uses the SAME audit codebook as AI2, with a different task mode; it
-must not see the proposed correction or rationale. Identify permitted human cases.
+estimates. The adjudicator uses the same audit codebook as the auditor, in a different
+task mode; it must not see the proposed correction or rationale. Identify permitted human cases.
 
 ## Round 7: how will we know the rules are usable?
 Choose a small pilot with positive, negative, missing and mixed/boundary cases.

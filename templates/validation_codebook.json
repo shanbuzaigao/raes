@@ -40,7 +40,7 @@
         "unresolved_items"
       ]
     },
-    "AI2": {
+    "coding_audit": {
       "inputs": [
         "original frozen pre-g target rows",
         "sources",
@@ -63,7 +63,7 @@
         "unresolved_items"
       ]
     },
-    "AI3": {
+    "coding_adjudication": {
       "inputs": [
         "same original targets and sources",
         "same production codebook",
@@ -71,9 +71,9 @@
         "disputed coordinate only"
       ],
       "hidden": [
-        "AI2 proposed value",
-        "AI2 rationale",
-        "AI2 confidence",
+        "the auditor's proposed value",
+        "the auditor's rationale",
+        "the auditor's confidence",
         "downstream effects"
       ],
       "response": [
