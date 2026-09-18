@@ -68,7 +68,7 @@ def main() -> int:
         writable_copy(source,target)
     except (OSError,ValueError) as exc:
         print(f"ERROR: {exc}",file=sys.stderr);return 1
-    print(f"{'Replaced' if replaced else 'Installed'}: {target}\nRestart or reload the host's skills. Host activation is not tested by this installer.")
+    print(f"{'Replaced' if replaced else 'Installed'}: {target}\nRestart the host so that it reads the skill.")
     return 0
 if __name__=="__main__":
     raise SystemExit(main())

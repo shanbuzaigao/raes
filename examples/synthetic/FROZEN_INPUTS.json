@@ -98,13 +98,13 @@
     },
     {
       "path": "examples/synthetic/pipeline.py",
-      "sha256": "d0b4a656c5d4fc9c772f4047ddeb10af169e2fa929eeea1a169ce94ceff519c9",
-      "size": 23234
+      "sha256": "db7fe969dc5f94347cf5340c0aaf9322a2fd4c283cbc1f136b39915ff4d21196",
+      "size": 23178
     },
     {
       "path": "examples/synthetic/reproduce.py",
-      "sha256": "e9b2eae6645a232a843e7f1354e736dff5f982d9c9c0062fe9a41d545d65f1aa",
-      "size": 3898
+      "sha256": "1a99ebf97e6b4e8d74031536520e3a6083fd1654945b0c624f3d1b63dd5328ba",
+      "size": 3842
     },
     {
       "path": "raes_core/__init__.py",
@@ -113,23 +113,23 @@
     },
     {
       "path": "raes_core/freeze.py",
-      "sha256": "f1e80bf3634d311de10cb1c8200717257584e1fcf5ff6099f116051a97457f51",
-      "size": 4383
+      "sha256": "e926494993a43eef04a9f08d5247e2fcec0471448fac0c22ae63e65aafaeeb4f",
+      "size": 4382
     },
     {
       "path": "raes_core/io.py",
-      "sha256": "fe751379400702a95e839bde04132dd32e272d6a52fadd23ffe72c3495e9a951",
-      "size": 1835
+      "sha256": "75719ad02425414a9812bba6f65bcfdda308776f0d848e5b5ba4deb9a6d15126",
+      "size": 1829
     },
     {
       "path": "raes_core/registry.py",
-      "sha256": "b51b47ed3791fcd16986697b2b5c16fdffd87da1b296cf67cef3c79857ba17c7",
-      "size": 5142
+      "sha256": "8d827c889625e830b2ab8ee72161d0050d0818c75ea91e01f3c33a4126ee6e09",
+      "size": 5122
     },
     {
       "path": "skills/raes/scripts/check_codebook.py",
-      "sha256": "553b1294f7e87334b06e21d9aafdbc1725ddff350dff7be2eee6ef4581e3142d",
-      "size": 12663
+      "sha256": "a55c28a6cb51b7638982d45f15636fee94f32d35c328303fab2786c6a78785ef",
+      "size": 12629
     }
   ],
   "schema_version": 1,

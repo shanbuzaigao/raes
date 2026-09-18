@@ -43,7 +43,7 @@ def reproduce(output: Path | None = None) -> Path:
     if output is not None and output.resolve().is_relative_to(ROOT):
         raise ValueError("Choose an output directory outside the source repository")
     verify(ROOT,load_json(demo/"FROZEN_INPUTS.json"))
-    # A Python-level tripwire, not an OS sandbox for untrusted code.
+    # Block network access while replaying.
     old_socket,old_connect=socket.socket,socket.create_connection
     try:
         socket.socket=_blocked;socket.create_connection=_blocked
@@ -77,7 +77,7 @@ def main() -> int:
     except (OSError,ValueError,RuntimeError,TypeError,KeyError) as exc:
         print(f"ERROR: {exc}",file=sys.stderr);return 1
     print("PASS: frozen inputs verified, all saved judgments replayed, expected outputs matched.")
-    print("Synthetic only; zero live API calls. This does not estimate AI audit accuracy.")
+    print("All material is synthetic; no model was called.")
     print(f"Results: {out}")
     return 0
 

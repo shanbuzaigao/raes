@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Local release checks: explicit public inventory, links, JSON, source syntax and tests.
+"""Local release checks: public inventory, links, JSON, source syntax, skill assets and tests.
 
-Secret-pattern checks are limited heuristics, not a guarantee that files are safe.
+The secret-pattern check looks for a few known key formats only.
 """
 from __future__ import annotations
 import argparse

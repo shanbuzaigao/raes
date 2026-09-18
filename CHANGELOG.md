@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Plain wording in the synthetic example's READMEs and numerical notes, the rehearsal, the plan memo and the code docstrings: the facts stay, the disclaimers go. The example's frozen manifest was regenerated for the changed docstrings.
 - Synthetic example: the audit roles are now called auditor, adjudicator, auditor_1, auditor_2 and third, as in the templates. The request identifiers, the expected results and the frozen manifest were regenerated; the replayed results are unchanged apart from the identifiers.
 - Protocol S3 and the screening rule sheet say how the deduplicated export becomes the three-column records table that the template program reads; my own program parses the EndNote export directly.
 - Screening program: `--not-retrieved` names the kept records whose full text could not be obtained; the full-text phase skips them and lists them in `summary.json`, so that they are reported as not retrieved rather than excluded.

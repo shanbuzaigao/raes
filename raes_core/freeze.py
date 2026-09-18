@@ -1,4 +1,4 @@
-"""Byte-level SHA-256 inventories; hashes are change detectors, not authentication."""
+"""SHA-256 inventories of files: create a manifest, verify it, detect added files."""
 from __future__ import annotations
 import hashlib
 from pathlib import Path, PurePosixPath

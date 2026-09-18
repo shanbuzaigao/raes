@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Check the RAES authoring contract. Standard library only; no semantic certification.
+"""Check the structure of a RAES codebook. Standard library only.
 
-Draft mode reports placeholders as warnings; --ready makes them blocking. Schema,
-reference and type errors block both modes. Exit 0 means these checks passed, not
-that the research design is valid or the codebook is approved by this program.
+Draft mode reports placeholders as warnings; --ready makes them errors. Structural,
+reference and type errors are errors in both modes. Exit 0 means that the structure
+checks passed; the checker does not judge the research design.
 """
 from __future__ import annotations
 import argparse

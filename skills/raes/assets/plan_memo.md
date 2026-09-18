@@ -46,7 +46,7 @@ Offline preflight and schema checks: {{PREFLIGHT}}
 Finite attempts per invocation, global attempt IDs and resume: {{RETRY_POLICY}}
 Refusal/timeout/invalid JSON != EXCLUDE/PASS/vote.
 Budget, allowed provider and explicit live authorization: {{BUDGET_AND_APPROVAL}}
-The starter supplies no live API runner; never treat this memo as authorization.
+A plan is not an authorization to run; that is recorded in section 6 and signed in section 7.
 
 ## 7. Version and completion
 Freeze input, prompt, codebook, model config and code versions for THIS stage.

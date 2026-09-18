@@ -1,7 +1,7 @@
-"""Stable IDs with explicit registration and retirement; ordinary lookup is read-only.
+"""Stable row identifiers: lookup is read-only; registration and retirement are explicit.
 
-Adapted conceptually from table_build_codes/row_registry.py. Domain-specific keys,
-CSV aliases and AI/human labels have been removed. Keys use exact text values.
+Adapted from the registry of my meta-analysis, without its field-specific keys and
+labels. Keys are the exact text of the identity fields.
 """
 from __future__ import annotations
 from copy import deepcopy

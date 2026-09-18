@@ -1,9 +1,8 @@
 # Rehearsal of the codebook stage: a small feedback review
 
-This is a **scripted local rehearsal**, not a fabricated transcript from a live
-model. It documents the questions and design choices used to fill the
-[synthetic codebook](synthetic/inputs/codebook.json), and what the checker exercises.
-No paid call or host conversation was performed to generate this record.
+This is a scripted rehearsal, written by hand: the questions and the design choices
+that led to the [synthetic codebook](synthetic/inputs/codebook.json), and what the
+checker tests. No model was called.
 
 ## Round 1: question and units
 

@@ -1,4 +1,4 @@
-"""Strict JSON and explicit, non-overwriting writes; no API or network clients."""
+"""Strict JSON reading and writing; files are created, never overwritten."""
 from __future__ import annotations
 import json
 import math

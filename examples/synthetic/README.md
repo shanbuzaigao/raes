@@ -2,98 +2,62 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-**Everything here is invented.** Seven short fictional reports, eight search
-records, saved requests, simulated AI answers and a simulated human adjudication
-illustrate the protocol. There are no real authors, participants, DOIs, study data,
-API responses, API keys or model-accuracy measurements. An auditor's or adjudicator's
-answer is a hand-authored fixture assigned that role, not a response from a live model.
+**Everything here is invented.** Seven short fictional reports, eight search records, the saved requests, the AI answers and one human adjudication were all written by hand for this example. There are no real papers, participants, authors, DOIs, API responses or keys. An auditor's or adjudicator's answer is a fixture written for that role, not the output of any model.
 
 ## One command
 
-From the repository root, with Python 3.10+:
+From the repository root, with Python 3.10 or later:
 
 ```sh
 python examples/synthetic/reproduce.py
 ```
 
-The command first verifies `FROZEN_INPUTS.json`, then rebuilds the decisions and
-calculations from saved responses. It compares categorical/identity data exactly
-and floats at absolute/relative tolerance `1e-12` to `expected/results.json`, writes
-results to a NEW temporary directory outside the repository, and verifies their
-output manifest. `runtime.json` records the interpreter and OS separately.
+The command verifies `FROZEN_INPUTS.json`, switches off network access, rebuilds every decision and calculation from the saved answers, and compares the result with `expected/results.json`: text, identifiers, categories and integers must match exactly, floating-point numbers within `1e-12`. It then writes the results to a new temporary folder outside the repository, with a manifest of their hashes and a `runtime.json` that records the Python version and the operating system.
 
-Choose a NEW destination explicitly with `--output /path/to/new-directory`.
-An existing directory is never overwritten. No dependencies need installing and
-there are no network clients. The runner additionally blocks Python socket creation
-while replaying; that is a tripwire, not an OS security sandbox for untrusted code.
+`--output <new folder>` chooses the destination; an existing folder is never overwritten. Nothing needs installing.
 
 ## What to look for
 
-| Event | Why it is present |
+| Event | What it shows |
 |---|---|
-| REC003 duplicates REC002 | Search records are not independent studies |
-| SYN001 has preprint/journal reports | The same underlying adults contribute only once |
-| SYN005 is a narrative review; SYN004 uses children | TA and FT exclusions remain distinct |
-| SYN006 uses “step cards” | A deliberately narrow keyword rule creates a false exclusion; two reviewers disagree, a third supports inclusion, and bounded adjudication rescues it |
-| SYN001 reports SD 10.0 and SE 1.58 | The simulated coder mistakes SE for SD; the auditor and the blinded adjudicator independently agree on 10.0 |
-| SYN002 has one malformed answer before a valid retry | A failed attempt is not an exclusion, a pass, or a new observation |
-| SYN003 lacks SDs | The study and both arm rows remain coded; the comparison is explicitly uncomputable |
+| REC003 duplicates REC002 | A search record is not a study |
+| SYN001 has a preprint and a journal version | The same adults contribute once |
+| SYN005 is a narrative review; SYN004 studies children | One exclusion at title and abstract, one at full text |
+| SYN006 uses "step cards" | A narrow keyword rule excludes it wrongly; two auditors disagree, a third supports inclusion, and a human adjudication with a cited line brings it back |
+| SYN001 reports SD 10.0 and SE 1.58 | The simulated coder writes the SE as the SD; the auditor and the blinded adjudicator independently arrive at 10.0 |
+| SYN002 has one malformed answer before a valid retry | A failed attempt is not an exclusion, a pass or a new observation |
+| SYN003 has no SDs | The study and both arm rows stay coded; the comparison is recorded as not computable |
 
-Expected accounting: 8 search records -> 7 after deduplication -> 6 full texts ->
-5 included reports -> 4 underlying studies -> 8 coded arm rows. Three computable
-comparisons supply 6 pre-g audit rows and 3 effect estimates; one comparison remains
-uncomputed. Fourteen logical requests have 15 saved attempts. There is one rescued
-screening exclusion and one confirmed coding correction.
+The counts: 8 search records, 7 after deduplication, 6 full texts, 5 included reports, 4 studies, 8 coded arm rows. Three comparisons can be computed; they give 6 audited rows and 3 effect sizes; one comparison stays uncomputed. Fourteen requests have 15 saved attempts. One screening exclusion is brought back and one coding error is confirmed and corrected.
 
-Approximate effects are 0.495177 (SYN001), 0.443659 (SYN002) and 0.393717 (SYN006).
-The second is log-odds-derived; the other two are pooled-SD standardized differences.
-**They are not pooled.** The example is about execution and provenance, not an
-inferential claim about a synthetic population. See [formula details](NUMERICAL_METHODS.md).
+The effects are 0.495177 (SYN001), 0.443659 (SYN002) and 0.393717 (SYN006); the second comes from a log odds ratio, the other two from pooled standard deviations. They are not pooled: the example shows the records, not a result. [NUMERICAL_METHODS.md](NUMERICAL_METHODS.md) gives the formulas.
 
-## Stage coverage
+## What each stage does here
 
-| Stage | Example implementation and limit |
+| Stage | In this example |
 |---|---|
-| S0 | Filled toy eligibility and codebook; fictional approval is labeled as such |
-| S1 | Replays a fabricated search snapshot, not a live database search |
-| S2 | Exact source-key duplicate removal, not EndNote automation |
-| S3 | Title rule; the saved TA review sees only the title/abstract |
-| S4 | Explicit fictional headers plus a narrow keyword rule; not an arbitrary-PDF parser |
-| S5 | Census of this tiny set of exclusions; fixed reviewer routing, not the research project's sampled stopping design |
-| S6 | Printed synthetic Study-ID and report version; not a general similarity matcher |
-| S7 | Not needed: all available statistics are in the invented texts |
-| S8 | One paper per request; type/column checks plus exact line/quote provenance |
-| S9 | Frozen computable pre-g census; original targets, independent challenge and an adjudicator who does not see the proposal; missing-statistic rows are outside this specific audit |
-| S10 | Read-only stable ID lookup, separate correction log and two numerical paths |
-| S11 | Accounting, numerical and fixture consistency checks; no regression, pooling, bias diagnostic or power study |
-| S12 | Frozen inputs, saved outputs, output hashes and fresh-directory reconstruction |
+| S0 | A filled small eligibility file and codebook; the approval entry is fictional and says so |
+| S1 | A fabricated search snapshot; no database is searched |
+| S2 | Duplicates removed by an exact key; no reference manager |
+| S3 | One title rule; the audit of this phase sees only the title and abstract |
+| S4 | The fictional reports carry explicit header fields, which a narrow keyword rule reads; this is not a PDF parser |
+| S5 | Every exclusion is audited, because the set is tiny; a real project samples and has a stopping rule |
+| S6 | The reports print their Study-ID; no similarity matching |
+| S7 | Not needed: the statistics are in the text |
+| S8 | One paper per request; column and type checks; every number needs a line and a quotation |
+| S9 | The computable rows are audited; the adjudicator sees the original rows and the disputed field, not the proposal; rows with missing statistics are outside this audit |
+| S10 | Row identifiers from a read-only registry; corrections in a separate log; two computation paths |
+| S11 | Counts and arithmetic checks only; no pooling, meta-regression, bias diagnostics or power analysis |
+| S12 | Frozen inputs, saved outputs, output hashes, rebuild in a fresh folder |
 
-The full protocol is a research workflow; the teaching runner implements only this
-bounded specialization. It must not be used as an automatic screen for real papers.
+The runner is written for these seven fictional reports. It is not a screening tool for real papers; a real project uses the screening program in `templates/` and its own runner.
 
-## Audit and reproducibility artifacts
+## Where the process is recorded
 
-`inputs/requests.jsonl` preserves exact structured request payloads and their SHA-256
-identities. `inputs/responses.jsonl` retains the raw simulated text of all attempts.
-The same coding-audit codebook is included in the auditor's and the adjudicator's requests.
-The adjudicator sees the original target rows and the disputed coordinate, not the
-proposed correction or rationale.
-Full-text screening inputs do not include the earlier screen result or reason.
+`inputs/requests.jsonl` holds every request with its hash; `inputs/responses.jsonl` holds the raw text of every attempt, failures included. The auditor and the adjudicator receive the same audit codebook; the adjudicator receives the original target rows and the disputed field, not the proposed correction or its rationale. The full-text audit requests do not contain the screen's decision or reason.
 
-Outputs include `coded_original.json`, `coded_reconciled.json`, `corrections.json`,
-`computability.json`, `unresolved_items.json`, `study_map.json`, two audit logs,
-`attempt_log.json`, `flow_counts.json` and effect JSON/CSV. Original coding evidence
-remains in the saved answers; correction evidence is in the separate correction log.
-Resolving a quotation at a line confirms the locator, not the semantic truth of the
-coded value—precisely why the SE/SD error can survive that check and need an audit.
+The outputs are the original coded rows, the reconciled rows, the corrections, the computability record, the unresolved items, the report-to-study map, the two audit logs, the attempt log, the flow counts, and the effect sizes as JSON and CSV. Matching a quotation to its line confirms where a value came from, not that it was read correctly; that is why the SE/SD error passes the evidence check and needs the audit.
 
-The freeze covers source text, rules, request/answer fixtures, expected outputs and
-computational code. Closed input inventories also detect added files. A hash cannot
-prove that the original content was correct, private or collected before inspection;
-any deliberate replacement requires a new version and documented provenance.
+The freeze covers the source texts, the rules, the requests and answers, the expected outputs and the computation code, and it rejects added files in `inputs/` and `expected/`. Changing a frozen file means a new version and a new manifest.
 
-## What counts as testing this example?
-
-A successful replay tests software routing, checks and arithmetic with known inputs.
-It does not establish screening recall, auditor independence, model reliability, or
-usefulness in another domain. Those require real source-specific validation.
+A successful replay shows that the program does what it should with known inputs. It says nothing about how accurate real models are.
