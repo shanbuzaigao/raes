@@ -50,7 +50,8 @@ class ScreeningSkeletonTests(unittest.TestCase):
             self.assertEqual(decisions["R1"]["decision"], "keep")
             self.assertEqual(decisions["R2"]["decision"], "exclude")
             self.assertIn("C2", decisions["R2"]["failed_criteria"])
-            self.assertEqual(decisions["R3"]["decision"], "removed_before_screening")
+            # Document type is handled in S2, not here: a review that names a game and an LLM is kept for full text.
+            self.assertEqual(decisions["R3"]["decision"], "keep")
             evidence = json.loads((out / "evidence.json").read_text(encoding="utf-8"))
             kept = next(e for e in evidence if e["record_id"] == "R1")
             self.assertTrue(kept["criteria"]["C1"]["supported"])

@@ -7,8 +7,10 @@ eligibility file. Then run:
     python screen_rules_template.py ta records.csv --output out/ta_v0.1
     python screen_rules_template.py ft records.csv --texts fulltext/ --output out/ft_v0.1
 
-records.csv needs the columns record_id, title and abstract. For the full-text
-phase, fulltext/<record_id>.txt holds the text extracted from each PDF.
+records.csv needs the columns record_id, title and abstract. It is the file
+exported from the reference manager after deduplication (S2); records removed
+there by document type never reach this program. For the full-text phase,
+fulltext/<record_id>.txt holds the text extracted from each PDF.
 
 The program never calls a model. Every record receives a decision and a reason,
 and every criterion receives its own evidence, which the audit stage (S5) uses to
@@ -58,11 +60,6 @@ CRITERIA = {
         "check_at": ["ft"],
     },
 }
-
-# Optional pre-filter on the title only. Leave the list empty to disable it.
-# Report these removals under "records removed before screening" (PRISMA 2020).
-EXCLUDE_IF_TITLE_CONTAINS = ["systematic review", "scoping review", "literature review",
-                             "meta-analysis", "study protocol"]
 
 SNIPPET_CHARS = 120
 MAX_SNIPPETS = 3
@@ -123,15 +120,6 @@ def screen_text(text: str, phase: str) -> dict:
     return {"decision": decision, "reason": reason, "failed": failed, "criteria": results}
 
 
-def prefilter_title(title: str) -> str | None:
-    """Return the matching phrase when the title alone removes the record."""
-    lowered = normalize(title)
-    for phrase in EXCLUDE_IF_TITLE_CONTAINS:
-        if phrase.lower() in lowered:
-            return phrase
-    return None
-
-
 def read_records(path: Path) -> list[dict]:
     with path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
@@ -150,12 +138,7 @@ def screen_records(rows: list[dict], phase: str, texts: Path | None) -> list[dic
     for row in rows:
         entry = {"record_id": row["record_id"], "phase": phase, "rules_version": RULES_VERSION}
         if phase == "ta":
-            phrase = prefilter_title(row["title"])
-            if phrase:
-                entry.update({"decision": "removed_before_screening", "reason": f"title contains '{phrase}'",
-                              "failed": [], "criteria": {}})
-            else:
-                entry.update(screen_text(row["title"] + " " + row["abstract"], "ta"))
+            entry.update(screen_text(row["title"] + " " + row["abstract"], "ta"))
         else:
             text_path = texts / f"{row['record_id']}.txt"
             if not text_path.is_file():

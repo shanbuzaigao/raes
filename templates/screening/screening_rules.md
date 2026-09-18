@@ -8,7 +8,7 @@ This document states the screening rules in words. The program `screen_rules_tem
 
 - Title and abstract phase (S3): {{RECORD_FILE_AND_FORMAT}}, exported from the reference manager after deduplication. Fields used: {{FIELDS}}.
 - Full-text phase (S4): text extracted from each PDF with {{EXTRACTION_TOOL_AND_VERSION}}, one file per record. Records without a retrievable full text are counted separately as "not retrieved".
-- Pre-filter before screening, if any: {{TITLE_PHRASES_OR_NONE}}. Every removal is logged and reported under "records removed before screening".
+- Removals by document type, if any, happen in the reference manager (S2), before this program runs: {{TITLE_PHRASES_OR_NONE}}. They are logged there and reported under "records removed before screening". This program does not repeat them.
 
 ## 2. One rule per criterion
 
