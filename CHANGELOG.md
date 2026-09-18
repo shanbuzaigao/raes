@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Folded the release notes into CONTRIBUTING.md and removed the `docs/` folder.
 - Moved the effect-size code and its formula notes from `raes_core/` into `examples/synthetic/`: the formulas are one project's conventions, not part of the general tools. The example's frozen manifest was regenerated.
 - Replaced the `codebook-author` skill with `raes`, one skill that covers every stage of the workflow; its assets mirror `templates/`. The synthetic example's frozen manifest was regenerated for the checker's new path.
 - Added a screening rules template: a written rule sheet and a runnable rule-based screener for the title-and-abstract and full-text phases.
