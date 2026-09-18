@@ -9,8 +9,10 @@ eligibility file. Then run:
 
 records.csv needs the columns record_id, title and abstract. It is the file
 exported from the reference manager after deduplication (S2); records removed
-there by document type never reach this program. For the full-text phase,
-fulltext/<record_id>.txt holds the text extracted from each PDF.
+there by document type never reach this program. The title-and-abstract phase
+reads nothing else. For the full-text phase, fulltext/<record_id>.txt holds the
+text extracted from each PDF; use one extraction tool for the whole project and
+record its version (I use PyMuPDF), because tools differ in the text they produce.
 
 The program never calls a model. Every record receives a decision and a reason,
 and every criterion receives its own evidence, which the audit stage (S5) uses to
