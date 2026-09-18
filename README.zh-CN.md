@@ -69,6 +69,12 @@ python examples/synthetic/reproduce.py
 
 例子里的一切都是编造的，不调用任何 API，也不需要密钥。它演示了一条重复记录、一篇被误筛后由审计救回的论文、一处缺失的 SD、一次模型回答失败后的重试，以及一处被审计发现的编码错误。运行全部检查用 `python tools/check_repository.py`。
 
+把 skill 装进 Claude Code：在仓库文件夹下运行下面这条命令，然后重启 Claude Code，输入 `/raes`：
+
+```sh
+python tools/install_skill.py --destination ~/.claude/skills
+```
+
 关于名字：PyPI 上有一个叫 `raes` 的 Python 包，那是另一个项目，与本仓库无关。
 
 ## 我为什么觉得需要它

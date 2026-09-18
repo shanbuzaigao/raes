@@ -67,6 +67,12 @@ python examples/synthetic/reproduce.py
 
 Everything in the example is invented. It makes no API calls and needs no key. It shows a duplicate record, a paper that was wrongly screened out and then rescued by the audit, a missing SD, a failed model answer followed by a retry, and a coding error caught by the audit. To run all checks, use `python tools/check_repository.py`.
 
+To install the skill into Claude Code, run this from the repository folder, then restart Claude Code and type `/raes`:
+
+```sh
+python tools/install_skill.py --destination ~/.claude/skills
+```
+
 A note on the name: a Python package called `raes` exists on PyPI. It is a different project and has nothing to do with this repository.
 
 ## Why I think this is needed
