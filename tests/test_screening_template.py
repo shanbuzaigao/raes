@@ -18,8 +18,8 @@ RECORDS = [
      "abstract": "We let GPT-4 and Llama play the prisoner's dilemma for 100 rounds and record cooperation rates."},
     {"record_id": "R2", "title": "Trust game behaviour across cultures",
      "abstract": "Human participants played the trust game in three countries."},
-    {"record_id": "R3", "title": "Language-model agents in economic games: a systematic review",
-     "abstract": "We review studies in which LLM agents play the ultimatum game."},
+    {"record_id": "R3", "title": "Cooperation with ChatGPT teammates in an online video game",
+     "abstract": "Players cooperated with a ChatGPT teammate in a multiplayer video game."},
 ]
 
 
@@ -50,8 +50,8 @@ class ScreeningSkeletonTests(unittest.TestCase):
             self.assertEqual(decisions["R1"]["decision"], "keep")
             self.assertEqual(decisions["R2"]["decision"], "exclude")
             self.assertIn("C2", decisions["R2"]["failed_criteria"])
-            # Document type is handled in S2, not here: a review that names a game and an LLM is kept for full text.
-            self.assertEqual(decisions["R3"]["decision"], "keep")
+            self.assertEqual(decisions["R3"]["decision"], "exclude")
+            self.assertIn("C1", decisions["R3"]["failed_criteria"], "blocking term 'video game'")
             evidence = json.loads((out / "evidence.json").read_text(encoding="utf-8"))
             kept = next(e for e in evidence if e["record_id"] == "R1")
             self.assertTrue(kept["criteria"]["C1"]["supported"])
@@ -61,26 +61,27 @@ class ScreeningSkeletonTests(unittest.TestCase):
             self.assertEqual(summary["records"], 3)
             self.assertEqual(len(summary["input_sha256"]), 64)
 
-    def test_full_text_phase_and_missing_text(self):
+    def test_full_text_phase_needs_kept_list_and_texts(self):
         module = load_module()
         with tempfile.TemporaryDirectory() as tmp:
             records = write_records(Path(tmp))
             texts = Path(tmp) / "fulltext"
             texts.mkdir()
-            (texts / "R1.txt").write_text("GPT-4 played the prisoner's dilemma. The cooperation rate was 62 percent.", encoding="utf-8")
-            (texts / "R2.txt").write_text("The trust game was played by an LLM. Trust was measured by the amount sent.", encoding="utf-8")
             ta_out = Path(tmp) / "ta"
             self.assertEqual(module.main(["ta", str(records), "--output", str(ta_out)]), 0)
             out = Path(tmp) / "ft"
             # Without the ta decisions the full-text phase refuses to run.
             self.assertEqual(module.main(["ft", str(records), "--texts", str(texts), "--output", str(out)]), 1)
+            # Every kept record needs its full text before the phase runs.
+            self.assertEqual(module.main(["ft", str(records), "--after-ta", str(ta_out / "decisions.csv"),
+                                          "--texts", str(texts), "--output", str(out)]), 1)
+            (texts / "R1.txt").write_text("GPT-4 played the prisoner's dilemma. The cooperation rate was 62 percent.", encoding="utf-8")
             self.assertEqual(module.main(["ft", str(records), "--after-ta", str(ta_out / "decisions.csv"),
                                           "--texts", str(texts), "--output", str(out)]), 0)
             decisions = {row["record_id"]: row for row in csv.DictReader((out / "decisions.csv").open(encoding="utf-8"))}
-            # R2 was excluded at the title-and-abstract phase, so it is not screened here at all.
-            self.assertEqual(set(decisions), {"R1", "R3"})
+            # Only the record kept at the title-and-abstract phase is screened here.
+            self.assertEqual(set(decisions), {"R1"})
             self.assertEqual(decisions["R1"]["decision"], "keep")
-            self.assertEqual(decisions["R3"]["decision"], "not_retrieved")
             evidence = json.loads((out / "evidence.json").read_text(encoding="utf-8"))
             r1 = next(e for e in evidence if e["record_id"] == "R1")
             self.assertEqual(set(r1["criteria"]), {"C1", "C2", "C3"})

@@ -148,20 +148,22 @@ def kept_at_ta(decisions_path: Path) -> set[str]:
     return {row["record_id"] for row in rows if row["decision"] == "keep"}
 
 
+def require_texts(rows: list[dict], texts: Path) -> None:
+    """Every kept record needs its extracted text before the full-text phase runs."""
+    missing = [row["record_id"] for row in rows if not (texts / f"{row['record_id']}.txt").is_file()]
+    if missing:
+        raise ValueError("retrieve the full text of every kept record first; missing: " + ", ".join(missing))
+
+
 def screen_records(rows: list[dict], phase: str, texts: Path | None) -> list[dict]:
-    """Screen every record given. In the full-text phase, a missing text is recorded, not excluded."""
+    """Screen every record given."""
     output = []
     for row in rows:
         entry = {"record_id": row["record_id"], "phase": phase, "rules_version": RULES_VERSION}
         if phase == "ta":
             entry.update(screen_text(row["title"] + " " + row["abstract"], "ta"))
         else:
-            text_path = texts / f"{row['record_id']}.txt"
-            if not text_path.is_file():
-                entry.update({"decision": "not_retrieved", "reason": "full text not available",
-                              "failed": [], "criteria": {}})
-            else:
-                entry.update(screen_text(text_path.read_text(encoding="utf-8"), "ft"))
+            entry.update(screen_text((texts / f"{row['record_id']}.txt").read_text(encoding="utf-8"), "ft"))
         output.append(entry)
     return output
 
@@ -207,6 +209,7 @@ def main(argv: list[str] | None = None) -> int:
             rows = [row for row in rows if row["record_id"] in kept]
             if len(rows) != len(kept):
                 raise ValueError("some records kept at the ta phase are missing from the records file")
+            require_texts(rows, args.texts)
         results = screen_records(rows, args.phase, args.texts)
         write_outputs(results, args.output, args.records)
     except (OSError, ValueError) as exc:
