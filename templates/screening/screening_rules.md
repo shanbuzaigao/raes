@@ -7,21 +7,23 @@ This document states the screening rules in words. The program `screen_rules_tem
 ## 1. Inputs
 
 - Title and abstract phase (S3): {{RECORD_FILE_AND_FORMAT}}, exported from the reference manager after deduplication. Fields used: {{FIELDS}}.
-- Full-text phase (S4): only the records kept at S3, read from the decisions file of that run. Retrieve every kept full text first; the program stops if a text file is missing. The input text is extracted from each PDF, one file per record. Use one extraction tool for the whole project and record its version, because different tools produce different text from the same PDF; I use PyMuPDF. Tool and version: {{EXTRACTION_TOOL_AND_VERSION}}. A full text that truly cannot be obtained is reported as "not retrieved" in the PRISMA counts, outside this program. The title-and-abstract phase does not use PDFs.
+- Full-text phase (S4): only the records kept at S3, read from the decisions file of that run. Retrieve every kept full text first; the program stops if a text file is missing. The input text is extracted from each PDF, one file per record. Use one extraction tool for the whole project and record its version, because different tools produce different text from the same PDF. Tool and version: {{EXTRACTION_TOOL_AND_VERSION, e.g. PyMuPDF 1.27}}. A full text that truly cannot be obtained is reported as "not retrieved" in the PRISMA counts, outside this program. The title-and-abstract phase does not use PDFs.
 - Removals by document type, if any, happen in the reference manager (S2), before this program runs: {{TITLE_PHRASES_OR_NONE}}. They are logged there and reported under "records removed before screening". This program does not repeat them.
 
 ## 2. One rule per criterion
 
 Keep the criterion IDs identical to the eligibility file.
 
+One row per criterion. Every cell is a decision; the examples in the cells come from a review of language-model behaviour in classic economic games and show one way to fill them.
+
 | Criterion | Checked at | Supporting terms or patterns | Blocking terms | Supported when | Evidence recorded |
 |---|---|---|---|---|---|
-| C1 classic economic game | TA, FT | prisoner's dilemma, trust game, ultimatum game, dictator game, public goods, stag hunt, coordination game, social dilemma | video game, esports | at least one game term and no blocking term | matched term and surrounding text |
-| C2 generative AI makes the decisions | TA, FT | large language model, LLM, language model, generative AI, GPT, ChatGPT, Claude, Llama | {{TERMS_OR_NONE}} | at least one term | matched term and surrounding text |
-| C3 behavioural outcome reported | FT | cooperation, defection, offer, contribution, trust, acceptance | {{TERMS_OR_NONE}} | at least one term in the full text | matched term and surrounding text |
-| C4 {{LABEL}} | {{TA, FT}} | {{TERMS}} | {{TERMS_OR_NONE}} | {{RULE}} | matched term and surrounding text |
+| C1 {{LABEL, e.g. classic economic game}} | {{e.g. TA, FT}} | {{TERMS, e.g. prisoner's dilemma, trust game, ultimatum game, dictator game, public goods, stag hunt, coordination game, social dilemma}} | {{TERMS_OR_NONE, e.g. video game, esports}} | {{RULE, e.g. at least one supporting term and no blocking term}} | matched term and surrounding text |
+| C2 {{LABEL, e.g. generative AI makes the decisions}} | {{e.g. TA, FT}} | {{TERMS, e.g. large language model, LLM, language model, generative AI, GPT, ChatGPT, Claude, Llama}} | {{TERMS_OR_NONE}} | {{RULE, e.g. at least one supporting term}} | matched term and surrounding text |
+| C3 {{LABEL, e.g. behavioural outcome reported}} | {{e.g. FT only}} | {{TERMS, e.g. cooperation, defection, offer, contribution, trust, acceptance}} | {{TERMS_OR_NONE}} | {{RULE, e.g. at least one supporting term in the full text}} | matched term and surrounding text |
+| C{{N}} {{LABEL}} | {{TA, FT}} | {{TERMS}} | {{TERMS_OR_NONE}} | {{RULE}} | matched term and surrounding text |
 
-The rows above are examples modelled on a review of language-model behaviour in classic economic games; replace them with your own criteria. Where a criterion cannot be decided from terms, say so here and leave it to the full-text reading or to a model that screens under a codebook. Example: whether the prompt steered the behaviour cannot be read from terms. {{CRITERIA_NOT_DECIDABLE_BY_TERMS}}
+Criteria that cannot be decided from terms: {{LIST_OR_NONE, e.g. whether the prompt steered the behaviour}}. Say so here and leave them to the full-text reading, or to a model that screens under a codebook.
 
 ## 3. Decision logic
 

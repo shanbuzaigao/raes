@@ -15,7 +15,7 @@ exported from the reference manager after deduplication (S2); records removed
 there by document type never reach this program. The title-and-abstract phase
 reads nothing else. For the full-text phase, fulltext/<record_id>.txt holds the
 text extracted from each PDF; use one extraction tool for the whole project and
-record its version (I use PyMuPDF), because tools differ in the text they produce.
+record its version (for example PyMuPDF), because tools differ in the text they produce.
 
 The program never calls a model. Every record receives a decision and a reason,
 and every criterion receives its own evidence, which the audit stage (S5) uses to
@@ -37,13 +37,16 @@ RULES_VERSION = "0.1.0-draft"
 #   any_of    : the record supports the criterion if at least one term appears
 #   none_of   : the criterion fails if any of these terms appears
 #   check_at  : the phases that check this criterion ("ta", "ft")
-# Terms are matched as whole words, case-insensitively. The example entries are
-# modelled on a review of how language models behave in classic economic games;
-# a criterion that terms cannot decide (for example, whether the prompt steered
-# the behaviour) is left to the full-text reading and is not listed here.
+# Terms are matched as whole words, case-insensitively.
+#
+# EXAMPLE ENTRIES. The three entries below are only an illustration, modelled on
+# a review of how language models behave in classic economic games. Replace them
+# with your own criteria. A criterion that terms cannot decide (for example,
+# whether the prompt steered the behaviour) is left to the full-text reading and
+# is not listed here.
 CRITERIA = {
     "C1": {
-        "label": "classic economic game",
+        "label": "classic economic game (example)",
         "any_of": ["prisoner's dilemma", "prisoners dilemma", "trust game", "ultimatum game",
                    "dictator game", "public goods game", "public goods", "stag hunt",
                    "coordination game", "social dilemma"],
@@ -51,14 +54,14 @@ CRITERIA = {
         "check_at": ["ta", "ft"],
     },
     "C2": {
-        "label": "generative AI makes the decisions",
+        "label": "generative AI makes the decisions (example)",
         "any_of": ["large language model", "large language models", "llm", "llms",
                    "language model", "generative ai", "gpt", "chatgpt", "claude", "llama"],
         "none_of": [],
         "check_at": ["ta", "ft"],
     },
     "C3": {
-        "label": "behavioural outcome reported",
+        "label": "behavioural outcome reported (example)",
         "any_of": ["cooperation", "cooperate", "cooperated", "defection", "defect",
                    "offer", "offers", "contribution", "contributions", "trust", "acceptance"],
         "none_of": [],
