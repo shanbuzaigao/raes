@@ -1,8 +1,9 @@
-"""Two documented formula paths adapted from the author's evidence-synthesis code.
+"""Effect-size computation used by the synthetic example: two formula paths.
 
-These are the source project's approximations, not a universal meta-analysis engine.
-Independent arm summaries only; no paired/cluster-adjusted effects or pooling.
-See docs/NUMERICAL_METHODS.md for estimands, variance and continuity conventions.
+This is an example of the rule that code, not the model, computes effect sizes.
+The formulas follow one project's conventions; a real project uses the paths its
+analysis plan specifies. Independent arm summaries only; no paired or
+cluster-adjusted effects and no pooling. See NUMERICAL_METHODS.md in this folder.
 """
 from __future__ import annotations
 from dataclasses import asdict, dataclass

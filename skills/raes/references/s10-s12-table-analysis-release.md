@@ -5,7 +5,7 @@ These stages differ from project to project. The skill helps with the structure 
 ## S10 Master table and effect sizes
 
 - Code builds the master table from the per-paper outputs. Each row receives a stable identifier from a registry: normal builds are read-only and fail on an unregistered row; allocating new identifiers needs an explicit flag; retired identifiers are never reused.
-- Effect sizes are computed by code from the coded inputs, by the paths the analysis plan declares. The RAES repository's `raes_core/effect_sizes.py` shows two paths (means and standard deviations; events and totals) as examples, with their formulas documented; a project uses the paths its plan specifies.
+- Effect sizes are computed by code from the coded inputs, by the paths the analysis plan declares. The synthetic example in the RAES repository (`examples/synthetic/effect_sizes.py`) shows two paths (means and standard deviations; events and totals) with their formulas documented; a project uses the paths its plan specifies.
 - Ask: the identity fields; the computation paths and formulas the plan specifies; which second package will recompute the pooled results.
 - Check: every effect recomputed independently; pooled results cross-checked in a second package.
 

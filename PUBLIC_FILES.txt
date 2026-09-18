@@ -10,12 +10,13 @@ PROTOCOL.zh-CN.md
 PUBLIC_FILES.txt
 README.md
 README.zh-CN.md
-docs/NUMERICAL_METHODS.md
 docs/RELEASING.md
 examples/codebook_author_rehearsal.md
 examples/synthetic/FROZEN_INPUTS.json
+examples/synthetic/NUMERICAL_METHODS.md
 examples/synthetic/README.md
 examples/synthetic/README.zh-CN.md
+examples/synthetic/effect_sizes.py
 examples/synthetic/expected/results.json
 examples/synthetic/inputs/codebook.json
 examples/synthetic/inputs/eligibility.json
@@ -37,7 +38,6 @@ examples/synthetic/inputs/validation_codebook.json
 examples/synthetic/pipeline.py
 examples/synthetic/reproduce.py
 raes_core/__init__.py
-raes_core/effect_sizes.py
 raes_core/freeze.py
 raes_core/io.py
 raes_core/registry.py

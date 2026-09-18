@@ -48,7 +48,7 @@ screening exclusion and one confirmed coding correction.
 Approximate effects are 0.495177 (SYN001), 0.443659 (SYN002) and 0.393717 (SYN006).
 The second is log-odds-derived; the other two are pooled-SD standardized differences.
 **They are not pooled.** The example is about execution and provenance, not an
-inferential claim about a synthetic population. See [formula details](../../docs/NUMERICAL_METHODS.md).
+inferential claim about a synthetic population. See [formula details](NUMERICAL_METHODS.md).
 
 ## Stage coverage
 

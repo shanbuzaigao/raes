@@ -57,8 +57,8 @@ flowchart TD
 | [PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md) | 操作手册，逐阶段展开 |
 | [templates/](templates/README.zh-CN.md) | 要填写的文件：计划 memo、纳入标准、codebook、prompt、验证 memo 与配置、项目目录 |
 | [skills/](skills/README.zh-CN.md) | `raes`：按阶段带你走完整个流程的 skill，它提问、用模板写文件、跑检查 |
-| [examples/synthetic/](examples/synthetic/README.zh-CN.md) | 一个编造的小例子，离线把整个流程跑一遍 |
-| [raes_core/](docs/NUMERICAL_METHODS.md) | 例子用到的小工具：效应量、稳定行编号、哈希冻结 |
+| [examples/synthetic/](examples/synthetic/README.zh-CN.md) | 一个编造的小例子，离线把整个流程跑一遍；它用的效应量代码和[公式说明](examples/synthetic/NUMERICAL_METHODS.md)也在这里 |
+| [raes_core/](raes_core) | 通用的小工具：稳定行编号、哈希冻结、JSON 读写 |
 | [tests/](tests) 和 [tools/](tools) | 测试和辅助命令 |
 
 运行例子只需要 Python 3.10 或更新版本：

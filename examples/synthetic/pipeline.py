@@ -10,8 +10,10 @@ import csv
 import importlib.util
 import io
 from pathlib import Path
+import sys
 from typing import Callable
-from raes_core import effect_sizes
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import effect_sizes
 from raes_core.freeze import sha256_bytes
 from raes_core.io import canonical_json, load_json, loads
 from raes_core.registry import Registry

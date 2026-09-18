@@ -5,8 +5,10 @@ from decimal import Decimal, localcontext
 import math
 from pathlib import Path
 import tempfile
+import sys
 import unittest
-from raes_core.effect_sizes import continuous, binary
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'examples/synthetic'))
+from effect_sizes import continuous, binary
 from raes_core.freeze import manifest, verify, safe_path, freeze_new
 from raes_core.io import loads, canonical_json, write_new, load_json
 from raes_core.registry import Registry

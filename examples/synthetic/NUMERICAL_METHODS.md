@@ -1,11 +1,6 @@
-# Numerical methods and extraction scope
+# Numerical methods of the synthetic example
 
-This starter exposes only the two paths used by its synthetic example. Functions
-were adapted from the author's `compute_effect_sizes_from_master.py`, with strict
-finite/type/domain checks and no domain labels, spreadsheet dependencies or private
-paths. Stable-ID behavior was adapted from `row_registry.py`; file inventories reuse
-the project's explicit-input, SHA-256, immutable-release conventions. The public
-example does not need, import or redistribute the original research data.
+This note documents `effect_sizes.py`, the effect-size code of the synthetic example. It exists so that the example runs from coded rows to computed effects with code alone, which is the rule in RAES; the formulas themselves are one project's conventions, taken from my meta-analysis, and a real project uses the paths its own analysis plan specifies. The functions carry strict checks on finite values, types and domains, and no domain labels, spreadsheet dependencies or private paths. The stable-ID and freeze utilities in `raes_core/` follow the same project's conventions for explicit inputs, SHA-256 inventories and immutable releases. The example does not need, import or redistribute the original research data.
 
 ## 1. Independent means and SDs
 
