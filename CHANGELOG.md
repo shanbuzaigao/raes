@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Protocol S3 and the screening rule sheet say how the deduplicated export becomes the three-column records table that the template program reads; my own program parses the EndNote export directly.
 - Screening program: `--not-retrieved` names the kept records whose full text could not be obtained; the full-text phase skips them and lists them in `summary.json`, so that they are reported as not retrieved rather than excluded.
 - Renamed `examples/codebook_author_rehearsal.md` to `examples/raes_rehearsal.md`.
 - Skill: filling the placeholders of a copied template is not overwriting; only a rule file that has been filled and reviewed needs a new version. Found in the first trial of the skill in Claude Code.

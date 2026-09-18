@@ -97,7 +97,7 @@ python tools/new_project.py ../my-evidence-project
 
 | 占位符 | 填什么 |
 |---|---|
-| `{{RECORD_FILE_AND_FORMAT}}` | 去重后从文献管理软件导出的记录文件和格式。例：`records.csv exported from EndNote` |
+| `{{RECORD_FILE_AND_FORMAT}}` | 去重后的记录文件和格式。例：由 EndNote 导出文件转成的 `records.csv`，三列 `record_id`、`title`、`abstract` |
 | `{{FIELDS}}` | 题目摘要阶段用到的字段。例：`record_id, title, abstract` |
 | `{{EXTRACTION_TOOL_AND_VERSION}}` | 从 PDF 提取全文的工具和版本，全项目只用一个。例：`PyMuPDF 1.27` |
 | `{{NOT_RETRIEVED_FILE_OR_NONE}}` | 取不到全文的记录清单文件，每行一个记录编号，运行全文阶段时用 `--not-retrieved` 传给程序；没有就写 `none`。例：`screening/not_retrieved.txt` |
