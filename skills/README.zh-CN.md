@@ -26,7 +26,13 @@ python tools/install_skill.py --destination ~/.claude/skills
 
 > /raes 我有一个关于结构化反馈和普通反馈的研究问题，还没有任何文件。从 S0 开始。
 
-其他宿主有各自的安装和调用方式。宿主不能运行 Python 时，skill 会给出确切的命令，并说明检查没有运行。
+同一个文件夹在其他支持这种格式的宿主里也能用。Codex 从 `~/.agents/skills` 读个人 skill，从 `<仓库>/.agents/skills` 读仓库 skill，调用时写 `$raes`：
+
+```sh
+python tools/install_skill.py --destination ~/.agents/skills
+```
+
+Gemini CLI、Cursor、GitHub Copilot 等各自的路径见 [Agent Skills 的客户端列表](https://agentskills.io/clients)。宿主不能运行 Python 时，skill 会给出确切的命令，并说明检查没有运行。
 
 ## 状态
 

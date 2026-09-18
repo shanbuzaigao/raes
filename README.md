@@ -73,6 +73,8 @@ To install the skill into Claude Code, run this from the repository folder, then
 python tools/install_skill.py --destination ~/.claude/skills
 ```
 
+For Codex, use `--destination ~/.agents/skills` and invoke it as `$raes`. Other hosts that support the Agent Skills format are listed in [skills/README.md](skills/README.md).
+
 A note on the name: a Python package called `raes` exists on PyPI. It is a different project and has nothing to do with this repository.
 
 ## Why I think this is needed

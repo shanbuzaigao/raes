@@ -75,6 +75,8 @@ python examples/synthetic/reproduce.py
 python tools/install_skill.py --destination ~/.claude/skills
 ```
 
+Codex 用 `--destination ~/.agents/skills`，调用时写 `$raes`。其他支持 Agent Skills 格式的宿主见 [skills/README.zh-CN.md](skills/README.zh-CN.md)。
+
 关于名字：PyPI 上有一个叫 `raes` 的 Python 包，那是另一个项目，与本仓库无关。
 
 ## 我为什么觉得需要它

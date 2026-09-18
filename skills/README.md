@@ -26,7 +26,13 @@ The installer copies the whole folder and refuses to replace an existing `raes`.
 
 > /raes I have a research question about structured versus plain feedback and no files yet. Start at S0.
 
-Other hosts have their own installation and invocation steps. If a host cannot run Python, the skill returns the exact command and says that the check was not run.
+The same folder works in other hosts that support the format. Codex reads personal skills from `~/.agents/skills` and repository skills from `<repo>/.agents/skills`, and invokes a skill as `$raes`:
+
+```sh
+python tools/install_skill.py --destination ~/.agents/skills
+```
+
+Gemini CLI, Cursor, GitHub Copilot and others list their own paths on the [Agent Skills client page](https://agentskills.io/clients). If a host cannot run Python, the skill returns the exact command and says that the check was not run.
 
 ## Status
 
