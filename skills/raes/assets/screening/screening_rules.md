@@ -14,16 +14,25 @@ This document states the screening rules in words. The program `screen_rules_tem
 
 Keep the criterion IDs identical to the eligibility file.
 
-One row per criterion. Every cell is a decision; the examples in the cells come from a review of language-model behaviour in classic economic games and show one way to fill them.
+One row per criterion, with the same IDs as the eligibility file. Add rows as needed.
 
 | Criterion | Checked at | Supporting terms or patterns | Blocking terms | Supported when | Evidence recorded |
 |---|---|---|---|---|---|
-| C1 {{LABEL, e.g. classic economic game}} | {{e.g. TA, FT}} | {{TERMS, e.g. prisoner's dilemma, trust game, ultimatum game, dictator game, public goods, stag hunt, coordination game, social dilemma}} | {{TERMS_OR_NONE, e.g. video game, esports}} | {{RULE, e.g. at least one supporting term and no blocking term}} | matched term and surrounding text |
-| C2 {{LABEL, e.g. generative AI makes the decisions}} | {{e.g. TA, FT}} | {{TERMS, e.g. large language model, LLM, language model, generative AI, GPT, ChatGPT, Claude, Llama}} | {{TERMS_OR_NONE}} | {{RULE, e.g. at least one supporting term}} | matched term and surrounding text |
-| C3 {{LABEL, e.g. behavioural outcome reported}} | {{e.g. FT only}} | {{TERMS, e.g. cooperation, defection, offer, contribution, trust, acceptance}} | {{TERMS_OR_NONE}} | {{RULE, e.g. at least one supporting term in the full text}} | matched term and surrounding text |
+| C1 {{LABEL}} | {{TA, FT}} | {{TERMS}} | {{TERMS_OR_NONE}} | {{RULE}} | matched term and surrounding text |
+| C2 {{LABEL}} | {{TA, FT}} | {{TERMS}} | {{TERMS_OR_NONE}} | {{RULE}} | matched term and surrounding text |
 | C{{N}} {{LABEL}} | {{TA, FT}} | {{TERMS}} | {{TERMS_OR_NONE}} | {{RULE}} | matched term and surrounding text |
 
-Criteria that cannot be decided from terms: {{LIST_OR_NONE, e.g. whether the prompt steered the behaviour}}. Say so here and leave them to the full-text reading, or to a model that screens under a codebook.
+Criteria that cannot be decided from terms: {{LIST_OR_NONE}}. Say so here and leave them to the full-text reading, or to a model that screens under a codebook.
+
+**Example**, from a review of language-model behaviour in classic economic games. It shows one way to fill the table, not the required one.
+
+| Criterion | Checked at | Supporting terms or patterns | Blocking terms | Supported when | Evidence recorded |
+|---|---|---|---|---|---|
+| C1 classic economic game | TA, FT | prisoner's dilemma, trust game, ultimatum game, dictator game, public goods, stag hunt, coordination game, social dilemma | video game, esports | at least one supporting term and no blocking term | matched term and surrounding text |
+| C2 generative AI makes the decisions | TA, FT | large language model, LLM, language model, generative AI, GPT, ChatGPT, Claude, Llama | none | at least one supporting term | matched term and surrounding text |
+| C3 behavioural outcome reported | FT only | cooperation, defection, offer, contribution, trust, acceptance | none | at least one supporting term in the full text | matched term and surrounding text |
+
+In the example, one criterion cannot be decided from terms: whether the prompt steered the behaviour. It is left to the full-text reading.
 
 ## 3. Decision logic
 
