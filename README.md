@@ -138,4 +138,8 @@ Code is released under the [MIT License](LICENSE). Documentation and templates a
 
 If you use RAES, please cite it; see [CITATION.cff](CITATION.cff). The workflow comes out of my working paper, *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments*.
 
+## Contact
+
+Questions and suggestions: zqj0966522453@gmail.com. I maintain the method myself and do not take pull requests.
+
 Qijun Zhu, Ph.D. candidate in Economics, George Mason University

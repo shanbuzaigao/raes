@@ -140,4 +140,8 @@ Codex 用 `--destination ~/.agents/skills`，调用时写 `$raes`。其他支持
 
 如果你使用了 RAES，请引用它，见 [CITATION.cff](CITATION.cff)。这套流程出自我的 working paper：*Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments*。
 
+## 联系方式
+
+有问题或建议，请写信到 zqj0966522453@gmail.com。方法本身由我自己维护，不接受 pull request。
+
 Qijun Zhu，乔治梅森大学经济学博士候选人

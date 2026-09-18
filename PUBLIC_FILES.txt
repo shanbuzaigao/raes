@@ -2,7 +2,6 @@
 .gitignore
 CHANGELOG.md
 CITATION.cff
-CONTRIBUTING.md
 LICENSE
 LICENSE-docs.md
 PROTOCOL.md
