@@ -6,15 +6,15 @@ This document states the screening rules in words. The program `screen_rules_tem
 
 ## 1. Inputs
 
-- Title and abstract phase (S3): {{RECORD_FILE_AND_FORMAT}}, exported from the reference manager after deduplication. Fields used: {{FIELDS}}.
-- Full-text phase (S4): only the records kept at S3, read from the decisions file of that run. Retrieve every kept full text first; the program stops if a text file is missing. The input text is extracted from each PDF, one file per record. Use one extraction tool for the whole project and record its version, because different tools produce different text from the same PDF. Tool and version: {{EXTRACTION_TOOL_AND_VERSION, e.g. PyMuPDF 1.27}}. A full text that truly cannot be obtained is reported as "not retrieved" in the PRISMA counts, outside this program. The title-and-abstract phase does not use PDFs.
+- Title and abstract phase (S3; "TA" below): {{RECORD_FILE_AND_FORMAT}}, exported from the reference manager after deduplication. Fields used: {{FIELDS}}.
+- Full-text phase (S4; "FT" below): only the records kept at S3, read from the decisions file of that run. Retrieve every kept full text first; the program stops if a text file is missing. The input text is extracted from each PDF, one file per record. Use one extraction tool for the whole project and record its version, because different tools produce different text from the same PDF. Tool and version: {{EXTRACTION_TOOL_AND_VERSION, e.g. PyMuPDF 1.27}}. A full text that truly cannot be obtained is reported as "not retrieved" in the PRISMA counts, outside this program. The title-and-abstract phase does not use PDFs.
 - Removals by document type, if any, happen in the reference manager (S2), before this program runs: {{TITLE_PHRASES_OR_NONE}}. They are logged there and reported under "records removed before screening". This program does not repeat them.
 
 ## 2. One rule per criterion
 
 Keep the criterion IDs identical to the eligibility file.
 
-One row per criterion, with the same IDs as the eligibility file. Add rows as needed.
+One row per criterion, with the same IDs as the eligibility file. Add rows as needed. In the column "Checked at", TA means the title and abstract phase and FT the full-text phase.
 
 | Criterion | Checked at | Supporting terms or patterns | Blocking terms | Supported when | Evidence recorded |
 |---|---|---|---|---|---|

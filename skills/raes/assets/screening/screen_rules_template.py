@@ -36,7 +36,7 @@ RULES_VERSION = "0.1.0-draft"
 # One entry per eligibility criterion. Keep the IDs identical to eligibility.json.
 #   any_of    : the record supports the criterion if at least one term appears
 #   none_of   : the criterion fails if any of these terms appears
-#   check_at  : the phases that check this criterion ("ta", "ft")
+#   check_at  : the phases that check this criterion: "ta" = title and abstract, "ft" = full text
 # Terms are matched as whole words, case-insensitively.
 #
 # EXAMPLE ENTRIES. The three entries below are only an illustration, modelled on
