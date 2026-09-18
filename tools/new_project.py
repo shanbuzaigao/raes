@@ -19,7 +19,7 @@ def main() -> int:
         shutil.copytree(ROOT/"templates/project",dest)
         for folder,purpose in {
             'plans':'Stage plans, open decisions and change-impact records.',
-            'codebook':'Canonical eligibility, coding rules and audit rules.',
+            'codebook':'Canonical eligibility and coding rules.',
             'prompts':'Prompt templates; render only after filling and reviewing the codebook.',
             'search':'Exact queries, dates, raw exports and deduplication ledger.',
             'screening':'Rule code, record fates, full-text availability and audit reconciliation.',

@@ -4,7 +4,7 @@
   "version": "0.1.0-draft",
   "screening_rules_version": "{{RULES_VERSION}}",
   "canonical_eligibility": {
-    "file": "eligibility.json",
+    "file": "codebook/eligibility.json",
     "sha256": "{{EXACT_BYTE_SHA256}}"
   },
   "target": "{{TARGET, e.g. false exclusion: a record excluded by the screening program that should have been kept}}",

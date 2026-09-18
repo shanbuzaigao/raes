@@ -20,6 +20,8 @@ RECORDS = [
      "abstract": "Human participants played the trust game in three countries."},
     {"record_id": "R3", "title": "Cooperation with ChatGPT teammates in an online video game",
      "abstract": "Players cooperated with a ChatGPT teammate in a multiplayer video game."},
+    {"record_id": "R4", "title": "Claude in the prisoner\u2019s dilemma",
+     "abstract": "Claude played the prisoner\u2019s dilemma; the curly apostrophe must still match."},
 ]
 
 
@@ -32,7 +34,8 @@ def load_module():
 
 def write_records(folder: Path) -> Path:
     path = folder / "records.csv"
-    with path.open("w", encoding="utf-8", newline="") as handle:
+    # utf-8-sig writes a byte-order mark, as some spreadsheet exports do.
+    with path.open("w", encoding="utf-8-sig", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=["record_id", "title", "abstract"], lineterminator="\n")
         writer.writeheader()
         writer.writerows(RECORDS)
@@ -52,13 +55,14 @@ class ScreeningSkeletonTests(unittest.TestCase):
             self.assertIn("C2", decisions["R2"]["failed_criteria"])
             self.assertEqual(decisions["R3"]["decision"], "exclude")
             self.assertIn("C1", decisions["R3"]["failed_criteria"], "blocking term 'video game'")
+            self.assertEqual(decisions["R4"]["decision"], "keep", "curly apostrophe in prisoner's dilemma")
             evidence = json.loads((out / "evidence.json").read_text(encoding="utf-8"))
             kept = next(e for e in evidence if e["record_id"] == "R1")
             self.assertTrue(kept["criteria"]["C1"]["supported"])
             self.assertTrue(kept["criteria"]["C1"]["evidence"])
             self.assertNotIn("C3", kept["criteria"], "C3 is checked at the full-text phase only")
             summary = json.loads((out / "summary.json").read_text(encoding="utf-8"))
-            self.assertEqual(summary["records"], 3)
+            self.assertEqual(summary["records"], 4)
             self.assertEqual(len(summary["input_sha256"]), 64)
 
     def test_full_text_phase_needs_kept_list_and_texts(self):
@@ -76,12 +80,14 @@ class ScreeningSkeletonTests(unittest.TestCase):
             self.assertEqual(module.main(["ft", str(records), "--after-ta", str(ta_out / "decisions.csv"),
                                           "--texts", str(texts), "--output", str(out)]), 1)
             (texts / "R1.txt").write_text("GPT-4 played the prisoner's dilemma. The cooperation rate was 62 percent.", encoding="utf-8")
+            (texts / "R4.txt").write_text("Claude played the prisoner\u2019s dilemma. Offers and acceptance were recorded.", encoding="utf-8")
             self.assertEqual(module.main(["ft", str(records), "--after-ta", str(ta_out / "decisions.csv"),
                                           "--texts", str(texts), "--output", str(out)]), 0)
             decisions = {row["record_id"]: row for row in csv.DictReader((out / "decisions.csv").open(encoding="utf-8"))}
-            # Only the record kept at the title-and-abstract phase is screened here.
-            self.assertEqual(set(decisions), {"R1"})
+            # Only the records kept at the title-and-abstract phase are screened here.
+            self.assertEqual(set(decisions), {"R1", "R4"})
             self.assertEqual(decisions["R1"]["decision"], "keep")
+            self.assertEqual(decisions["R4"]["decision"], "keep")
             evidence = json.loads((out / "evidence.json").read_text(encoding="utf-8"))
             r1 = next(e for e in evidence if e["record_id"] == "R1")
             self.assertEqual(set(r1["criteria"]), {"C1", "C2", "C3"})

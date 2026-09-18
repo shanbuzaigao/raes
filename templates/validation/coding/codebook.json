@@ -4,7 +4,7 @@
   "version": "0.1.0-draft",
   "production_codebook_version": "{{VERSION}}",
   "canonical_eligibility": {
-    "file": "eligibility.json",
+    "file": "codebook/eligibility.json",
     "sha256": "{{EXACT_BYTE_SHA256}}"
   },
   "scope": {

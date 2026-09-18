@@ -75,7 +75,9 @@ def sha256_of(path: Path) -> str:
 
 
 def normalize(text: str) -> str:
-    return re.sub(r"\s+", " ", text or "").strip().lower()
+    """Lower-case, collapse whitespace, and turn curly apostrophes into straight ones."""
+    text = (text or "").replace("\u2019", "'").replace("\u2018", "'")
+    return re.sub(r"\s+", " ", text).strip().lower()
 
 
 def find_terms(text: str, terms: list[str]) -> list[dict]:
@@ -126,7 +128,8 @@ def screen_text(text: str, phase: str) -> dict:
 
 
 def read_records(path: Path) -> list[dict]:
-    with path.open(encoding="utf-8", newline="") as handle:
+    # utf-8-sig also accepts a file that starts with a byte-order mark, which some exports add.
+    with path.open(encoding="utf-8-sig", newline="") as handle:
         rows = list(csv.DictReader(handle))
     required = {"record_id", "title", "abstract"}
     if not rows or not required.issubset(rows[0].keys()):

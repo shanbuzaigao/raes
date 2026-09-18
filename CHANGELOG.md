@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Added a screening rules template: a written rule sheet and a runnable rule-based screener for the title-and-abstract and full-text phases.
+- Split the validation templates into a screening set and a coding set, each with its memo, audit codebook, config and prompts.
+- Named the audit roles auditor and adjudicator throughout the templates.
+
 ## 0.3.0-rc.1 (2026-09-17)
 
 - Added templates, the `codebook-author` skill, a synthetic offline example, and the small tools it uses: effect sizes, stable row IDs and hash freezes.

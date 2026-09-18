@@ -23,18 +23,20 @@ python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json --r
 
 No third-party package is needed. On Windows, use the Python launcher you normally use.
 
-## What to fill in, in this order
+## What to fill in
+
+The rows follow the order of the pipeline. The plan memo is written once for every stage that calls an AI.
 
 | File | Stage | What it holds |
 |---|---|---|
-| [plan_memo.md](plan_memo.md) | Any stage that calls an AI: the screening audit (S5), the coding (S8), the coding audit (S9), and the screens (S3, S4) if a model does them | The plan for one stage: question, unit of judgment, inputs and outputs, what the model may and may not see, pilot, what counts as done, approval |
 | [eligibility.json](eligibility.json) | Goal and criteria (S0); read by every later stage | The eligibility criteria, numbered, each with its clarifications. One file for the whole project |
-| [codebook.json](codebook.json) | Coding (S8) | The variables: type, whether null is allowed, who fills the field (executor or code), the rule, the permitted evidence, what to do when a value is missing, an example and a counterexample. Then the outcome map, the pairing, aggregation and direction rules, source precedence and worked cases |
-| [prompts/](prompts/coding_system.md) | Coding (S8) | The coding system prompt and the coding paper prompt |
-| [validation/screening/](validation/screening/memo.md) | Screening audit (S5) | The screening audit as one set: memo, audit codebook, config and two prompts. Full-text mode: two primary auditors and a third on disagreement. Abstract mode: one auditor whose "retain" is a candidate that goes through the frozen full-text screen |
-| [validation/coding/](validation/coding/memo.md) | Coding audit (S9) | The coding audit as one set: memo, audit codebook, config and two prompts. One auditor checks every paper; a blinded adjudicator resolves each challenge |
 | [screening/screening_rules.md](screening/screening_rules.md) | Screening (S3, S4) | The screening rules in words: one rule per criterion, the decision logic of each phase, the checks before a run, the version log |
 | [screening/screen_rules_template.py](screening/screen_rules_template.py) | Screening (S3, S4) | The same rules as a runnable program: term lists per criterion, a decision and a reason for every record, criterion-level evidence for the audit |
+| [plan_memo.md](plan_memo.md) | Any stage that calls an AI: the screening audit (S5), the coding (S8), the coding audit (S9), and the screens (S3, S4) if a model does them | The plan for one stage: question, unit of judgment, inputs and outputs, what the model may and may not see, pilot, what counts as done, approval |
+| [validation/screening/](validation/screening/memo.md) | Screening audit (S5) | The screening audit as one set: memo, audit codebook, config and two prompts. Full-text mode, for example two primary auditors and a third on disagreement. Abstract mode, for example one auditor whose "retain" is a candidate that goes through the frozen full-text screen |
+| [codebook.json](codebook.json) | Coding (S8) | The variables: type, whether null is allowed, who fills the field (executor or code), the rule, the permitted evidence, what to do when a value is missing, an example and a counterexample. Then the outcome map, the pairing, aggregation and direction rules, source precedence and worked cases |
+| [prompts/](prompts/coding_system.md) | Coding (S8) | The coding system prompt and the coding paper prompt |
+| [validation/coding/](validation/coding/memo.md) | Coding audit (S9) | The coding audit as one set: memo, audit codebook, config and two prompts. For example, one auditor checks every paper and a blinded adjudicator resolves each challenge |
 | [project/](project/README.md) | All | The starting files of a new project folder |
 
 The screening program is a skeleton in the spirit of Robleto and Shehadeh (2025): edit the term lists at the top so that each entry mirrors one criterion of `eligibility.json`, try it on the papers you already know should be included, then freeze it with a version. `python templates/screening/screen_rules_template.py --help` shows the two phases.
