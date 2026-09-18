@@ -42,4 +42,4 @@ Gemini CLI, Cursor, GitHub Copilot and others list their own paths on the [Agent
 
 ## Status
 
-The skill has been checked locally: the copied folder is self-contained and its scripts run. It has not yet been tried by a researcher in a real host; that trial comes next. A [scripted rehearsal](../examples/codebook_author_rehearsal.md) of the codebook stage on a small invented topic shows what the questions and outputs look like.
+The skill has been checked locally: the copied folder is self-contained and its scripts run. Its first trial in Claude Code, on 2026-09-17, went as intended: it created the project with its own script, ran the checks, and wrote the proposals of stage S0 as proposals for the researcher to decide. Trials on topics from other fields follow. A [scripted rehearsal](../examples/raes_rehearsal.md) of the codebook stage on a small invented topic shows what the questions and outputs look like.

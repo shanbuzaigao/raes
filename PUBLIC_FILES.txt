@@ -9,7 +9,7 @@ PROTOCOL.zh-CN.md
 PUBLIC_FILES.txt
 README.md
 README.zh-CN.md
-examples/codebook_author_rehearsal.md
+examples/raes_rehearsal.md
 examples/synthetic/FROZEN_INPUTS.json
 examples/synthetic/NUMERICAL_METHODS.md
 examples/synthetic/README.md

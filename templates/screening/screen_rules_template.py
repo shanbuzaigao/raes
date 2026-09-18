@@ -8,7 +8,11 @@ eligibility file. Then run:
     python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.csv --texts fulltext/ --output out/ft_v0.1
 
 The full-text phase screens only the records that the title-and-abstract phase
-kept; it reads that list from the decisions file of the earlier run.
+kept; it reads that list from the decisions file of the earlier run. A kept record
+whose full text truly cannot be obtained is listed, one record_id per line, in a
+file passed with --not-retrieved: the program skips it and lists it in summary.json,
+so that it is reported as "not retrieved" in the PRISMA counts, not as an
+exclusion. Every other kept record needs its text file, or the program stops.
 
 records.csv needs the columns record_id, title and abstract. It is the file
 exported from the reference manager after deduplication (S2); records removed
@@ -161,6 +165,12 @@ def require_texts(rows: list[dict], texts: Path) -> None:
         raise ValueError("retrieve the full text of every kept record first; missing: " + ", ".join(missing))
 
 
+def read_not_retrieved(path: Path) -> set[str]:
+    """Read the kept records whose full text could not be obtained: one record_id per line, # starts a comment."""
+    lines = path.read_text(encoding="utf-8-sig").splitlines()
+    return {line.strip() for line in lines if line.strip() and not line.lstrip().startswith("#")}
+
+
 def screen_records(rows: list[dict], phase: str, texts: Path | None) -> list[dict]:
     """Screen every record given."""
     output = []
@@ -174,7 +184,7 @@ def screen_records(rows: list[dict], phase: str, texts: Path | None) -> list[dic
     return output
 
 
-def write_outputs(results: list[dict], output: Path, input_path: Path) -> None:
+def write_outputs(results: list[dict], output: Path, input_path: Path, not_retrieved: list[str] | None = None) -> None:
     if output.exists():
         raise ValueError("Output directory already exists; choose a new one")
     output.mkdir(parents=True)
@@ -189,7 +199,8 @@ def write_outputs(results: list[dict], output: Path, input_path: Path) -> None:
     for entry in results:
         counts[entry["decision"]] = counts.get(entry["decision"], 0) + 1
     summary = {"rules_version": RULES_VERSION, "input_file": input_path.name,
-               "input_sha256": sha256_of(input_path), "records": len(results), "decisions": counts}
+               "input_sha256": sha256_of(input_path), "records": len(results), "decisions": counts,
+               "not_retrieved": not_retrieved or []}
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
 
 
@@ -200,8 +211,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--after-ta", type=Path, help="decisions.csv of the title-and-abstract run (full-text phase)")
     parser.add_argument("--texts", type=Path, help="folder with <record_id>.txt files (full-text phase)")
     parser.add_argument("--output", type=Path, required=True, help="new directory for the results")
+    parser.add_argument("--not-retrieved", type=Path,
+                        help="file listing, one record_id per line, the kept records whose full text could not be obtained (full-text phase)")
     parser.add_argument("--expect-sha256", help="refuse to run unless the records file has this hash")
     args = parser.parse_args(argv)
+    not_retrieved: set[str] = set()
     try:
         if args.expect_sha256 and sha256_of(args.records) != args.expect_sha256:
             raise ValueError("records file does not match the expected hash; the frozen input has changed")
@@ -209,20 +223,32 @@ def main(argv: list[str] | None = None) -> int:
             raise ValueError("the full-text phase needs --texts pointing to a folder of .txt files")
         if args.phase == "ft" and not args.after_ta:
             raise ValueError("the full-text phase needs --after-ta pointing to the decisions.csv of the ta run")
+        if args.phase == "ta" and args.not_retrieved:
+            raise ValueError("--not-retrieved applies to the full-text phase only")
         rows = read_records(args.records)
         if args.phase == "ft":
             kept = kept_at_ta(args.after_ta)
             rows = [row for row in rows if row["record_id"] in kept]
             if len(rows) != len(kept):
                 raise ValueError("some records kept at the ta phase are missing from the records file")
+            if args.not_retrieved:
+                not_retrieved = read_not_retrieved(args.not_retrieved)
+                unknown = sorted(not_retrieved - kept)
+                if unknown:
+                    raise ValueError("the not-retrieved list names records that were not kept at the ta phase: " + ", ".join(unknown))
+                present = sorted(i for i in not_retrieved if (args.texts / f"{i}.txt").is_file())
+                if present:
+                    raise ValueError("listed as not retrieved but the text file exists: " + ", ".join(present))
+                rows = [row for row in rows if row["record_id"] not in not_retrieved]
             require_texts(rows, args.texts)
         results = screen_records(rows, args.phase, args.texts)
-        write_outputs(results, args.output, args.records)
+        write_outputs(results, args.output, args.records, sorted(not_retrieved))
     except (OSError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
     kept = sum(1 for r in results if r["decision"] == "keep")
-    print(f"{len(results)} records screened at phase {args.phase}: {kept} kept. Results in {args.output}")
+    skipped = f", {len(not_retrieved)} not retrieved" if not_retrieved else ""
+    print(f"{len(results)} records screened at phase {args.phase}: {kept} kept{skipped}. Results in {args.output}")
     return 0
 
 

@@ -42,4 +42,4 @@ Gemini CLI、Cursor、GitHub Copilot 等各自的路径见 [Agent Skills 的客�
 
 ## 状态
 
-skill 已在本地检查过：复制出去的文件夹独立可用，脚本能运行。还没有研究者在真实宿主里试用过，那是下一步。[一份脚本化的演练](../examples/codebook_author_rehearsal.md)用一个编造的小题目走了一遍 codebook 阶段，可以看到提问和产出是什么样子。
+skill 已在本地检查过：复制出去的文件夹独立可用，脚本能运行。2026-09-17 在 Claude Code 里第一次试用，表现符合预期：它用自带脚本建了项目、跑了检查、把 S0 阶段的提案写成提案交给研究者决定。接下来在其他学科的题目上继续试。[一份脚本化的演练](../examples/raes_rehearsal.md)用一个编造的小题目走了一遍 codebook 阶段，可以看到提问和产出是什么样子。

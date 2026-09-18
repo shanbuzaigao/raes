@@ -48,7 +48,7 @@ The templates behind these files are in `assets/`, in the same layout as the RAE
 ## Checks
 
 - Codebook: `python scripts/check_codebook.py <project>/codebook/codebook.json` while drafting; add `--ready` once the researcher has approved the codebook and the eligibility hash is recorded. Do not set `status: ready` or fill in an approval to silence the checker.
-- Screening program: before any formal run, run it on the papers the researcher already knows should be included; they must all be kept. Every kept record needs its extracted text before the full-text phase.
+- Screening program: before any formal run, run it on the papers the researcher already knows should be included; they must all be kept. Every kept record needs its extracted text before the full-text phase, or a line in the not-retrieved list passed with `--not-retrieved`.
 - Open placeholders: a `{{...}}` left in a file is an open decision. List them; do not fill them with guesses.
 - If the host cannot run Python, give the exact command and say that the check was not run.
 

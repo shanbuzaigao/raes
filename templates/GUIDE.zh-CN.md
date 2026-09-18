@@ -100,6 +100,7 @@ python tools/new_project.py ../my-evidence-project
 | `{{RECORD_FILE_AND_FORMAT}}` | 去重后从文献管理软件导出的记录文件和格式。例：`records.csv exported from EndNote` |
 | `{{FIELDS}}` | 题目摘要阶段用到的字段。例：`record_id, title, abstract` |
 | `{{EXTRACTION_TOOL_AND_VERSION}}` | 从 PDF 提取全文的工具和版本，全项目只用一个。例：`PyMuPDF 1.27` |
+| `{{NOT_RETRIEVED_FILE_OR_NONE}}` | 取不到全文的记录清单文件，每行一个记录编号，运行全文阶段时用 `--not-retrieved` 传给程序；没有就写 `none`。例：`screening/not_retrieved.txt` |
 | `{{TITLE_PHRASES_OR_NONE}}` | 在文献管理软件里按文献类型去掉的记录（这是 S2 做的事），没有就写 `none`。例：`titles containing "systematic review" or "meta-analysis"` |
 
 **第 2 节 每条标准一条规则**
@@ -154,7 +155,7 @@ python tools/new_project.py ../my-evidence-project
 **输入**
 
 - `records.csv`：三列 `record_id`、`title`、`abstract`，去重（S2）后导出；`record_id` 不能空、不能重复。
-- 全文阶段：`fulltext/<record_id>.txt`，每条被保留的记录一个文件，从 PDF 提取，全项目用同一个工具并记录版本。程序要求每条保留记录都有全文文件；确实取不到的全文，在 PRISMA 计数里记为 not retrieved。
+- 全文阶段：`fulltext/<record_id>.txt`，每条被保留的记录一个文件，从 PDF 提取，全项目用同一个工具并记录版本。程序要求每条保留记录都有全文文件。确实取不到的，把记录编号写进一个清单文件（每行一个，`#` 开头的行是注释），运行时用 `--not-retrieved` 传给程序：程序跳过这些记录，在 `summary.json` 里列出；PRISMA 计数里记为 not retrieved，与按标准排除的分开。
 
 **运行**
 
@@ -163,13 +164,13 @@ python screen_rules_template.py ta records.csv --output out/ta_v0.1
 python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.csv --texts fulltext/ --output out/ft_v0.1
 ```
 
-全文阶段只筛题目摘要阶段保留的记录，名单从 `--after-ta` 指定的结果文件里读。加 `--expect-sha256 <哈希>` 时，记录文件和冻结时不一致就拒绝运行。`--help` 显示全部选项。
+全文阶段只筛题目摘要阶段保留的记录，名单从 `--after-ta` 指定的结果文件里读。`--not-retrieved <清单文件>` 只用于全文阶段，见上面的输入。加 `--expect-sha256 <哈希>` 时，记录文件和冻结时不一致就拒绝运行。`--help` 显示全部选项。
 
 **输出**（写到一个新目录，从不覆盖）
 
 - `decisions.csv`：每条记录一行：决定（`keep` 或 `exclude`）、理由、不符合的标准、规则版本。
 - `evidence.json`：每条标准命中的词和上下文，审计用。
-- `summary.json`：输入文件的哈希、记录数、各决定的数量。
+- `summary.json`：输入文件的哈希、筛选的记录数、各决定的数量、取不到全文的记录清单。
 
 **常见提示**
 
@@ -178,7 +179,10 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | `records.csv needs the columns record_id, title and abstract` | 缺列 | 导出时带上这三列，列名要完全一致 |
 | `record_id must be present and unique` | 有空的或重复的编号 | 回到去重那一步 |
 | `the full-text phase needs --after-ta …` | 全文阶段没指定题目摘要阶段的结果 | 加 `--after-ta` |
-| `retrieve the full text of every kept record first; missing: …` | 有保留记录还没有全文 | 先取来列出的记录的全文 |
+| `retrieve the full text of every kept record first; missing: …` | 有保留记录还没有全文 | 先取来列出的记录的全文；确实取不到的写进清单，用 `--not-retrieved` 传入 |
+| `--not-retrieved applies to the full-text phase only` | 题目摘要阶段用了这个参数 | 去掉；题目摘要阶段不用全文 |
+| `the not-retrieved list names records that were not kept at the ta phase: …` | 清单里有不在题目摘要保留名单里的编号 | 核对编号；只有保留的记录才谈得上取全文 |
+| `listed as not retrieved but the text file exists: …` | 清单和全文文件夹矛盾 | 有全文就从清单里去掉，没有就删掉那个文件 |
 | `Output directory already exists; choose a new one` | 输出目录已存在 | 换一个新目录名，结果从不覆盖 |
 | `records file does not match the expected hash` | 记录文件变了 | 确认是不是用错了文件；冻结的输入不能改 |
 

@@ -1,8 +1,10 @@
 """Tests for the rule-based screening skeleton and its copy into a new project."""
 from __future__ import annotations
 
+import contextlib
 import csv
 import importlib.util
+import io
 import json
 import subprocess
 import sys
@@ -91,6 +93,47 @@ class ScreeningSkeletonTests(unittest.TestCase):
             evidence = json.loads((out / "evidence.json").read_text(encoding="utf-8"))
             r1 = next(e for e in evidence if e["record_id"] == "R1")
             self.assertEqual(set(r1["criteria"]), {"C1", "C2", "C3"})
+
+    def test_full_text_phase_skips_listed_not_retrieved(self):
+        module = load_module()
+
+        def run(argv):
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err):
+                code = module.main(argv)
+            return code, err.getvalue()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            records = write_records(Path(tmp))
+            texts = Path(tmp) / "fulltext"
+            texts.mkdir()
+            ta_out = Path(tmp) / "ta"
+            self.assertEqual(module.main(["ta", str(records), "--output", str(ta_out)]), 0)
+            (texts / "R1.txt").write_text("GPT-4 played the prisoner's dilemma. The cooperation rate was 62 percent.", encoding="utf-8")
+            listing = Path(tmp) / "not_retrieved.txt"
+            listing.write_text("# full texts that could not be obtained\nR4\n", encoding="utf-8")
+            after = ["--after-ta", str(ta_out / "decisions.csv"), "--texts", str(texts)]
+            # The list belongs to the full-text phase only.
+            code, err = run(["ta", str(records), "--output", str(Path(tmp) / "ta2"), "--not-retrieved", str(listing)])
+            self.assertEqual(code, 1)
+            self.assertIn("full-text phase only", err)
+            out = Path(tmp) / "ft"
+            self.assertEqual(module.main(["ft", str(records), *after, "--not-retrieved", str(listing), "--output", str(out)]), 0)
+            decisions = {row["record_id"] for row in csv.DictReader((out / "decisions.csv").open(encoding="utf-8"))}
+            self.assertEqual(decisions, {"R1"}, "a record without a full text receives no decision")
+            summary = json.loads((out / "summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(summary["not_retrieved"], ["R4"])
+            self.assertEqual(summary["records"], 1)
+            # Only records kept at the title-and-abstract phase can be listed.
+            listing.write_text("R2\n", encoding="utf-8")
+            code, err = run(["ft", str(records), *after, "--not-retrieved", str(listing), "--output", str(Path(tmp) / "ft2")])
+            self.assertEqual(code, 1)
+            self.assertIn("not kept at the ta phase: R2", err)
+            # A record whose text exists is not "not retrieved".
+            listing.write_text("R1\n", encoding="utf-8")
+            code, err = run(["ft", str(records), *after, "--not-retrieved", str(listing), "--output", str(Path(tmp) / "ft3")])
+            self.assertEqual(code, 1)
+            self.assertIn("text file exists: R1", err)
 
     def test_refuses_existing_output_and_wrong_hash(self):
         module = load_module()

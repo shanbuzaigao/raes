@@ -1,4 +1,4 @@
-# Codebook-author rehearsal: a small feedback review
+# Rehearsal of the codebook stage: a small feedback review
 
 This is a **scripted local rehearsal**, not a fabricated transcript from a live
 model. It documents the questions and design choices used to fill the
@@ -47,5 +47,5 @@ The installed skill's checker runs without access to the original repository.
 
 The offline example separately replays the saved toy judgments and the SD correction.
 No automatic check determines whether the actual question-asking conversation is
-pleasant, complete or accurate in Claude or another host. That real user/host trial
-is the gate before adding the second Skill.
+pleasant, complete or accurate in Claude or another host. Only a trial in a real
+host shows that; the first one is described in the skills README.

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Screening program: `--not-retrieved` names the kept records whose full text could not be obtained; the full-text phase skips them and lists them in `summary.json`, so that they are reported as not retrieved rather than excluded.
+- Renamed `examples/codebook_author_rehearsal.md` to `examples/raes_rehearsal.md`.
 - Skill: filling the placeholders of a copied template is not overwriting; only a rule file that has been filled and reviewed needs a new version. Found in the first trial of the skill in Claude Code.
 - `tools/install_skill.py --replace` updates an installed copy of the skill; it removes the existing folder only when that folder is a raes skill.
 - Added a Chinese guide to the templates, `templates/GUIDE.zh-CN.md`: every file and every field, what it is, what to fill in, with examples.

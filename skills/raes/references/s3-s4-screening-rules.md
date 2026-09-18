@@ -17,7 +17,7 @@ Goal: rule-based screens written from the criteria. Every record receives a deci
 ## Run
 
 - Title and abstract: `python screening/screen_rules_template.py ta records.csv --output <new folder>`. The records file is the export from S2, with the columns `record_id`, `title`, `abstract`.
-- Full text: `python screening/screen_rules_template.py ft records.csv --after-ta <ta folder>/decisions.csv --texts <folder of record_id.txt files> --output <new folder>`. It screens only the records kept at the first phase and stops if any of them lacks its text.
+- Full text: `python screening/screen_rules_template.py ft records.csv --after-ta <ta folder>/decisions.csv --texts <folder of record_id.txt files> --output <new folder>`. It screens only the records kept at the first phase and stops if any of them lacks its text. A kept record whose full text truly cannot be obtained is listed, one identifier per line, in a file passed with `--not-retrieved`; the program skips it and lists it in `summary.json`, so that it is reported as not retrieved, not as excluded.
 
 ## Check before moving on
 
