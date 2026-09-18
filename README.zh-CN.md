@@ -55,7 +55,7 @@ flowchart TD
 | 位置 | 内容 |
 |---|---|
 | [PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md) | 操作手册，逐阶段展开 |
-| [templates/](templates/README.zh-CN.md) | 要填写的文件：计划 memo、纳入标准、codebook、prompt、验证 memo 与配置、项目目录 |
+| [templates/](templates/README.zh-CN.md) | 要填写的文件：计划 memo、纳入标准、codebook、prompt、验证 memo 与配置、项目目录；另有[逐字段的中文填写指南](templates/GUIDE.zh-CN.md) |
 | [skills/](skills/README.zh-CN.md) | `raes`：按阶段带你走完整个流程的 skill，它提问、用模板写文件、跑检查 |
 | [examples/synthetic/](examples/synthetic/README.zh-CN.md) | 一个编造的小例子，离线把整个流程跑一遍；它用的效应量代码和[公式说明](examples/synthetic/NUMERICAL_METHODS.md)也在这里 |
 | [raes_core/](raes_core) | 通用的小工具：稳定行编号、哈希冻结、JSON 读写 |

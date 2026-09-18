@@ -53,7 +53,7 @@ The working manual is [PROTOCOL.md](PROTOCOL.md). It expands every stage of the 
 | Where | What it is |
 |---|---|
 | [PROTOCOL.md](PROTOCOL.md) ([中文](PROTOCOL.zh-CN.md)) | The working manual, stage by stage |
-| [templates/](templates/README.md) | Files to fill in: plan memo, eligibility criteria, codebook, prompts, validation memo and settings, project folders |
+| [templates/](templates/README.md) | Files to fill in: plan memo, eligibility criteria, codebook, prompts, validation memo and settings, project folders; a [field-by-field guide in Chinese](templates/GUIDE.zh-CN.md) |
 | [skills/](skills/README.md) | `raes`, a skill that walks you through the workflow stage by stage: it asks, writes the files from the templates and runs the checks |
 | [examples/synthetic/](examples/synthetic/README.md) | A small invented example that runs the whole pipeline offline, including the effect-size code it uses and the [notes on its formulas](examples/synthetic/NUMERICAL_METHODS.md) |
 | [raes_core/](raes_core) | Small general tools: stable row IDs, hash freezes, JSON reading and writing |

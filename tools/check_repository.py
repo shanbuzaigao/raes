@@ -72,7 +72,7 @@ def inspect(root: Path) -> list[str]:
                 elif destination.is_file() and destination.relative_to(root.resolve()).as_posix() not in public:
                     errors.append(f'{name}: public document links to excluded file {target}')
     # The skill's assets mirror templates/ file for file (the guides excepted), and must not drift.
-    guides={'README.md','README.zh-CN.md'}
+    guides={'README.md','README.zh-CN.md','GUIDE.zh-CN.md'}
     templates={p.relative_to(root/'templates').as_posix() for p in (root/'templates').rglob('*') if p.is_file() and not (p.parent==root/'templates' and p.name in guides) and '__pycache__' not in p.parts}
     assets={p.relative_to(root/'skills/raes/assets').as_posix() for p in (root/'skills/raes/assets').rglob('*') if p.is_file() and '__pycache__' not in p.parts}
     for n in sorted(templates^assets):

@@ -4,6 +4,8 @@
 
 These files are the "how to write" layer of RAES. They give each document of the protocol a fixed shape: the plan memo, the eligibility criteria, the codebook, the audit designs and the prompts. Every `{{...}}` marks a decision the researcher has to make; the examples next to a placeholder show one way to fill it, taken from my project, not the required one. A skeleton with placeholders passes the draft check and fails the `--ready` check, on purpose.
 
+A guide in Chinese goes through every file and every field: [GUIDE.zh-CN.md](GUIDE.zh-CN.md).
+
 ## Start a project
 
 From the RAES folder, choose a new folder outside it:

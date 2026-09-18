@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added a Chinese guide to the templates, `templates/GUIDE.zh-CN.md`: every file and every field, what it is, what to fill in, with examples.
+- Added `skills/raes/assets/project/README.md` to the public file list; it was tracked but missing from the list.
 - Removed CONTRIBUTING.md and the `docs/` folder; the README now gives a contact address instead.
 - Moved the effect-size code and its formula notes from `raes_core/` into `examples/synthetic/`: the formulas are one project's conventions, not part of the general tools. The example's frozen manifest was regenerated.
 - Replaced the `codebook-author` skill with `raes`, one skill that covers every stage of the workflow; its assets mirror `templates/`. The synthetic example's frozen manifest was regenerated for the checker's new path.

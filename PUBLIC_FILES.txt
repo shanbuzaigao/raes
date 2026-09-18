@@ -49,6 +49,7 @@ skills/raes/assets/eligibility.json
 skills/raes/assets/plan_memo.md
 skills/raes/assets/project/.gitignore
 skills/raes/assets/project/CURRENT_STATUS.md
+skills/raes/assets/project/README.md
 skills/raes/assets/prompts/coding_paper.md
 skills/raes/assets/prompts/coding_system.md
 skills/raes/assets/screening/screen_rules_template.py
@@ -75,6 +76,7 @@ skills/raes/references/s8-coding.md
 skills/raes/references/s9-coding-audit.md
 skills/raes/scripts/check_codebook.py
 skills/raes/scripts/new_project.py
+templates/GUIDE.zh-CN.md
 templates/README.md
 templates/README.zh-CN.md
 templates/codebook.json
