@@ -15,7 +15,7 @@ RAES is a workflow for evidence syntheses in which a model screens or codes pape
 
 1. Find out where the project stands. If a project folder exists, read `CURRENT_STATUS.md`, `plans/DECISIONS.md` and the files that are already there. If none exists, ask for the research question and create one with `python scripts/new_project.py <new folder>`; it copies the templates from `assets/`.
 2. Ask which stage the user wants to work on, open the matching file in `references/` (table below) and follow it. Work on one stage at a time.
-3. Never overwrite an existing file. Write a new version and record the change in `plans/DECISIONS.md`.
+3. Filling the placeholders of a copied template is not overwriting; `CURRENT_STATUS.md` is updated in place and `plans/DECISIONS.md` only grows. A rule file that has been filled and reviewed is never edited in place: write a new version and record the change in `plans/DECISIONS.md`.
 
 ## Rules for every stage
 

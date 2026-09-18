@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Skill: filling the placeholders of a copied template is not overwriting; only a rule file that has been filled and reviewed needs a new version. Found in the first trial of the skill in Claude Code.
 - `tools/install_skill.py --replace` updates an installed copy of the skill; it removes the existing folder only when that folder is a raes skill.
 - Added a Chinese guide to the templates, `templates/GUIDE.zh-CN.md`: every file and every field, what it is, what to fill in, with examples.
 - Added `skills/raes/assets/project/README.md` to the public file list; it was tracked but missing from the list.
