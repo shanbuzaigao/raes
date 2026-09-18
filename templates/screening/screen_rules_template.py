@@ -5,7 +5,10 @@ Edit the CRITERIA table so that each entry mirrors one criterion of your
 eligibility file. Then run:
 
     python screen_rules_template.py ta records.csv --output out/ta_v0.1
-    python screen_rules_template.py ft records.csv --texts fulltext/ --output out/ft_v0.1
+    python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.csv --texts fulltext/ --output out/ft_v0.1
+
+The full-text phase screens only the records that the title-and-abstract phase
+kept; it reads that list from the decisions file of the earlier run.
 
 records.csv needs the columns record_id, title and abstract. It is the file
 exported from the reference manager after deduplication (S2); records removed
@@ -134,8 +137,19 @@ def read_records(path: Path) -> list[dict]:
     return rows
 
 
+def kept_at_ta(decisions_path: Path) -> set[str]:
+    """Read the decisions file of the title-and-abstract run and return the kept record IDs."""
+    with decisions_path.open(encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    if not rows or not {"record_id", "phase", "decision"}.issubset(rows[0].keys()):
+        raise ValueError("--after-ta must point to the decisions.csv written by the ta phase")
+    if any(row["phase"] != "ta" for row in rows):
+        raise ValueError("--after-ta must point to a title-and-abstract run, not a full-text run")
+    return {row["record_id"] for row in rows if row["decision"] == "keep"}
+
+
 def screen_records(rows: list[dict], phase: str, texts: Path | None) -> list[dict]:
-    """Screen every record. In the full-text phase, a missing text is recorded, not excluded."""
+    """Screen every record given. In the full-text phase, a missing text is recorded, not excluded."""
     output = []
     for row in rows:
         entry = {"record_id": row["record_id"], "phase": phase, "rules_version": RULES_VERSION}
@@ -175,6 +189,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("phase", choices=["ta", "ft"], help="ta = title and abstract, ft = full text")
     parser.add_argument("records", type=Path, help="CSV with record_id, title, abstract")
+    parser.add_argument("--after-ta", type=Path, help="decisions.csv of the title-and-abstract run (full-text phase)")
     parser.add_argument("--texts", type=Path, help="folder with <record_id>.txt files (full-text phase)")
     parser.add_argument("--output", type=Path, required=True, help="new directory for the results")
     parser.add_argument("--expect-sha256", help="refuse to run unless the records file has this hash")
@@ -184,7 +199,14 @@ def main(argv: list[str] | None = None) -> int:
             raise ValueError("records file does not match the expected hash; the frozen input has changed")
         if args.phase == "ft" and not (args.texts and args.texts.is_dir()):
             raise ValueError("the full-text phase needs --texts pointing to a folder of .txt files")
+        if args.phase == "ft" and not args.after_ta:
+            raise ValueError("the full-text phase needs --after-ta pointing to the decisions.csv of the ta run")
         rows = read_records(args.records)
+        if args.phase == "ft":
+            kept = kept_at_ta(args.after_ta)
+            rows = [row for row in rows if row["record_id"] in kept]
+            if len(rows) != len(kept):
+                raise ValueError("some records kept at the ta phase are missing from the records file")
         results = screen_records(rows, args.phase, args.texts)
         write_outputs(results, args.output, args.records)
     except (OSError, ValueError) as exc:

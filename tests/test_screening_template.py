@@ -69,11 +69,17 @@ class ScreeningSkeletonTests(unittest.TestCase):
             texts.mkdir()
             (texts / "R1.txt").write_text("GPT-4 played the prisoner's dilemma. The cooperation rate was 62 percent.", encoding="utf-8")
             (texts / "R2.txt").write_text("The trust game was played by an LLM. Trust was measured by the amount sent.", encoding="utf-8")
+            ta_out = Path(tmp) / "ta"
+            self.assertEqual(module.main(["ta", str(records), "--output", str(ta_out)]), 0)
             out = Path(tmp) / "ft"
-            self.assertEqual(module.main(["ft", str(records), "--texts", str(texts), "--output", str(out)]), 0)
+            # Without the ta decisions the full-text phase refuses to run.
+            self.assertEqual(module.main(["ft", str(records), "--texts", str(texts), "--output", str(out)]), 1)
+            self.assertEqual(module.main(["ft", str(records), "--after-ta", str(ta_out / "decisions.csv"),
+                                          "--texts", str(texts), "--output", str(out)]), 0)
             decisions = {row["record_id"]: row for row in csv.DictReader((out / "decisions.csv").open(encoding="utf-8"))}
+            # R2 was excluded at the title-and-abstract phase, so it is not screened here at all.
+            self.assertEqual(set(decisions), {"R1", "R3"})
             self.assertEqual(decisions["R1"]["decision"], "keep")
-            self.assertEqual(decisions["R2"]["decision"], "keep")
             self.assertEqual(decisions["R3"]["decision"], "not_retrieved")
             evidence = json.loads((out / "evidence.json").read_text(encoding="utf-8"))
             r1 = next(e for e in evidence if e["record_id"] == "R1")
