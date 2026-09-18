@@ -28,8 +28,7 @@ Estimator, assumptions and undefined cases: {{ESTIMATOR}}
 
 ## 4. Roles and information boundaries
 Executor and model snapshot/settings: {{EXECUTOR}}
-Auditor role and the target values it may see: {{AUDITOR}}
-Adjudicator route, using the same audit codebook: {{ADJUDICATOR}}
+Reviewers and what each may see, as in validation/screening or validation/coding: {{REVIEWERS}}
 Hidden inputs: {{HIDDEN_FIELDS}}
 Researcher adjudication trigger and evidence required: {{HUMAN_BOUNDARY}}
 Do not send credentials or downstream statistics in review payloads.

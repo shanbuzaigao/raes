@@ -30,10 +30,9 @@ python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json --r
 | [plan_memo.md](plan_memo.md) | 任何调用 AI 的阶段：S5、S8、S9；如果由模型做筛选，也包括 S3、S4 | 一个阶段的计划：问题、判断单位、输入和输出、模型能看什么和不能看什么、试跑、完成标准、批准 |
 | [eligibility.json](eligibility.json) | S0；之后每个阶段都读它 | 纳入标准，带编号，每条附澄清。整个项目只有这一个文件 |
 | [codebook.json](codebook.json) | S8 编码 | 变量：类型、能否为空、由谁填（执行模型还是程序）、规则、允许的证据、缺失时怎么办、例子和反例。之后是结果指标对应表、配对规则、合并规则、方向规则、来源优先级和 worked cases |
-| [validation_memo.md](validation_memo.md) | S5 和 S9 | 一次审计的设计：目标、抽样框、单位、全查还是抽样、分层和种子、停止规则、每位审计者能看什么、分歧怎么流转、怎样报告 |
-| [validation_codebook.json](validation_codebook.json) | S5 和 S9 | 审计者遵守的规则。一个文件覆盖筛选审计、编码审计和裁决，各为一种模式 |
-| [validation_config.json](validation_config.json) | S5 和 S9 | 一次审计的运行设置：抽样框、模型、抽样、流转、重试、预算。文件填完并批准之前，不发出真实请求 |
-| [prompts/](prompts/coding_system.md) | S8：`coding_system`、`coding_paper`。S9：`coding_audit`、`coding_adjudicator`。S5：`screening_audit` | 五个 prompt 模板 |
+| [prompts/](prompts/coding_system.md) | S8 编码 | 编码的 system prompt 和 paper prompt |
+| [validation/screening/](validation/screening/memo.md) | S5 | 筛选审计一整套：memo、审计 codebook、配置和两个 prompt。全文模式：两位主审加一位第三位；题摘模式：一位审计者，它的"保留"是候选，要经过冻结的全文筛选 |
+| [validation/coding/](validation/coding/memo.md) | S9 | 编码审计一整套：memo、审计 codebook、配置和两个 prompt。一位审计者检查每篇论文，每处质疑由盲审的裁决者处理 |
 | [screening/screening_rules.md](screening/screening_rules.md) | S3 和 S4 | 用文字写的筛选规则：每条标准一条规则、两个阶段各自的判定逻辑、运行前的检查、版本记录 |
 | [screening/screen_rules_template.py](screening/screen_rules_template.py) | S3 和 S4 | 同一套规则的可运行程序：每条标准一组词表，每条记录一个判断和理由，逐条标准的证据供审计使用 |
 | [project/](project/README.md) | 全部 | 新项目文件夹的起始文件 |
@@ -62,7 +61,7 @@ python -c "import hashlib,pathlib; print(hashlib.sha256(pathlib.Path('../my-evid
 python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codebook.json --template templates/prompts/coding_system.md --context ../my-evidence-project/context.json --output ../my-evidence-project/coding_system_rendered.md
 ```
 
-预览还没填完的 codebook 用 `--draft`。这条命令不覆盖已有的输出文件，也不向任何地方发送内容。审计者和裁决者共用一份审计 codebook。裁决者收到被质疑的字段、原始的编码行和原始材料，永远看不到审计者提出的值。
+预览还没填完的 codebook 用 `--draft`。这条命令不覆盖已有的输出文件，也不向任何地方发送内容。审计用的 prompt 和各自的审计套件放在一起，在 `validation/` 下；编码审计者和裁决者共用一份审计 codebook，裁决者永远看不到审计者提出的值。
 
 ## 检查器能做什么、不能做什么
 

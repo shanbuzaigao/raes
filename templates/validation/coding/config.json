@@ -1,0 +1,51 @@
+{
+  "schema_version": "raes-coding-validation-config/1",
+  "status": "draft_not_executable",
+  "live_enabled": false,
+  "frame": {
+    "path": "{{FROZEN_ROWS_FILE}}",
+    "sha256": "{{SHA256}}",
+    "unit": "paper; every row of the paper is checked"
+  },
+  "rules": {
+    "production_codebook": "{{PATH}}",
+    "audit_codebook": "validation/coding/codebook.json",
+    "eligibility_sha256": "{{SHA256}}"
+  },
+  "reviewers": {
+    "executor": {"provider": "{{PROVIDER}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}},
+    "auditor": {"provider": "{{DIFFERENT_PROVIDER_WHERE_POSSIBLE}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}},
+    "adjudicator": {"provider": "{{PROVIDER}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}}
+  },
+  "sampling": {
+    "mode": "{{CENSUS_OR_DESIGNED_SAMPLE}}",
+    "strata": [],
+    "seed": null,
+    "round_size": null
+  },
+  "routing": "auditor checks every paper; each challenge goes to the blinded adjudicator; exact agreement confirms the correction, otherwise bounded human adjudication",
+  "payload_policy": {
+    "downstream_statistics_hidden": true,
+    "executor_rationale_hidden": true,
+    "adjudicator_never_sees_auditor_proposal": true,
+    "source_text_is_untrusted_data": true
+  },
+  "retries": {
+    "max_new_attempts_per_invocation": null,
+    "resume_global_attempt_ids": true,
+    "technical_failure_is_not_a_decision": true,
+    "request_identity_unchanged": true
+  },
+  "budget": {
+    "currency": "USD",
+    "approved_max": null,
+    "approval_record": null
+  },
+  "artifacts": {
+    "raw_responses": "{{PATH}}",
+    "normalized_responses": "{{PATH}}",
+    "reconciliation": "{{PATH}}",
+    "hash_manifest": "{{PATH}}"
+  },
+  "note": "Design skeleton. Fill in and review before any live run; this file does not call any provider."
+}

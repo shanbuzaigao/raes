@@ -24,18 +24,18 @@ def main() -> int:
             'search':'Exact queries, dates, raw exports and deduplication ledger.',
             'screening':'Rule code, record fates, full-text availability and audit reconciliation.',
             'papers':'Authorized sources and per-paper preparation; do not publish by default.',
-            'validation':'Frozen audit frames, configuration and separately stored auditor outputs.',
+            'validation':'One folder per audit: screening/ (S5) and coding/ (S9), each with memo, codebook, config and prompts; frozen frames and auditor outputs.',
             'table_build':'Read-only ID registry during builds; versions for explicit ID allocation.',
             'analysis':'Analysis plan, scripts, assumptions and verification.',
             'releases':'Immutable completed artifacts; update pointers separately.',
             'archive':'Superseded records with hashes, never silently rewritten.'}.items():
             d=dest/folder;d.mkdir(exist_ok=True)
             (d/'README.md').write_text('# '+folder+'\n\n'+purpose+'\n',encoding='utf-8')
-        for n in ('codebook.json','eligibility.json','validation_codebook.json'):
+        for n in ('codebook.json','eligibility.json'):
             shutil.copy2(ROOT/'templates'/n,dest/'codebook'/n)
-        shutil.copy2(ROOT/'templates/validation_config.json',dest/'validation/config.json')
+        for stage in ('screening','coding'):
+            shutil.copytree(ROOT/'templates/validation'/stage,dest/'validation'/stage)
         shutil.copy2(ROOT/'templates/plan_memo.md',dest/'plans/STAGE_PLAN.md')
-        shutil.copy2(ROOT/'templates/validation_memo.md',dest/'plans/VALIDATION_PLAN.md')
         (dest/'plans/DECISIONS.md').write_text('# Decisions\n\nNo operational choices have been approved. Replace placeholders after discussing them.\n',encoding='utf-8')
         for source in (ROOT/'templates/prompts').glob('*.md'):shutil.copy2(source,dest/'prompts'/source.name)
         for source in (ROOT/'templates/screening').iterdir():

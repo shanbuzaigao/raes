@@ -1,5 +1,5 @@
 {
-  "schema_version": "raes-audit/1",
+  "schema_version": "raes-coding-audit/1",
   "version": "0.1.0-draft",
   "production_codebook_version": "{{VERSION}}",
   "canonical_eligibility": {
@@ -8,47 +8,30 @@
   },
   "scope": {
     "frame": "{{FRAME_ID}}",
-    "units": "{{RECORDS_OR_ROW_UIDS}}",
+    "units": "{{ROW_UIDS}}",
     "allowed_domains": [
-      "{{DOMAIN_1}}",
-      "{{DOMAIN_2}}"
+      "effect-size inputs",
+      "pairing and computation path",
+      "moderators"
     ],
     "prohibited_actions": [
       "add rows",
       "delete rows",
       "change identity",
-      "reopen eligibility during coding audit",
+      "reopen eligibility",
       "compute downstream effects"
     ]
   },
   "modes": {
-    "screening": {
-      "inputs": [
-        "source",
-        "identical criteria"
-      ],
-      "hidden": [
-        "original decision",
-        "original reason",
-        "selection rank",
-        "downstream results"
-      ],
-      "response": [
-        "decision",
-        "criterion_id",
-        "evidence",
-        "unresolved_items"
-      ]
-    },
     "coding_audit": {
       "inputs": [
-        "original frozen pre-g target rows",
+        "original frozen rows, effect-size fields blank",
         "sources",
         "production codebook",
         "this audit codebook"
       ],
       "hidden": [
-        "production rationale",
+        "the executor's rationale",
         "prior audit output",
         "g",
         "SE_g",
@@ -65,10 +48,10 @@
     },
     "coding_adjudication": {
       "inputs": [
-        "same original targets and sources",
-        "same production codebook",
-        "THIS SAME audit codebook",
-        "disputed coordinate only"
+        "the same original rows and sources",
+        "the same production codebook",
+        "this same audit codebook",
+        "the disputed field only"
       ],
       "hidden": [
         "the auditor's proposed value",
@@ -87,8 +70,8 @@
     }
   },
   "pass_rule": "{{What complete checked coverage and absence of unresolved evidence are required?}}",
-  "challenge_rule": "An exact coordinate, a source-supported alternative, a rule ID and a resolvable locator are required.",
-  "conflict_rule": "{{General source precedence or bounded human adjudication; do not invent}}",
+  "challenge_rule": "An exact row and field, a source-supported alternative value, a rule ID and a resolvable locator are required.",
+  "conflict_rule": "{{Source precedence, or bounded human adjudication; never invent a value}}",
   "error_taxonomy": [
     "technical_invalid",
     "substantive_disagreement",

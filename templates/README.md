@@ -30,10 +30,9 @@ No third-party package is needed. On Windows, use the Python launcher you normal
 | [plan_memo.md](plan_memo.md) | Any stage that calls an AI: S5, S8, S9, and S3 or S4 if a model screens | The plan for one stage: question, unit of judgment, inputs and outputs, what the model may and may not see, pilot, what counts as done, approval |
 | [eligibility.json](eligibility.json) | S0; read by every later stage | The eligibility criteria, numbered, each with its clarifications. One file for the whole project |
 | [codebook.json](codebook.json) | S8 coding | The variables: type, whether null is allowed, who fills the field (executor or code), the rule, the permitted evidence, what to do when a value is missing, an example and a counterexample. Then the outcome map, the pairing, aggregation and direction rules, source precedence and worked cases |
-| [validation_memo.md](validation_memo.md) | S5 and S9 | The design of an audit: target, frame, unit, census or sample, strata and seed, stopping rule, what each auditor sees, routing, reporting |
-| [validation_codebook.json](validation_codebook.json) | S5 and S9 | The rules auditors follow. One file covers the screening audit, the coding audit and the adjudication, each as its own mode |
-| [validation_config.json](validation_config.json) | S5 and S9 | The operational settings of an audit: frame, models, sampling, routing, retries, budget. Live requests stay off until the file is complete and approved |
-| [prompts/](prompts/coding_system.md) | S8: `coding_system`, `coding_paper`. S9: `coding_audit`, `coding_adjudicator`. S5: `screening_audit` | Five prompt templates |
+| [prompts/](prompts/coding_system.md) | S8 coding | The coding system prompt and the coding paper prompt |
+| [validation/screening/](validation/screening/memo.md) | S5 | The screening audit as one set: memo, audit codebook, config and two prompts. Full-text mode: two primary auditors and a third on disagreement. Abstract mode: one auditor whose "retain" is a candidate that goes through the frozen full-text screen |
+| [validation/coding/](validation/coding/memo.md) | S9 | The coding audit as one set: memo, audit codebook, config and two prompts. One auditor checks every paper; a blinded adjudicator resolves each challenge |
 | [screening/screening_rules.md](screening/screening_rules.md) | S3 and S4 | The screening rules in words: one rule per criterion, the decision logic of each phase, the checks before a run, the version log |
 | [screening/screen_rules_template.py](screening/screen_rules_template.py) | S3 and S4 | The same rules as a runnable program: term lists per criterion, a decision and a reason for every record, criterion-level evidence for the audit |
 | [project/](project/README.md) | All | The starting files of a new project folder |
@@ -62,7 +61,7 @@ The renderer reads the codebook, the eligibility file and the executor columns i
 python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codebook.json --template templates/prompts/coding_system.md --context ../my-evidence-project/context.json --output ../my-evidence-project/coding_system_rendered.md
 ```
 
-Use `--draft` to preview an unfinished codebook. The command refuses to overwrite an existing output and sends nothing anywhere. The auditor and the adjudicator share one audit codebook. The adjudicator receives the challenged field, the original target rows and the sources, never the value the auditor proposed.
+Use `--draft` to preview an unfinished codebook. The command refuses to overwrite an existing output and sends nothing anywhere. The audit prompts live with their audit set under `validation/`; the coding auditor and the adjudicator share one audit codebook, and the adjudicator never sees the value the auditor proposed.
 
 ## What the checker does and does not do
 
