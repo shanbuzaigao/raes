@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-These files are the "how to write" layer of RAES. They give each document of the protocol a fixed shape: the plan memo, the eligibility criteria, the codebook, the validation design and the prompts. Every `{{...}}` marks a decision the researcher has to make. A skeleton with placeholders passes the draft check and fails the `--ready` check, on purpose.
+These files are the "how to write" layer of RAES. They give each document of the protocol a fixed shape: the plan memo, the eligibility criteria, the codebook, the audit designs and the prompts. Every `{{...}}` marks a decision the researcher has to make; the examples next to a placeholder show one way to fill it, taken from my project, not the required one. A skeleton with placeholders passes the draft check and fails the `--ready` check, on purpose.
 
 ## Start a project
 
@@ -27,14 +27,14 @@ No third-party package is needed. On Windows, use the Python launcher you normal
 
 | File | Stage | What it holds |
 |---|---|---|
-| [plan_memo.md](plan_memo.md) | Any stage that calls an AI: S5, S8, S9, and S3 or S4 if a model screens | The plan for one stage: question, unit of judgment, inputs and outputs, what the model may and may not see, pilot, what counts as done, approval |
-| [eligibility.json](eligibility.json) | S0; read by every later stage | The eligibility criteria, numbered, each with its clarifications. One file for the whole project |
-| [codebook.json](codebook.json) | S8 coding | The variables: type, whether null is allowed, who fills the field (executor or code), the rule, the permitted evidence, what to do when a value is missing, an example and a counterexample. Then the outcome map, the pairing, aggregation and direction rules, source precedence and worked cases |
-| [prompts/](prompts/coding_system.md) | S8 coding | The coding system prompt and the coding paper prompt |
-| [validation/screening/](validation/screening/memo.md) | S5 | The screening audit as one set: memo, audit codebook, config and two prompts. Full-text mode: two primary auditors and a third on disagreement. Abstract mode: one auditor whose "retain" is a candidate that goes through the frozen full-text screen |
-| [validation/coding/](validation/coding/memo.md) | S9 | The coding audit as one set: memo, audit codebook, config and two prompts. One auditor checks every paper; a blinded adjudicator resolves each challenge |
-| [screening/screening_rules.md](screening/screening_rules.md) | S3 and S4 | The screening rules in words: one rule per criterion, the decision logic of each phase, the checks before a run, the version log |
-| [screening/screen_rules_template.py](screening/screen_rules_template.py) | S3 and S4 | The same rules as a runnable program: term lists per criterion, a decision and a reason for every record, criterion-level evidence for the audit |
+| [plan_memo.md](plan_memo.md) | Any stage that calls an AI: the screening audit (S5), the coding (S8), the coding audit (S9), and the screens (S3, S4) if a model does them | The plan for one stage: question, unit of judgment, inputs and outputs, what the model may and may not see, pilot, what counts as done, approval |
+| [eligibility.json](eligibility.json) | Goal and criteria (S0); read by every later stage | The eligibility criteria, numbered, each with its clarifications. One file for the whole project |
+| [codebook.json](codebook.json) | Coding (S8) | The variables: type, whether null is allowed, who fills the field (executor or code), the rule, the permitted evidence, what to do when a value is missing, an example and a counterexample. Then the outcome map, the pairing, aggregation and direction rules, source precedence and worked cases |
+| [prompts/](prompts/coding_system.md) | Coding (S8) | The coding system prompt and the coding paper prompt |
+| [validation/screening/](validation/screening/memo.md) | Screening audit (S5) | The screening audit as one set: memo, audit codebook, config and two prompts. Full-text mode: two primary auditors and a third on disagreement. Abstract mode: one auditor whose "retain" is a candidate that goes through the frozen full-text screen |
+| [validation/coding/](validation/coding/memo.md) | Coding audit (S9) | The coding audit as one set: memo, audit codebook, config and two prompts. One auditor checks every paper; a blinded adjudicator resolves each challenge |
+| [screening/screening_rules.md](screening/screening_rules.md) | Screening (S3, S4) | The screening rules in words: one rule per criterion, the decision logic of each phase, the checks before a run, the version log |
+| [screening/screen_rules_template.py](screening/screen_rules_template.py) | Screening (S3, S4) | The same rules as a runnable program: term lists per criterion, a decision and a reason for every record, criterion-level evidence for the audit |
 | [project/](project/README.md) | All | The starting files of a new project folder |
 
 The screening program is a skeleton in the spirit of Robleto and Shehadeh (2025): edit the term lists at the top so that each entry mirrors one criterion of `eligibility.json`, try it on the papers you already know should be included, then freeze it with a version. `python templates/screening/screen_rules_template.py --help` shows the two phases.

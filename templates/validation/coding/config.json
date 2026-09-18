@@ -1,11 +1,12 @@
 {
   "schema_version": "raes-coding-validation-config/1",
+  "purpose": "Operational settings of the coding audit (stage S9 in the protocol). Fill every {{...}}; the examples show one way, not the required one.",
   "status": "draft_not_executable",
   "live_enabled": false,
   "frame": {
     "path": "{{FROZEN_ROWS_FILE}}",
     "sha256": "{{SHA256}}",
-    "unit": "paper; every row of the paper is checked"
+    "unit": "{{e.g. paper; every row of the paper is checked}}"
   },
   "rules": {
     "production_codebook": "{{PATH}}",
@@ -23,7 +24,7 @@
     "seed": null,
     "round_size": null
   },
-  "routing": "auditor checks every paper; each challenge goes to the blinded adjudicator; exact agreement confirms the correction, otherwise bounded human adjudication",
+  "routing": "{{e.g. the auditor checks every paper; each challenge goes to the blinded adjudicator; exact agreement confirms the correction, otherwise bounded human adjudication}}",
   "payload_policy": {
     "downstream_statistics_hidden": true,
     "executor_rationale_hidden": true,

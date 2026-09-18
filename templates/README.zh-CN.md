@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-这些文件是 RAES 里"怎么写"的那一层。它们给操作手册里的每一类文件一个固定的形状：计划 memo、纳入标准、codebook、验证设计和 prompt。每个 `{{...}}` 都是一个要由研究者做的决定。带占位符的骨架能通过草稿检查，但故意通不过 `--ready` 检查。
+这些文件是 RAES 里"怎么写"的那一层。它们给操作手册里的每一类文件一个固定的形状：计划 memo、纳入标准、codebook、审计设计和 prompt。每个 `{{...}}` 都是一个要由研究者做的决定；占位符旁边的例子是一种填法，取自我的项目，不是必须照做的。带占位符的骨架能通过草稿检查，但故意通不过 `--ready` 检查。
 
 ## 新建一个项目
 
@@ -27,14 +27,14 @@ python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json --r
 
 | 文件 | 用在哪个阶段 | 内容 |
 |---|---|---|
-| [plan_memo.md](plan_memo.md) | 任何调用 AI 的阶段：S5、S8、S9；如果由模型做筛选，也包括 S3、S4 | 一个阶段的计划：问题、判断单位、输入和输出、模型能看什么和不能看什么、试跑、完成标准、批准 |
-| [eligibility.json](eligibility.json) | S0；之后每个阶段都读它 | 纳入标准，带编号，每条附澄清。整个项目只有这一个文件 |
-| [codebook.json](codebook.json) | S8 编码 | 变量：类型、能否为空、由谁填（执行模型还是程序）、规则、允许的证据、缺失时怎么办、例子和反例。之后是结果指标对应表、配对规则、合并规则、方向规则、来源优先级和 worked cases |
-| [prompts/](prompts/coding_system.md) | S8 编码 | 编码的 system prompt 和 paper prompt |
-| [validation/screening/](validation/screening/memo.md) | S5 | 筛选审计一整套：memo、审计 codebook、配置和两个 prompt。全文模式：两位主审加一位第三位；题摘模式：一位审计者，它的"保留"是候选，要经过冻结的全文筛选 |
-| [validation/coding/](validation/coding/memo.md) | S9 | 编码审计一整套：memo、审计 codebook、配置和两个 prompt。一位审计者检查每篇论文，每处质疑由盲审的裁决者处理 |
-| [screening/screening_rules.md](screening/screening_rules.md) | S3 和 S4 | 用文字写的筛选规则：每条标准一条规则、两个阶段各自的判定逻辑、运行前的检查、版本记录 |
-| [screening/screen_rules_template.py](screening/screen_rules_template.py) | S3 和 S4 | 同一套规则的可运行程序：每条标准一组词表，每条记录一个判断和理由，逐条标准的证据供审计使用 |
+| [plan_memo.md](plan_memo.md) | 任何调用 AI 的阶段：筛选审计（S5）、编码（S8）、编码审计（S9）；如果由模型做筛选，也包括筛选（S3、S4） | 一个阶段的计划：问题、判断单位、输入和输出、模型能看什么和不能看什么、试跑、完成标准、批准 |
+| [eligibility.json](eligibility.json) | 目标与纳入标准（S0）；之后每个阶段都读它 | 纳入标准，带编号，每条附澄清。整个项目只有这一个文件 |
+| [codebook.json](codebook.json) | 编码（S8） | 变量：类型、能否为空、由谁填（执行模型还是程序）、规则、允许的证据、缺失时怎么办、例子和反例。之后是结果指标对应表、配对规则、合并规则、方向规则、来源优先级和 worked cases |
+| [prompts/](prompts/coding_system.md) | 编码（S8） | 编码的 system prompt 和 paper prompt |
+| [validation/screening/](validation/screening/memo.md) | 筛选审计（S5） | 筛选审计一整套：memo、审计 codebook、配置和两个 prompt。全文模式：两位主审加一位第三位；题摘模式：一位审计者，它的"保留"是候选，要经过冻结的全文筛选 |
+| [validation/coding/](validation/coding/memo.md) | 编码审计（S9） | 编码审计一整套：memo、审计 codebook、配置和两个 prompt。一位审计者检查每篇论文，每处质疑由盲审的裁决者处理 |
+| [screening/screening_rules.md](screening/screening_rules.md) | 筛选（S3、S4） | 用文字写的筛选规则：每条标准一条规则、两个阶段各自的判定逻辑、运行前的检查、版本记录 |
+| [screening/screen_rules_template.py](screening/screen_rules_template.py) | 筛选（S3、S4） | 同一套规则的可运行程序：每条标准一组词表，每条记录一个判断和理由，逐条标准的证据供审计使用 |
 | [project/](project/README.md) | 全部 | 新项目文件夹的起始文件 |
 
 筛选程序是一个骨架，思路和 Robleto and Shehadeh (2025) 一样：改文件开头的词表，让每一项对应 `eligibility.json` 里的一条标准；先在你已知应该纳入的论文上试，再定版本冻结。`python templates/screening/screen_rules_template.py --help` 显示两个阶段的用法。

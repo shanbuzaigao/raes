@@ -5,7 +5,7 @@ A working plan is not a preregistration. Record registration separately if it ex
 
 ## 1. Research question and scope
 Question: {{QUESTION}}
-Stage in S0-S12: {{STAGE}}
+Stage, by name and by its number in the protocol: {{STAGE, e.g. coding audit, S9}}
 What this stage decides: {{DECISIONS}}
 What it must not decide: {{OUT_OF_SCOPE}}
 Canonical eligibility file and exact-byte hash: {{FILE_AND_SHA256}}

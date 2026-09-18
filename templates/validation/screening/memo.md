@@ -1,38 +1,45 @@
-# Screening validation memo (S5)
+# Screening audit memo
+
+Audit of the screening stages (title and abstract, full text); stage S5 in the protocol.
 
 Version: {{VERSION}} | Search snapshot: {{SNAPSHOT_ID}} | Screening rules version: {{RULES_VERSION}} | Eligibility file and SHA-256: {{FILE_AND_SHA256}}
 
-**Target:** false exclusion. Did the screening program exclude a record it should have kept? Nothing else is audited here.
+Write this memo before the first request is sent. Every field below is a decision; the examples in brackets are one way to fill it, not the required one.
 
-**Order:** the full-text screen is audited first, then the title-and-abstract screen. The second audit needs the first, because a "retain" from the abstract auditor is a candidate that goes through the frozen full-text screen.
+## 1. Target
 
-## 1. Full-text audit
+What error the audit looks for: {{TARGET}} (for example: records excluded by the screening program that should have been kept).
 
-- Frame: every full-text exclusion of this snapshot. File and hash: {{FRAME_FILE_AND_SHA256}}; size: {{N}}.
-- Strata: near misses, defined as {{NEAR_MISS_DEFINITION, e.g. failed exactly one criterion}}; the rest: {{OTHER_STRATA}}.
-- Sample: {{ROUND_SIZE}} per round, allocated {{ALLOCATION}}, seed {{SEED}}, drawn in a fixed order that later rounds continue.
-- Reviewers: two primary auditors from different vendors; a third auditor only when both answers are valid and disagree. The majority is computed by code.
-- Each auditor receives: the record identifier, the title, the complete PDF and the criteria. It does not receive the program's decision or reason, the criterion results, the stratum, the rank, any other auditor's answer, or any downstream result.
-- Human adjudication: only when the auditor majority says include. A false exclusion is confirmed only when the human agrees and cites the page.
+## 2. Order of the audits
 
-## 2. Title-and-abstract audit
+{{ORDER_AND_REASON}} (for example: audit the full-text screen first, then the title-and-abstract screen, because a "retain" from the abstract audit is resolved through the frozen full-text screen).
 
-- Frame: every title-and-abstract exclusion of this snapshot, stratified by search batch. File and hash: {{FRAME_FILE_AND_SHA256}}; size: {{N}}.
-- Sample: {{ROUND_SIZE}} per round, allocated in proportion to the strata, seed {{SEED}}; later rounds take the next unaudited records.
-- Reviewer: one auditor. It receives the record identifier, the title, the complete abstract or null, and the criteria. It does not receive the program's decision or reason, the batch, the rank, a PDF, any other answer, the stopping target or the cumulative count.
-- A "retain" answer is a candidate, not an error. The candidate's full text is retrieved and run through the full-text screen frozen for this round. Records the screen includes are read by the full-text reviewers of section 1 (two primary auditors, a third on disagreement).
+## 3. Full-text audit
 
-## 3. Stopping
+- Frame: {{WHICH_RECORDS}} (for example: every full-text exclusion of this snapshot); file and hash: {{FRAME_FILE_AND_SHA256}}; size: {{N}}.
+- Strata: {{STRATA}} (for example: near misses, defined as records that failed exactly one criterion, and the rest).
+- Sample: {{ROUND_SIZE_ALLOCATION_SEED}} (for example: a fixed number per round, allocated by stratum, drawn in a seeded order that later rounds continue).
+- Reviewers and routing: {{REVIEWERS_AND_ROUTING}} (for example: two primary auditors from different vendors; a third only when both answers are valid and disagree; majority computed by code).
+- Each reviewer receives: {{INPUTS}} (for example: record identifier, title, complete PDF, the criteria). It does not receive: {{HIDDEN}} (for example: the program's decision and reason, the criterion results, stratum and rank, other reviewers' answers, downstream results).
+- Human adjudication: {{WHEN_AND_WITH_WHAT_EVIDENCE}} (for example: only when the reviewer majority says include; a false exclusion is confirmed only when the human agrees and cites the page).
 
-- A round in which no candidate passes the frozen full-text screen ends the audit.
-- A round in which candidates pass the screen but the reviewers exclude all of them counts toward a cumulative total; {{K, e.g. three}} such rounds end the audit.
-- A confirmed miss is added back to the included set and the audit continues. Every {{M, e.g. third}} confirmed miss triggers a review for systematic failure.
-- Anything unfinished (a missing PDF, an incomplete screen run, an unresolved auditor answer) blocks the round; it never counts as zero.
+## 4. Title-and-abstract audit
 
-## 4. Rules during the audit
+- Frame: {{WHICH_RECORDS}} (for example: every title-and-abstract exclusion of this snapshot); file and hash: {{FRAME_FILE_AND_SHA256}}; size: {{N}}.
+- Strata and sample: {{STRATA_ROUND_SIZE_SEED}} (for example: stratified by search batch, allocated in proportion, seeded order).
+- Reviewers: {{REVIEWERS}} (for example: one auditor per record). Each receives: {{INPUTS}} (for example: record identifier, title, complete abstract or null, the criteria). It does not receive: {{HIDDEN}}.
+- What a "retain" means and where it goes: {{CANDIDATE_ROUTE}} (for example: a retain is a candidate, not an error; its full text is retrieved and run through the frozen full-text screen, and records the screen includes are read by the full-text reviewers of section 3).
 
-Rules stay fixed while an audit runs. If inspection shows that a rule should change, the change gets a new version, the current run is archived, and a fresh sample is frozen under the new rule. Records from a run that actually started are withheld from later samples within the same snapshot.
+## 5. Stopping rule
 
-## 5. Technical failures and reporting
+{{STOPPING_RULE}} (for example: a round in which no candidate passes the frozen full-text screen ends the audit; rounds in which candidates pass but all are excluded by the reviewers count toward a cumulative total; a confirmed miss is added back and the audit continues; every so many confirmed misses trigger a review for systematic failure). Anything unfinished, such as a missing PDF or an unresolved answer, never counts as zero.
 
-Refusals, malformed output, missing fields and identity mismatches are retried with the same request; they never count as an exclusion, a vote or a clean round. Report, per stage: the frame size, the strata, the rounds, the seed, the number audited, the candidates, the confirmed misses, the stopping condition met, and what the audit does not show (it does not prove that no eligible study was missed).
+## 6. Rules during the audit
+
+{{RULE_CHANGE_POLICY}} (for example: rules stay fixed while an audit runs; a change gets a new version, the current run is archived, and a fresh sample is frozen under the new rule).
+
+## 7. Technical failures and reporting
+
+Technical failures: {{RETRY_POLICY}} (for example: refusals, malformed output, missing fields and identity mismatches are retried with the same request and never count as an exclusion, a vote or a clean round).
+
+Report: {{WHAT_IS_REPORTED}} (for example, per stage: frame size, strata, rounds, seed, number audited, candidates, confirmed misses, the stopping condition met, and what the audit does not show).

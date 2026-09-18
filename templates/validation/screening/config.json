@@ -1,5 +1,6 @@
 {
   "schema_version": "raes-screening-validation-config/1",
+  "purpose": "Operational settings of the screening audit (stage S5 in the protocol). Fill every {{...}}; the examples show one way, not the required one.",
   "status": "draft_not_executable",
   "live_enabled": false,
   "snapshot": "{{SEARCH_SNAPSHOT_ID}}",
@@ -9,49 +10,30 @@
     "sha256": "{{SHA256}}"
   },
   "eligibility_sha256": "{{SHA256}}",
-  "order": ["full_text", "abstract"],
+  "order": "{{e.g. full_text first, then abstract}}",
   "full_text": {
-    "frame": {
-      "path": "{{FROZEN_FULL_TEXT_EXCLUSIONS}}",
-      "sha256": "{{SHA256}}",
-      "size": null
-    },
-    "strata": {
-      "near_miss": "{{DEFINITION, e.g. failed exactly one criterion}}",
-      "other": "{{DEFINITION}}"
-    },
-    "sample": {
-      "round_size": null,
-      "allocation": "{{BY_STRATUM}}",
-      "seed": null
-    },
+    "frame": {"path": "{{FROZEN_FULL_TEXT_EXCLUSIONS}}", "sha256": "{{SHA256}}", "size": null},
+    "strata": "{{e.g. near_miss = failed exactly one criterion; other = the rest}}",
+    "sample": {"round_size": null, "allocation": "{{e.g. by stratum}}", "seed": null},
     "reviewers": {
-      "auditor_1": {"provider": "{{PROVIDER}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}},
-      "auditor_2": {"provider": "{{DIFFERENT_PROVIDER}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}},
-      "third": {"provider": "{{THIRD_PROVIDER}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}}
+      "{{ROLE, e.g. auditor_1}}": {"provider": "{{PROVIDER}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}},
+      "{{ROLE, e.g. auditor_2}}": {"provider": "{{DIFFERENT_PROVIDER}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}},
+      "{{ROLE, e.g. third}}": {"provider": "{{PROVIDER}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}}
     },
-    "routing": "auditor_1 and auditor_2 independently; third only when both answers are valid and disagree; majority by code; human adjudication only when the majority says include",
+    "routing": "{{e.g. auditor_1 and auditor_2 independently; third only when both answers are valid and disagree; majority by code; human adjudication only when the majority says include}}",
     "stopping_rule": "{{APPROVED_RULE}}"
   },
   "abstract": {
-    "frame": {
-      "path": "{{FROZEN_ABSTRACT_EXCLUSIONS}}",
-      "sha256": "{{SHA256}}",
-      "size": null
-    },
-    "strata": "search batches",
-    "sample": {
-      "round_size": null,
-      "allocation": "proportional to stratum size",
-      "seed": null
-    },
+    "frame": {"path": "{{FROZEN_ABSTRACT_EXCLUSIONS}}", "sha256": "{{SHA256}}", "size": null},
+    "strata": "{{e.g. search batches}}",
+    "sample": {"round_size": null, "allocation": "{{e.g. proportional to stratum size}}", "seed": null},
     "reviewers": {
-      "auditor": {"provider": "{{PROVIDER}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}}
+      "{{ROLE, e.g. auditor}}": {"provider": "{{PROVIDER}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}}
     },
-    "candidate_route": "retrieve the full text; run the frozen full-text screen; if it includes the record, review it with the full_text reviewers above",
-    "stopping_rule": "a round with no candidate passing the frozen full-text screen ends the audit; rounds in which candidates pass but the reviewers exclude all of them count toward a cumulative total of {{K}}; a confirmed miss is added back and the audit continues; every {{M}}th confirmed miss triggers a review for systematic failure"
+    "candidate_route": "{{e.g. retrieve the full text; run the frozen full-text screen; if it includes the record, review it with the full_text reviewers}}",
+    "stopping_rule": "{{APPROVED_RULE, e.g. a round with no candidate passing the frozen full-text screen ends the audit; rounds in which candidates pass but the reviewers exclude all of them count toward a cumulative total; a confirmed miss is added back and the audit continues}}"
   },
-  "rule_change": "rules stay fixed during an audit; a change is a new version, the current run is archived and a fresh sample is frozen",
+  "rule_change": "{{e.g. rules stay fixed during an audit; a change is a new version, the current run is archived and a fresh sample is frozen}}",
   "payload_policy": {
     "program_decision_hidden": true,
     "other_answers_hidden": true,
@@ -64,11 +46,7 @@
     "technical_failure_is_not_a_decision": true,
     "request_identity_unchanged": true
   },
-  "budget": {
-    "currency": "USD",
-    "approved_max": null,
-    "approval_record": null
-  },
+  "budget": {"currency": "USD", "approved_max": null, "approval_record": null},
   "artifacts": {
     "raw_responses": "{{PATH}}",
     "normalized_responses": "{{PATH}}",
