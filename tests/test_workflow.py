@@ -137,6 +137,15 @@ class CommandTests(unittest.TestCase):
             check=self.call(skill/'scripts/check_codebook.py',ROOT/'examples/synthetic/inputs/codebook.json','--ready',cwd=Path(d))
             self.assertEqual(check.returncode,0,check.stdout+check.stderr)
             self.assertNotEqual(self.call('tools/install_skill.py','--destination',d).returncode,0)
+    def test_install_replace_only_a_raes_skill(self):
+        with tempfile.TemporaryDirectory(prefix='raes skill ') as d:
+            self.assertEqual(self.call('tools/install_skill.py','--destination',d).returncode,0)
+            stale=Path(d)/'raes/stale.txt';stale.write_text('old',encoding='utf-8')
+            result=self.call('tools/install_skill.py','--destination',d,'--replace');self.assertEqual(result.returncode,0,result.stderr)
+            self.assertFalse(stale.exists());self.assertTrue((Path(d)/'raes/SKILL.md').is_file())
+            other=Path(d)/'other/raes';other.mkdir(parents=True);(other/'notes.txt').write_text('mine',encoding='utf-8')
+            self.assertNotEqual(self.call('tools/install_skill.py','--destination',other.parent,'--replace').returncode,0)
+            self.assertTrue((other/'notes.txt').is_file())
     def test_starter_no_overwrite(self):
         with tempfile.TemporaryDirectory(prefix='raes starter ') as d:
             dest=Path(d)/'project'

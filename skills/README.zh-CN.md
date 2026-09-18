@@ -22,7 +22,13 @@ Claude Code 的个人 skill 放在 `~/.claude/skills/<名字>/`，项目 skill �
 python tools/install_skill.py --destination ~/.claude/skills
 ```
 
-安装程序复制整个文件夹，发现已有同名的 `raes` 就停止，不覆盖。重启或重新加载宿主后，输入 `/raes`，说明你在哪一步，例如：
+安装程序复制整个文件夹，发现已有同名的 `raes` 就停止，不覆盖。skill 改过之后要更新已装的那份，加 `--replace`：安装程序先确认已有的文件夹确实是一份 raes skill，再删掉它、复制当前版本。
+
+```sh
+python tools/install_skill.py --destination ~/.claude/skills --replace
+```
+
+重启或重新加载宿主后，输入 `/raes`，说明你在哪一步，例如：
 
 > /raes 我有一个关于结构化反馈和普通反馈的研究问题，还没有任何文件。从 S0 开始。
 

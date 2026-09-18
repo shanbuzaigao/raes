@@ -22,7 +22,13 @@ For Claude Code, personal skills live in `~/.claude/skills/<name>/` and project 
 python tools/install_skill.py --destination ~/.claude/skills
 ```
 
-The installer copies the whole folder and refuses to replace an existing `raes`. Restart or reload the host, then type `/raes` and say which stage you are at, for example:
+The installer copies the whole folder and refuses to overwrite an existing `raes`. To update an installed copy after the skill has changed, add `--replace`: the installer checks that the existing folder is a raes skill, removes it and copies the current version.
+
+```sh
+python tools/install_skill.py --destination ~/.claude/skills --replace
+```
+
+Restart or reload the host, then type `/raes` and say which stage you are at, for example:
 
 > /raes I have a research question about structured versus plain feedback and no files yet. Start at S0.
 
