@@ -2,6 +2,11 @@
   "algorithm": "sha256",
   "files": [
     {
+      "path": "examples/synthetic/effect_sizes.py",
+      "sha256": "0fbaad89087d3e613d9edfd1ab2f267665f0f372ed3736d8d9340396f101e051",
+      "size": 3887
+    },
+    {
       "path": "examples/synthetic/expected/results.json",
       "sha256": "1b263e560c16848f271dd1fd6db274a9b7e86b325da305d07b8c2989e2cb5791",
       "size": 12844
@@ -93,8 +98,8 @@
     },
     {
       "path": "examples/synthetic/pipeline.py",
-      "sha256": "097a145392394d43990626bbf6c3ba9674cdf065a4816b6576d346a17e00f41b",
-      "size": 23165
+      "sha256": "6ca83de54dcc51c08d1184735639d2c7c24bb8d9d1e5b902a803ade8c976cdfc",
+      "size": 23218
     },
     {
       "path": "examples/synthetic/reproduce.py",
@@ -103,13 +108,8 @@
     },
     {
       "path": "raes_core/__init__.py",
-      "sha256": "e8efed7315423483901e489dbbf9dd56348db890b20ab5452ffdd08b3fc8b544",
-      "size": 109
-    },
-    {
-      "path": "raes_core/effect_sizes.py",
-      "sha256": "adab4b8d4615c00f630618e14068b11f75c9c23d4867b6d483baf27bcde31ca4",
-      "size": 3826
+      "sha256": "d12475ddd2e3e2e0f30551b118f31d365f3985db93397ade38b3418fe549d157",
+      "size": 120
     },
     {
       "path": "raes_core/freeze.py",
