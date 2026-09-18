@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Replaced the `codebook-author` skill with `raes`, one skill that covers every stage of the workflow; its assets mirror `templates/`. The synthetic example's frozen manifest was regenerated for the checker's new path.
 - Added a screening rules template: a written rule sheet and a runnable rule-based screener for the title-and-abstract and full-text phases.
 - Split the validation templates into a screening set and a coding set, each with its memo, audit codebook, config and prompts.
 - Named the audit roles auditor and adjudicator throughout the templates.

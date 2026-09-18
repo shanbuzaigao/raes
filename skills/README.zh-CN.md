@@ -1,19 +1,33 @@
-# Codebook-author Skill
+# raes skill
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-这一版只做一个 [codebook-author](codebook-author/SKILL.md)。采用标准 Agent Skills 目录：`SKILL.md` 加脚本、问题指南、骨架。安装时复制整个目录；检查器不依赖 RAES 仓库的其他代码。
+一个 skill，[raes](raes/SKILL.md)，覆盖整个流程。装进支持 Agent Skills 的宿主之后，它带着研究者按操作手册的阶段走：问出这一阶段需要的决定，用模板写文件，跑本地检查，并把每个调用 AI 的环节按"计划、codebook、prompt、运行"的顺序准备好。它不调用模型 API，也不做真实的筛选或编码。
 
-在 RAES 根目录运行：
+文件夹遵循 [Agent Skills 规范](https://agentskills.io/specification)：
+
+| 路径 | 内容 |
+|---|---|
+| `raes/SKILL.md` | 说明书：怎么开始、每个阶段都适用的规则、阶段索引、检查 |
+| `raes/references/` | 每个阶段一个文件：问什么、写什么、进入下一步前检查什么 |
+| `raes/assets/` | 仓库 `templates/` 文件夹的副本，装到别处后 skill 也能独立工作 |
+| `raes/scripts/new_project.py` | 用模板建一个草稿项目文件夹 |
+| `raes/scripts/check_codebook.py` | 检查 codebook，草稿模式或 `--ready` 模式 |
+
+## 安装
+
+Claude Code 的个人 skill 放在 `~/.claude/skills/<名字>/`，项目 skill 放在 `<项目>/.claude/skills/<名字>/`。在本仓库下运行：
 
 ```sh
 python tools/install_skill.py --destination ~/.claude/skills
 ```
 
-这是 Claude Code 的个人 Skill 目录；项目安装可以改为目标项目的 `.claude/skills`。工具自行展开 `~`，发现已有同名 Skill 就停止，不覆盖。重新加载宿主后，在 Claude Code 中用 `/codebook-author` 调用。例如：“帮我为 structured versus plain feedback 的综述写 codebook，先问清研究问题、单位和纳入标准，不要发 API 请求。”
+安装程序复制整个文件夹，发现已有同名的 `raes` 就停止，不覆盖。重启或重新加载宿主后，输入 `/raes`，说明你在哪一步，例如：
 
-Skill 会先读已有规则，分小批提问，形成计划、统一纳入标准、codebook、列模板、prompt 草稿和未解决事项，再运行本地检查并准备一个小试例。没有执行工具的宿主只能提供命令，并须说明没有实际运行检查。
+> /raes 我有一个关于结构化反馈和普通反馈的研究问题，还没有任何文件。从 S0 开始。
 
-安装路径依据 [Claude Code 官方说明](https://code.claude.com/docs/en/skills)，目录依据 [Agent Skills 规范](https://agentskills.io/specification)。不同宿主的装载方式可能不同；这里没有宣称已经逐一测试。
+其他宿主有各自的安装和调用方式。宿主不能运行 Python 时，skill 会给出确切的命令，并说明检查没有运行。
 
-[合成题目演练](../examples/codebook_author_rehearsal.md) 是脚本化的本地演练，不是伪造的 Claude 对话或用户测试。已检查复制后脚本可运行；仍应在你真正使用的宿主里试一次交互，再决定是否做 validation-designer。验证设计的模板已提供，但第二个 Skill 没有提前做。
+## 状态
+
+skill 已在本地检查过：复制出去的文件夹独立可用，脚本能运行。还没有研究者在真实宿主里试用过，那是下一步。[一份脚本化的演练](../examples/codebook_author_rehearsal.md)用一个编造的小题目走了一遍 codebook 阶段，可以看到提问和产出是什么样子。

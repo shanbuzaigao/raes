@@ -20,7 +20,7 @@ def main() -> int:
     p.add_argument('--draft',action='store_true',help='Allow unresolved authoring placeholders; never a live-ready prompt')
     a=p.parse_args()
     try:
-        spec=importlib.util.spec_from_file_location('checker',ROOT/'skills/codebook-author/scripts/check_codebook.py')
+        spec=importlib.util.spec_from_file_location('checker',ROOT/'skills/raes/scripts/check_codebook.py')
         mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
         report=mod.check(a.codebook,ready=not a.draft)
         if not report['checks_passed']:raise ValueError('Codebook checks failed: '+pretty_json(report))

@@ -1,0 +1,45 @@
+{
+  "schema_version": "raes-screening-audit/1",
+  "purpose": "Rules for the auditors of the screening stages (stage S5 in the protocol). Fill every {{...}}; the examples show one way, not the required one.",
+  "version": "0.1.0-draft",
+  "screening_rules_version": "{{RULES_VERSION}}",
+  "canonical_eligibility": {
+    "file": "codebook/eligibility.json",
+    "sha256": "{{EXACT_BYTE_SHA256}}"
+  },
+  "target": "{{TARGET, e.g. false exclusion: a record excluded by the screening program that should have been kept}}",
+  "order": "{{ORDER, e.g. full_text first, then abstract}}",
+  "modes": {
+    "full_text": {
+      "used_for": "{{e.g. audit of full-text exclusions; review of abstract-audit candidates that pass the frozen full-text screen}}",
+      "reviewers": "{{e.g. two primary auditors from different vendors; a third only on disagreement; majority by code}}",
+      "inputs": ["record identifier", "title", "complete PDF", "the criteria, word for word"],
+      "hidden": ["the program's decision and reason", "the program's criterion results", "stratum, rank and batch", "other reviewers' answers", "downstream results"],
+      "response": ["record_id", "criterion_results: one entry per criterion with supported (true/false) and page-level evidence", "decision", "reason_code", "unresolved_items"],
+      "decision_values": ["INCLUDE", "EXCLUDE"],
+      "human_adjudication": "{{WHEN_AND_WITH_WHAT_EVIDENCE, e.g. only when the reviewer majority says INCLUDE; confirmed only with a page citation}}"
+    },
+    "abstract": {
+      "used_for": "{{e.g. audit of title-and-abstract exclusions}}",
+      "reviewers": "{{e.g. one auditor per record}}",
+      "inputs": ["record identifier", "title", "complete abstract, or null when none exists", "the criteria, word for word"],
+      "hidden": ["the program's decision and reason", "search batch and rank", "any PDF", "other answers", "stopping target and cumulative count"],
+      "response": ["record_id", "decision", "reason_code", "evidence", "rationale"],
+      "decision_values": ["RETAIN_FOR_FULL_TEXT", "EXCLUDE"],
+      "retain_rule": "{{e.g. RETAIN unless the title and abstract clearly establish an exclusion; a RETAIN is a candidate, not an error}}",
+      "candidate_route": "{{e.g. retrieve the full text and run the frozen full-text screen; a record the screen includes is reviewed in full_text mode}}"
+    }
+  },
+  "reason_codes": {
+    "POTENTIALLY_ELIGIBLE": "required for RETAIN_FOR_FULL_TEXT and for INCLUDE",
+    "{{CODE_FOR_C1}}": "the material clearly establishes that criterion C1 fails",
+    "{{CODE_FOR_C2}}": "the material clearly establishes that criterion C2 fails",
+    "{{ONE_CODE_PER_FURTHER_CRITERION}}": "..."
+  },
+  "technical_failure": "{{RETRY_POLICY, e.g. refusals, malformed output, missing fields and identity mismatches are retried with the same request and never become an EXCLUDE, a vote or a clean round}}",
+  "evidence_contract": {
+    "source_id": "record_id",
+    "locator": "{{e.g. page or section for full text; 'title' or 'abstract' for the abstract mode}}",
+    "quote": "{{a short quote from the supplied text}}"
+  }
+}

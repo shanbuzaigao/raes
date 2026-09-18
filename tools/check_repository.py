@@ -71,17 +71,22 @@ def inspect(root: Path) -> list[str]:
                     errors.append(f'{name}: broken/nonlocal link {target}')
                 elif destination.is_file() and destination.relative_to(root.resolve()).as_posix() not in public:
                     errors.append(f'{name}: public document links to excluded file {target}')
-    # Skill assets deliberately mirror templates, and must not drift.
-    for n in ('codebook.json','eligibility.json'):
-        if (root/'templates'/n).read_bytes()!=(root/'skills/codebook-author/assets'/n).read_bytes():
+    # The skill's assets mirror templates/ file for file (the guides excepted), and must not drift.
+    guides={'README.md','README.zh-CN.md'}
+    templates={p.relative_to(root/'templates').as_posix() for p in (root/'templates').rglob('*') if p.is_file() and not (p.parent==root/'templates' and p.name in guides) and '__pycache__' not in p.parts}
+    assets={p.relative_to(root/'skills/raes/assets').as_posix() for p in (root/'skills/raes/assets').rglob('*') if p.is_file() and '__pycache__' not in p.parts}
+    for n in sorted(templates^assets):
+        errors.append('Skill/template asset drift (missing on one side): '+n)
+    for n in sorted(templates&assets):
+        if (root/'templates'/n).read_bytes()!=(root/'skills/raes/assets'/n).read_bytes():
             errors.append('Skill/template asset drift: '+n)
-    skill=(root/'skills/codebook-author/SKILL.md').read_text()
+    skill=(root/'skills/raes/SKILL.md').read_text(encoding='utf-8')
     if not skill.startswith('---\n') or '\n---\n' not in skill[4:]:errors.append('Skill frontmatter missing')
     else:
         front=skill.split('---',2)[1]
         name=re.search(r'^name: (.+)$',front,re.M)
         desc=re.search(r'^description: (.+)$',front,re.M)
-        if not name or name[1]!='codebook-author':errors.append('Skill name mismatch')
+        if not name or name[1]!='raes':errors.append('Skill name mismatch')
         if not desc or not 1<=len(desc[1])<=1024:errors.append('Skill description length invalid')
     if len(skill.splitlines())>500:errors.append('Skill exceeds 500 lines')
     return errors

@@ -93,8 +93,8 @@
     },
     {
       "path": "examples/synthetic/pipeline.py",
-      "sha256": "bd0f8b00c79e7fcc4877a523beb75093d06dca821875d2487ad51717234db89a",
-      "size": 23176
+      "sha256": "097a145392394d43990626bbf6c3ba9674cdf065a4816b6576d346a17e00f41b",
+      "size": 23165
     },
     {
       "path": "examples/synthetic/reproduce.py",
@@ -127,7 +127,7 @@
       "size": 5142
     },
     {
-      "path": "skills/codebook-author/scripts/check_codebook.py",
+      "path": "skills/raes/scripts/check_codebook.py",
       "sha256": "553b1294f7e87334b06e21d9aafdbc1725ddff350dff7be2eee6ef4581e3142d",
       "size": 12663
     }

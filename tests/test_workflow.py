@@ -132,7 +132,7 @@ class CommandTests(unittest.TestCase):
     def test_install_standalone_and_no_overwrite(self):
         with tempfile.TemporaryDirectory(prefix='raes skill ') as d:
             result=self.call('tools/install_skill.py','--destination',d);self.assertEqual(result.returncode,0,result.stderr)
-            skill=Path(d)/'codebook-author'
+            skill=Path(d)/'raes'
             self.assertTrue((skill/'SKILL.md').is_file())
             check=self.call(skill/'scripts/check_codebook.py',ROOT/'examples/synthetic/inputs/codebook.json','--ready',cwd=Path(d))
             self.assertEqual(check.returncode,0,check.stdout+check.stderr)

@@ -20,7 +20,7 @@ DEMO = Path("examples/synthetic")
 
 
 def checker(root: Path):
-    path = root / "skills/codebook-author/scripts/check_codebook.py"
+    path = root / "skills/raes/scripts/check_codebook.py"
     spec = importlib.util.spec_from_file_location("raes_codebook_checker", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

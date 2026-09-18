@@ -1,0 +1,15 @@
+.env
+.env.*
+*.key
+secrets/
+.venv/
+venv/
+node_modules/
+__pycache__/
+*.pyc
+build/
+_internal/
+# Review before sharing. Ignore rules do not remove already tracked files.
+search/raw/
+papers/
+validation/raw/

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Copy the complete codebook-author skill into an explicit host skills directory."""
+"""Copy the complete raes skill into an explicit host skills directory."""
 from pathlib import Path
 import argparse
 import shutil
@@ -8,10 +8,10 @@ sys.dont_write_bytecode = True
 
 def main() -> int:
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--destination",type=Path,required=True,help="Parent skills directory; codebook-author is appended")
+    p.add_argument("--destination",type=Path,required=True,help="Parent skills directory; raes is appended")
     a=p.parse_args()
-    source=Path(__file__).resolve().parents[1]/"skills/codebook-author"
-    target=a.destination.expanduser()/"codebook-author"
+    source=Path(__file__).resolve().parents[1]/"skills/raes"
+    target=a.destination.expanduser()/"raes"
     try:
         if target.exists() or target.is_symlink():
             raise ValueError("Destination already exists; review and choose a fresh location")
