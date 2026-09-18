@@ -19,6 +19,7 @@ RAES is a workflow for evidence syntheses in which a model screens or codes pape
 
 ## Rules for every stage
 
+- Talk to the researcher in the language they use; the files stay in English, because prompts and templates are read by models and kept in one version.
 - Ask at most three related questions at a time. Skip what the files or the user have already answered.
 - Never invent a threshold, a sample size, a citation, an approval, a model choice or a budget. Write a proposal as a proposal in `plans/DECISIONS.md` and leave the decision to the researcher.
 - The eligibility criteria live in one file, `codebook/eligibility.json`. Every other file refers to that file and records its SHA-256. Never paraphrase the criteria.
