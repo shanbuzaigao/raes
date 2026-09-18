@@ -14,12 +14,12 @@ ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "templates/screening/screen_rules_template.py"
 
 RECORDS = [
-    {"record_id": "R1", "title": "A randomized trial of feedback with adults",
-     "abstract": "Adults took part in an experiment. Scores were recorded."},
-    {"record_id": "R2", "title": "Feedback in classrooms",
-     "abstract": "Students described their views in interviews."},
-    {"record_id": "R3", "title": "Feedback and learning: a systematic review",
-     "abstract": "We reviewed trials with adults."},
+    {"record_id": "R1", "title": "Large language models in the repeated prisoner's dilemma",
+     "abstract": "We let GPT-4 and Llama play the prisoner's dilemma for 100 rounds and record cooperation rates."},
+    {"record_id": "R2", "title": "Trust game behaviour across cultures",
+     "abstract": "Human participants played the trust game in three countries."},
+    {"record_id": "R3", "title": "Language-model agents in economic games: a systematic review",
+     "abstract": "We review studies in which LLM agents play the ultimatum game."},
 ]
 
 
@@ -66,8 +66,8 @@ class ScreeningSkeletonTests(unittest.TestCase):
             records = write_records(Path(tmp))
             texts = Path(tmp) / "fulltext"
             texts.mkdir()
-            (texts / "R1.txt").write_text("Adults were randomized in a trial. Mean scores improved.", encoding="utf-8")
-            (texts / "R2.txt").write_text("Students were randomized. Accuracy was measured.", encoding="utf-8")
+            (texts / "R1.txt").write_text("GPT-4 played the prisoner's dilemma. The cooperation rate was 62 percent.", encoding="utf-8")
+            (texts / "R2.txt").write_text("The trust game was played by an LLM. Trust was measured by the amount sent.", encoding="utf-8")
             out = Path(tmp) / "ft"
             self.assertEqual(module.main(["ft", str(records), "--texts", str(texts), "--output", str(out)]), 0)
             decisions = {row["record_id"]: row for row in csv.DictReader((out / "decisions.csv").open(encoding="utf-8"))}

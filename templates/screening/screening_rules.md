@@ -16,11 +16,12 @@ Keep the criterion IDs identical to the eligibility file.
 
 | Criterion | Checked at | Supporting terms or patterns | Blocking terms | Supported when | Evidence recorded |
 |---|---|---|---|---|---|
-| C1 {{LABEL}} | {{TA, FT}} | {{TERMS}} | {{TERMS_OR_NONE}} | {{RULE}} | matched term and surrounding text |
-| C2 {{LABEL}} | {{TA, FT}} | {{TERMS}} | {{TERMS_OR_NONE}} | {{RULE}} | matched term and surrounding text |
-| C3 {{LABEL}} | {{FT}} | {{TERMS}} | {{TERMS_OR_NONE}} | {{RULE}} | matched term and surrounding text |
+| C1 classic economic game | TA, FT | prisoner's dilemma, trust game, ultimatum game, dictator game, public goods, stag hunt, coordination game, social dilemma | video game, esports | at least one game term and no blocking term | matched term and surrounding text |
+| C2 generative AI makes the decisions | TA, FT | large language model, LLM, language model, generative AI, GPT, ChatGPT, Claude, Llama | {{TERMS_OR_NONE}} | at least one term | matched term and surrounding text |
+| C3 behavioural outcome reported | FT | cooperation, defection, offer, contribution, trust, acceptance | {{TERMS_OR_NONE}} | at least one term in the full text | matched term and surrounding text |
+| C4 {{LABEL}} | {{TA, FT}} | {{TERMS}} | {{TERMS_OR_NONE}} | {{RULE}} | matched term and surrounding text |
 
-Where a criterion cannot be decided from terms, say so here and leave it to the full-text phase or to a model that screens under a codebook: {{CRITERIA_NOT_DECIDABLE_BY_TERMS}}.
+The rows above are examples modelled on a review of language-model behaviour in classic economic games; replace them with your own criteria. Where a criterion cannot be decided from terms, say so here and leave it to the full-text reading or to a model that screens under a codebook. Example: whether the prompt steered the behaviour cannot be read from terms. {{CRITERIA_NOT_DECIDABLE_BY_TERMS}}
 
 ## 3. Decision logic
 

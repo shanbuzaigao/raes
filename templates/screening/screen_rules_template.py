@@ -30,23 +30,30 @@ RULES_VERSION = "0.1.0-draft"
 #   any_of    : the record supports the criterion if at least one term appears
 #   none_of   : the criterion fails if any of these terms appears
 #   check_at  : the phases that check this criterion ("ta", "ft")
-# Terms are matched as whole words, case-insensitively.
+# Terms are matched as whole words, case-insensitively. The example entries are
+# modelled on a review of how language models behave in classic economic games;
+# a criterion that terms cannot decide (for example, whether the prompt steered
+# the behaviour) is left to the full-text reading and is not listed here.
 CRITERIA = {
     "C1": {
-        "label": "population",
-        "any_of": ["adult", "adults", "participants", "students"],
-        "none_of": ["children", "child", "adolescents"],
+        "label": "classic economic game",
+        "any_of": ["prisoner's dilemma", "prisoners dilemma", "trust game", "ultimatum game",
+                   "dictator game", "public goods game", "public goods", "stag hunt",
+                   "coordination game", "social dilemma"],
+        "none_of": ["video game", "esports"],
         "check_at": ["ta", "ft"],
     },
     "C2": {
-        "label": "design",
-        "any_of": ["randomized", "randomised", "trial", "experiment", "experimental"],
+        "label": "generative AI makes the decisions",
+        "any_of": ["large language model", "large language models", "llm", "llms",
+                   "language model", "generative ai", "gpt", "chatgpt", "claude", "llama"],
         "none_of": [],
         "check_at": ["ta", "ft"],
     },
     "C3": {
-        "label": "outcome",
-        "any_of": ["score", "scores", "accuracy", "performance"],
+        "label": "behavioural outcome reported",
+        "any_of": ["cooperation", "cooperate", "cooperated", "defection", "defect",
+                   "offer", "offers", "contribution", "contributions", "trust", "acceptance"],
         "none_of": [],
         "check_at": ["ft"],
     },
@@ -54,7 +61,8 @@ CRITERIA = {
 
 # Optional pre-filter on the title only. Leave the list empty to disable it.
 # Report these removals under "records removed before screening" (PRISMA 2020).
-EXCLUDE_IF_TITLE_CONTAINS = ["systematic review", "meta-analysis", "study protocol"]
+EXCLUDE_IF_TITLE_CONTAINS = ["systematic review", "scoping review", "literature review",
+                             "meta-analysis", "study protocol"]
 
 SNIPPET_CHARS = 120
 MAX_SNIPPETS = 3
