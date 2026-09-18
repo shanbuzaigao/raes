@@ -1,6 +1,6 @@
 {
-  "AI2": "Check all target rows in every domain; challenge exact coordinates only.",
-  "AI3": "Use the same rules and original targets; independently resolve only the supplied coordinate. Do not see the AI2 value or rationale.",
+  "adjudicator": "Use the same rules and original targets; independently resolve only the supplied coordinate. Do not see the auditor's value or rationale.",
+  "auditor": "Check all target rows in every domain; challenge exact coordinates only.",
   "domains": [
     "inputs",
     "pairing_and_path",

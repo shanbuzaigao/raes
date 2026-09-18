@@ -2,32 +2,32 @@
   "attempt_log.json": [
     {
       "attempt": 1,
-      "request_id": "REQ-f490a17ae9b418fe4da2",
+      "request_id": "REQ-84932153dee148f7a6b1",
       "status": "VALID"
     },
     {
       "attempt": 1,
-      "request_id": "REQ-7fbd4e72f1718437b9aa",
+      "request_id": "REQ-472861263be781514c1e",
       "status": "VALID"
     },
     {
       "attempt": 1,
-      "request_id": "REQ-86448063883da803cf6f",
+      "request_id": "REQ-d1921872fedd087175d2",
       "status": "VALID"
     },
     {
       "attempt": 1,
-      "request_id": "REQ-ab2e508f869502001038",
+      "request_id": "REQ-608ff1c49c937102bf3a",
       "status": "VALID"
     },
     {
       "attempt": 1,
-      "request_id": "REQ-b2085caa52ca0e978b8b",
+      "request_id": "REQ-efd45274f05278673985",
       "status": "VALID"
     },
     {
       "attempt": 1,
-      "request_id": "REQ-c5e3548a0d7be0b2fe46",
+      "request_id": "REQ-6c445d9519b59ed6297a",
       "status": "VALID"
     },
     {
@@ -58,22 +58,22 @@
     },
     {
       "attempt": 1,
-      "request_id": "REQ-9511711d4909d63a99ae",
+      "request_id": "REQ-d8dbc1a478b0847998f6",
       "status": "VALID"
     },
     {
       "attempt": 1,
-      "request_id": "REQ-24cb8f8e1cdd58babaf4",
+      "request_id": "REQ-e72e159b319c97100e82",
       "status": "VALID"
     },
     {
       "attempt": 1,
-      "request_id": "REQ-cbdea2c5d104f4c832a9",
+      "request_id": "REQ-7027c31f41935857a04e",
       "status": "VALID"
     },
     {
       "attempt": 1,
-      "request_id": "REQ-548b399b06ab637e55f1",
+      "request_id": "REQ-0af05352068ac48fa5ea",
       "status": "VALID"
     }
   ],
@@ -330,7 +330,7 @@
         "pairing_and_path",
         "moderators"
       ],
-      "request_id": "REQ-9511711d4909d63a99ae",
+      "request_id": "REQ-d8dbc1a478b0847998f6",
       "status": "CHALLENGE"
     },
     {
@@ -345,7 +345,7 @@
         "pairing_and_path",
         "moderators"
       ],
-      "request_id": "REQ-cbdea2c5d104f4c832a9",
+      "request_id": "REQ-7027c31f41935857a04e",
       "status": "PASS"
     },
     {
@@ -360,7 +360,7 @@
         "pairing_and_path",
         "moderators"
       ],
-      "request_id": "REQ-548b399b06ab637e55f1",
+      "request_id": "REQ-0af05352068ac48fa5ea",
       "status": "PASS"
     }
   ],
@@ -402,8 +402,8 @@
   "corrections.json": [
     {
       "Row_UID": "SYN-R000001",
-      "adjudicator_request": "REQ-24cb8f8e1cdd58babaf4",
-      "auditor_request": "REQ-9511711d4909d63a99ae",
+      "adjudicator_request": "REQ-e72e159b319c97100e82",
+      "auditor_request": "REQ-d8dbc1a478b0847998f6",
       "evidence": {
         "line": 11,
         "quote": "Treatment: N = 40; mean = 65.0; SD = 10.0; SE = 1.58; outcome = task score.",
@@ -478,8 +478,8 @@
       "final": "exclude",
       "majority": "exclude",
       "requests": [
-        "REQ-f490a17ae9b418fe4da2",
-        "REQ-7fbd4e72f1718437b9aa"
+        "REQ-84932153dee148f7a6b1",
+        "REQ-472861263be781514c1e"
       ],
       "source_id": "SYN004.md",
       "votes": [
@@ -491,9 +491,9 @@
       "final": "include",
       "majority": "include",
       "requests": [
-        "REQ-86448063883da803cf6f",
-        "REQ-ab2e508f869502001038",
-        "REQ-b2085caa52ca0e978b8b"
+        "REQ-d1921872fedd087175d2",
+        "REQ-608ff1c49c937102bf3a",
+        "REQ-efd45274f05278673985"
       ],
       "source_id": "SYN006.md",
       "votes": [
@@ -505,7 +505,7 @@
     {
       "final": "exclude",
       "requests": [
-        "REQ-c5e3548a0d7be0b2fe46"
+        "REQ-6c445d9519b59ed6297a"
       ],
       "source_id": "SYN005.md",
       "stage": "TA"

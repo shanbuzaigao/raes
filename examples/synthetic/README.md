@@ -5,8 +5,8 @@
 **Everything here is invented.** Seven short fictional reports, eight search
 records, saved requests, simulated AI answers and a simulated human adjudication
 illustrate the protocol. There are no real authors, participants, DOIs, study data,
-API responses, API keys or model-accuracy measurements. An answer marked AI2 or AI3
-is a hand-authored fixture assigned that role, not a response from a live model.
+API responses, API keys or model-accuracy measurements. An auditor's or adjudicator's
+answer is a hand-authored fixture assigned that role, not a response from a live model.
 
 ## One command
 
@@ -35,7 +35,7 @@ while replaying; that is a tripwire, not an OS security sandbox for untrusted co
 | SYN001 has preprint/journal reports | The same underlying adults contribute only once |
 | SYN005 is a narrative review; SYN004 uses children | TA and FT exclusions remain distinct |
 | SYN006 uses “step cards” | A deliberately narrow keyword rule creates a false exclusion; two reviewers disagree, a third supports inclusion, and bounded adjudication rescues it |
-| SYN001 reports SD 10.0 and SE 1.58 | The simulated coder mistakes SE for SD; AI2 and blinded AI3 independently agree on 10.0 |
+| SYN001 reports SD 10.0 and SE 1.58 | The simulated coder mistakes SE for SD; the auditor and the blinded adjudicator independently agree on 10.0 |
 | SYN002 has one malformed answer before a valid retry | A failed attempt is not an exclusion, a pass, or a new observation |
 | SYN003 lacks SDs | The study and both arm rows remain coded; the comparison is explicitly uncomputable |
 
@@ -63,7 +63,7 @@ inferential claim about a synthetic population. See [formula details](NUMERICAL_
 | S6 | Printed synthetic Study-ID and report version; not a general similarity matcher |
 | S7 | Not needed: all available statistics are in the invented texts |
 | S8 | One paper per request; type/column checks plus exact line/quote provenance |
-| S9 | Frozen computable pre-g census; original targets, independent challenge and hidden-proposal AI3; missing-statistic rows are outside this specific audit |
+| S9 | Frozen computable pre-g census; original targets, independent challenge and an adjudicator who does not see the proposal; missing-statistic rows are outside this specific audit |
 | S10 | Read-only stable ID lookup, separate correction log and two numerical paths |
 | S11 | Accounting, numerical and fixture consistency checks; no regression, pooling, bias diagnostic or power study |
 | S12 | Frozen inputs, saved outputs, output hashes and fresh-directory reconstruction |
@@ -75,8 +75,9 @@ bounded specialization. It must not be used as an automatic screen for real pape
 
 `inputs/requests.jsonl` preserves exact structured request payloads and their SHA-256
 identities. `inputs/responses.jsonl` retains the raw simulated text of all attempts.
-The same coding-audit codebook is included in both AI2 and AI3 requests. AI3 sees the
-original target rows and disputed coordinate, not the proposed correction or rationale.
+The same coding-audit codebook is included in the auditor's and the adjudicator's requests.
+The adjudicator sees the original target rows and the disputed coordinate, not the
+proposed correction or rationale.
 Full-text screening inputs do not include the earlier screen result or reason.
 
 Outputs include `coded_original.json`, `coded_reconciled.json`, `corrections.json`,

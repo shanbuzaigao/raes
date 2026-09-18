@@ -8,7 +8,7 @@
     },
     {
       "path": "examples/synthetic/expected/results.json",
-      "sha256": "1b263e560c16848f271dd1fd6db274a9b7e86b325da305d07b8c2989e2cb5791",
+      "sha256": "ac2d6e19d1037504d07e1781673c5837d64206bd7acf15913740d1992c493a36",
       "size": 12844
     },
     {
@@ -68,12 +68,12 @@
     },
     {
       "path": "examples/synthetic/inputs/requests.jsonl",
-      "sha256": "e44cc052c1fa70ac0c2a67c6ba03b59505c71edc58c83d8437f8588e525950fd",
-      "size": 183871
+      "sha256": "52c771e2e1eff7e90aae90f211205213b08d8e44870ed01daf86240ba1d30b5c",
+      "size": 184066
     },
     {
       "path": "examples/synthetic/inputs/responses.jsonl",
-      "sha256": "c603430eecf0ee93efc75ae357c7297cb378bb40cf012c00d78ea075b1b09931",
+      "sha256": "fc95c1b0e9bf35d29a8e4b875c4cd01f7c2a6e875fef22dcbbea1458c59bdccb",
       "size": 10718
     },
     {
@@ -83,23 +83,23 @@
     },
     {
       "path": "examples/synthetic/inputs/task_instructions.json",
-      "sha256": "fff4f77e58e8ea064d6541dcf501fb3e81190fa3198e2cdca28c846a5c6c3bce",
-      "size": 1409
+      "sha256": "466d159d4d82ce834dfd9816c01f0ae857ed89ef288af0695be4a0ae1062fdea",
+      "size": 1413
     },
     {
       "path": "examples/synthetic/inputs/validation.json",
-      "sha256": "109b893d9d22d70f34e48909d26f0fe63c556fc644046a7e1bfe5e941ae0fad1",
-      "size": 264
+      "sha256": "13435c806cb02c14317e6e22aa207e51771938acf6729745fdf0d7de2ae22754",
+      "size": 277
     },
     {
       "path": "examples/synthetic/inputs/validation_codebook.json",
-      "sha256": "5ae4644fa5e27b32839ce64f88b32f9ef12c6a0f82b600e6015e82b92d4513db",
-      "size": 935
+      "sha256": "70162142e8be6987b69ed8e0fc4b5911654ace1e61de2eab8616bc3122cd8aee",
+      "size": 953
     },
     {
       "path": "examples/synthetic/pipeline.py",
-      "sha256": "6ca83de54dcc51c08d1184735639d2c7c24bb8d9d1e5b902a803ade8c976cdfc",
-      "size": 23218
+      "sha256": "d0b4a656c5d4fc9c772f4047ddeb10af169e2fa929eeea1a169ce94ceff519c9",
+      "size": 23234
     },
     {
       "path": "examples/synthetic/reproduce.py",

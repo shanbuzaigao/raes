@@ -93,7 +93,7 @@ class ReplayTests(unittest.TestCase):
             if mode in {'coding_audit','coding_adjudicator'}:
                 for row in request['targets']:self.assertFalse({'g','SE_g','CI95_L','CI95_U'} & set(row))
             if mode=='coding_adjudicator':
-                self.assertFalse({'proposed','rationale','AI2_answer'} & set(request))
+                self.assertFalse({'proposed','rationale','auditor_answer'} & set(request))
                 self.assertEqual(set(request['coordinate']),{'Row_UID','field'})
         aud=[r['audit_codebook'] for r in rp.requests.values() if r['mode'] in {'coding_audit','coding_adjudicator'}]
         self.assertTrue(all(x==aud[0] for x in aud))

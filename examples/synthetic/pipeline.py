@@ -135,8 +135,8 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
     audit_rules=load_json(folder/"validation_codebook.json")
     config=load_json(folder/"validation.json")
     if config != {"schema_version":1,"FT_sample":"census_of_exclusions","TA_sample":"census_of_exclusions",
-                  "coding_frame":"computable_pre_g_census","FT_routing":"two_primary_then_third_on_disagreement",
-                  "coding_routing":"AI2_then_blinded_AI3_on_challenge"}:
+                  "coding_frame":"computable_pre_g_census","FT_routing":"two_auditors_then_third_on_disagreement",
+                  "coding_routing":"auditor_then_blinded_adjudicator_on_challenge"}:
         raise ValueError("Unsupported example configuration; this runner implements the documented census only")
     if audit_rules["eligibility_sha256"] != cb["eligibility"]["sha256"]:
         raise ValueError("Audit and coding eligibility differ")
@@ -200,11 +200,11 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
     for rec in ft_ex:
         sid=rec["source_id"]
         votes=[];rids=[]
-        for reviewer in ("primary_A","primary_B"):
+        for reviewer in ("auditor_1","auditor_2"):
             request=req("screening_audit",sid,reviewer=reviewer,stage="FT")
             votes.append(rp.get(request,lambda obj:check_screen(obj,request["sources"]))["decision"]);rids.append(request_id(request))
         if votes[0]!=votes[1]:
-            request=req("screening_audit",sid,reviewer="tie_breaker",stage="FT")
+            request=req("screening_audit",sid,reviewer="third",stage="FT")
             votes.append(rp.get(request,lambda obj:check_screen(obj,request["sources"]))["decision"]);rids.append(request_id(request))
         majority="include" if votes.count("include")>votes.count("exclude") else "exclude"
         final="exclude"
@@ -220,7 +220,7 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
         screening_audit.append({"source_id":sid,"votes":votes,"majority":majority,"final":final,"requests":rids})
     if consumed_human!=set(human):raise ValueError("Unused human adjudication")
     for rec in ta_ex:
-        request=req("screening_audit",rec["source_id"],reviewer="abstract_A",stage="TA")
+        request=req("screening_audit",rec["source_id"],reviewer="auditor",stage="TA")
         obj=rp.get(request,lambda obj:check_screen(obj,request["sources"]))
         # No retain candidate occurs in this fixture. A real candidate must go through FT.
         if obj["decision"]!="exclude":raise ValueError("TA retain requires the FT candidate branch, absent from this tiny example")
@@ -319,14 +319,14 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
                 if lint.value_errors(c["proposed"],executor_specs[c["field"]]):raise ValueError("Invalid proposed type/value")
                 if c["rule"] not in audit_rules["rule_ids"]:raise ValueError("Unknown audit rule")
                 evidence_check(c["evidence"],{representatives[study]["source_id"]:sources[representatives[study]["source_id"]]})
-        request=req("coding_audit",representatives[study]["source_id"],targets=rows,reviewer="AI2")
+        request=req("coding_audit",representatives[study]["source_id"],targets=rows,reviewer="auditor")
         answer=rp.get(request,check_audit)
         coding_audit.append({"Study_ID":study,"request_id":request_id(request),**answer})
         for challenge in answer["challenges"]:
             uid,field=challenge["Row_UID"],challenge["field"]
             # Only a coordinate identifies the disputed item, not the first proposal or reason.
             adjud_request=req("coding_adjudicator",representatives[study]["source_id"],targets=rows,
-                              coordinate={"Row_UID":uid,"field":field},reviewer="AI3")
+                              coordinate={"Row_UID":uid,"field":field},reviewer="adjudicator")
             def check_adjud(obj):
                 if set(obj)!={"Row_UID","field","value","rule","evidence"} or obj["Row_UID"]!=uid or obj["field"]!=field:
                     raise ValueError("Adjudication coordinate mismatch")
