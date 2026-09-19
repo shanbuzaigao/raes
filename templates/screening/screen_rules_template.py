@@ -15,7 +15,7 @@ so that it is reported as "not retrieved" in the PRISMA counts, not as an
 exclusion. Every other kept record needs its text file, or the program stops.
 
 records.csv needs the columns record_id, title and abstract. It is written in
-stage S2, from a reference manager's export or by the skill's dedupe_records.py;
+stage S2, from a reference manager's export or by the project's search/dedupe_records.py;
 records removed there by document type never reach this program. The title-and-abstract phase
 reads nothing else. For the full-text phase, fulltext/<record_id>.txt holds the
 text extracted from each PDF; use one extraction tool for the whole project and

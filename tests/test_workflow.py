@@ -72,6 +72,10 @@ class CodebookTests(unittest.TestCase):
             rules['criteria'][0]['clarifications']=[]
             path.write_text(pretty_json(rules))
             self.assertFalse(CHECKER.check_eligibility(path)['checks_passed'])
+            rules['criteria'][0]['clarifications']='Include: adults.'
+            del rules['mixed_condition_rule']
+            path.write_text(pretty_json(rules))
+            self.assertFalse(CHECKER.check_eligibility(path)['checks_passed'],'the rule for mixed conditions is required')
     def test_row_columns_and_duplicates(self):
         cb=load_json(ROOT/'examples/synthetic/inputs/codebook.json')
         row={v['name']:v['example'] for v in cb['variables'] if v['owner']=='executor'}

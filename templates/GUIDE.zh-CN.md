@@ -69,7 +69,7 @@ python tools/new_project.py ../my-evidence-project
 
 写的时候留意一点：澄清里关于题目摘要阶段的说法，决定了规则筛选能排除多少。写成"摘要没说就保留"，召回有保障，但大部分记录都要去取全文；写成"摘要必须写明才保留"，则相反。这个取舍在这里就要想好。
 
-这个文件可以单独检查，不用等 codebook 写好。下面的命令核对结构，并打印它的 SHA-256；没有占位符之后加 `--ready`：
+这个文件可以单独检查，不用等 codebook 写好。下面的命令核对结构，并打印它的 SHA-256；没有占位符之后加 `--ready`。对这个文件，`--ready` 只表示没有占位符了；标准是否批准，记在 `plans/DECISIONS.md` 里，检查通过不等于批准：
 
 ```sh
 python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eligibility.json
@@ -107,13 +107,15 @@ python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eli
 
 **运行**
 
+在项目文件夹下运行。脚本是建项目时复制进 `search/` 的，属于项目自己，以后重跑不受 skill 更新的影响。
+
 ```sh
-python tools/dedupe_records.py --inputs search/raw/<快照>/* --rules search/dedup_rules.json --output search/dedup/<新文件夹>
+python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/dedup_rules.json --output search/dedup/<新文件夹>
 ```
 
 它读 PubMed（MEDLINE）格式、Web of Science 纯文本和 RIS 三种导出文件，按 PubMed 编号、DOI、"标题加年份"依次配对；编号互相矛盾的从不合并。输出四个文件：`records.csv`（筛选程序读的就是它）、`ledger.csv`（每条输入记录的去向和依据）、`review_pairs.csv`（拿不准的配对）、`summary.json`（各项数量，以及"检索到的 = 去掉的 + 进入筛选的"这项核对）。
 
-拿不准的配对由你决定：建一个 CSV，四列 `record_id_a`、`record_id_b`、`decision`（`duplicate` 或 `not_duplicate`）、`note`，再用 `--decisions <文件>` 重跑到一个新文件夹。按文献类型去掉记录之前，先在导出的标签上试一遍规则，并抽读一些被去掉的记录：Web of Science 会按参考文献数量把一些原始研究标成 "Review"。
+拿不准的配对由你决定：建一个 CSV，四列 `record_id_a`、`record_id_b`、`decision`（`duplicate` 或 `not_duplicate`）、`note`，再用 `--decisions <文件>` 重跑到一个新文件夹。同一项研究的预印本和期刊版不算重复：答 `not_duplicate`，留到同研究判重（S6）去归并。按文献类型去掉记录之前，先在导出的标签上试一遍规则，并抽读一些被去掉的记录：Web of Science 会按参考文献数量把一些原始研究标成 "Review"。
 
 ## 2. 筛选规则 `screening/screening_rules.md`（筛选，S3、S4）
 
@@ -567,7 +569,7 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 - `plans/DECISIONS.md`（程序生成）：所有操作选择的记录。每个提议先写在这里，标明是提议还是已批准。文件开头有一张索引表（编号、决定了什么、状态、日期），随时更新，读的人不用往下翻；除了这张索引和提议的状态行，其余内容只追加、不修改。日志里的时间用 UTC，写之前先读系统时钟，不要估。
 - `plans/STAGE_PLAN.md` 是空白的计划表。每个调用 AI 的阶段复制一份，改名为 `<阶段>_PLAN.md` 再填。
 - `raes_templates.json`（程序生成）：记下建项目时复制了哪些模板、各自的哈希，以及当时 skill 的版本。skill 更新之后，`python tools/check_templates.py --project <项目>` 会告诉你哪些文件还是没填过的旧模板（`outdated`）、哪些已经填过（`filled`）；加 `--refresh` 只替换没填过的那些，填过的一律不动。
-- `pipeline.json` 和 `run_pipeline.py`：一条命令重跑所有由程序完成的阶段，并把每个输出和正式输出比对。每做完一个阶段，就在 `pipeline.json` 的 `stages` 里加一项：`name` 阶段名；`command` 命令（写成列表，输出目录用 `{out}` 表示）；`outputs` 正式输出文件对应重跑出来的哪个文件（默认逐字节比对；带时间戳注释的文件写成 `{"rerun": "...", "compare": "records"}`，只比对非注释行）。`fixed_files`、`fixed_folders` 列出冻结的输入和程序；浏览器取全文、调用模型这类不能重跑的步骤，把它们的产物列在这里。文件里的 `example` 是一个例子，程序不读它。规则、程序或输入经批准改动之后，运行 `python run_pipeline.py --write-manifest` 记下新的预期状态（旧清单自动存进 `archive/`），把新清单的哈希写进对应的决策；平时运行 `python run_pipeline.py`，它把结果写到项目之外，遇到第一处不一致就停下并指出位置。
+- `pipeline.json` 和 `run_pipeline.py`：一条命令重跑所有由程序完成的阶段，并把每个输出和正式输出比对。每做完一个阶段，就在 `pipeline.json` 的 `stages` 里加一项：`name` 阶段名；`command` 命令（写成列表，输出目录用 `{out}` 表示）；`outputs` 正式输出文件对应重跑出来的哪个文件（默认逐字节比对；带时间戳注释的文件写成 `{"rerun": "...", "compare": "records"}`，只比对非注释行）。`fixed_files`、`fixed_folders` 列出冻结的输入和程序；浏览器取全文、调用模型这类不能重跑的步骤，把它们的产物列在这里。文件里的 `example` 是一个例子，程序不读它。规则、程序或输入经批准改动之后，运行 `python run_pipeline.py --write-manifest` 记下新的预期状态（旧清单自动存进 `archive/`），把新清单的哈希写进对应的决策；平时运行 `python run_pipeline.py`，它把结果写到项目之外，遇到第一处不一致就停下并指出位置。加 `--copy` 时，它先把清单里列的文件复制到项目之外、逐个核对哈希，再在副本里重跑；为此每个阶段用到的程序都要列在 `fixed_files` 里。
 - `releases/LEFT_OUT.txt`：做发布时不记入清单的路径，每行一个。默认只有 `pipeline_report.md`，因为每次运行都会重写它。
 
 ## 10. 检查器提示对照
@@ -598,4 +600,4 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 5. 试跑三到五篇；有问题改规则（改一般规则，不改单篇），升版本。
 6. 冻结（`tools/freeze.py` 写哈希清单），然后运行。运行程序是你自己的；RAES 不向任何服务商发请求。
 7. 更新 `CURRENT_STATUS.md` 和 `plans/DECISIONS.md`。
-8. 阶段完成后做一次发布：`python tools/release.py --project <项目> create <名字>`，再 `activate <名字>`。它原地记录每个文件的哈希，不复制文件；之后 `verify` 能查出任何改动。重建全部结果时，用 `python tools/run_offline.py -- <命令>` 在断网状态下跑。
+8. 阶段完成后做一次发布：`python tools/release.py --project <项目> create <名字>`，再 `activate <名字>`。它原地记录每个文件的哈希，不复制文件；之后 `verify` 能查出任何改动。决策日志也在清单里，所以关于这次发布的那条日志要在 `create` 之前写；`activate` 会在发布文件夹里自动写一份 `ACTIVATION.md`（时间、清单哈希、它取代了哪个发布），事后才知道的内容记在那里。重建全部结果时，用 `python tools/run_offline.py -- <命令>` 在断网状态下跑。

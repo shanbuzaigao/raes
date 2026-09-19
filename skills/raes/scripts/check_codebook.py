@@ -124,7 +124,8 @@ def check_eligibility(path: Path, ready: bool = False) -> dict:
         else:
             criteria_errors(criteria, emit, required_text)
         if isinstance(rules, dict):
-            required_text(rules, "version", "eligibility")
+            for name in ("version", "mixed_condition_rule"):
+                required_text(rules, name, "eligibility")
         placeholders(rules)
     except (OSError, ValueError, TypeError, KeyError, OverflowError) as exc:
         emit("error", "file", str(exc))
@@ -257,6 +258,9 @@ def check(path: Path, ready: bool = False) -> dict:
                         emit("error","eligibility.criteria","nonempty array required")
                     else:
                         criteria_errors(criteria,emit,required_text)
+                    if isinstance(rules,dict):
+                        for name in ("version","mixed_condition_rule"):
+                            required_text(rules,name,"eligibility")
                     placeholders(rules,"eligibility")
     except (OSError,ValueError,TypeError,KeyError,OverflowError) as exc:
         emit("error","file",str(exc))
@@ -268,7 +272,7 @@ def check(path: Path, ready: bool = False) -> dict:
 def main() -> int:
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("codebook",type=Path,help="the codebook, or with --eligibility the eligibility file")
-    p.add_argument("--ready",action="store_true")
+    p.add_argument("--ready",action="store_true",help="placeholders become errors. For a codebook it also requires status ready and an approval. For an eligibility file it means only that no placeholder is left: the approval of the criteria is a decision recorded in plans/DECISIONS.md")
     p.add_argument("--eligibility",action="store_true",help="check an eligibility file on its own and print its SHA-256 (stage S0, before a codebook exists)")
     a=p.parse_args()
     report=check_eligibility(a.codebook, a.ready) if a.eligibility else check(a.codebook, a.ready)

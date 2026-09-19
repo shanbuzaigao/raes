@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "skills/raes/scripts/dedupe_records.py"
+SCRIPT = ROOT / "templates/search/dedupe_records.py"
 RULES = ROOT / "templates/search/dedup_rules.json"
 
 T_WALK = "A randomized trial of walking for depression in older adults"
@@ -102,6 +102,23 @@ class DedupeTests(unittest.TestCase):
         old = module.parse_wos(wos("A1993LX74100006", "Old record one about exercise", 1993, "Article")
                                + wos("A1993LQ74100006", "Old record two about exercise", 1993, "Article"))
         self.assertEqual([r["record_id"] for r in old], ["WOSA1993LX74100006", "WOSA1993LQ74100006"])
+
+    def test_ris_labels_and_identifiers(self):
+        module = load_module()
+        shared = ["AU  - Bowe, A", "TI  - Gum chewing after caesarean section a trial", "PY  - 2022"]
+        journal = "\n".join(["TY  - JOUR", *shared, "M3  - Research Support, Non-U.S. Gov't; Randomized Controlled Trial",
+                             "M3  - Journal Article", "DO  - 10.1/journal", "ER  - ", "", ""])
+        preprint = "\n".join(["TY  - UNPB", *shared, "DO  - 10.1/preprint", "ER  - ", "", ""])
+        first = module.parse_ris(journal + preprint, "europepmc")
+        self.assertEqual(first[0]["doc_types"],
+                         ["JOUR", "Research Support, Non-U.S. Gov't", "Randomized Controlled Trial", "Journal Article"])
+        ids = {r["doi"]: r["record_id"] for r in first}
+        swapped = {r["doi"]: r["record_id"] for r in module.parse_ris(preprint + journal, "europepmc")}
+        self.assertEqual(ids, swapped, "the identifiers do not depend on the order of the records in the file")
+        self.assertEqual(len(set(ids.values())), 2)
+        self.assertFalse(any(i.endswith("-2") for i in ids.values()))
+        # A trial label behind a neutral label now protects the record from removal.
+        self.assertFalse(module.removable(first[0], project_rules()["doc_type_removal"]))
 
     def test_command_with_three_formats(self):
         module = load_module()

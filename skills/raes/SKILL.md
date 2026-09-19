@@ -4,7 +4,7 @@ description: Guide an evidence synthesis (a meta-analysis, a systematic review o
 license: CC-BY-4.0 for instructions (LICENSE-docs.md); MIT for scripts (LICENSE-code.txt)
 compatibility: Claude Code or another host that supports Agent Skills. Local checks need Python 3.10+ and file access. No network or API key.
 metadata:
-  raes-version: "0.4.0"
+  raes-version: "0.4.1"
 ---
 
 # RAES

@@ -10,6 +10,9 @@ pipeline_report.md.
 
     python run_pipeline.py                     # rerun and compare; exit code 0 when everything is reproduced
     python run_pipeline.py --output <folder>   # choose the rerun folder (new, outside the project)
+    python run_pipeline.py --copy              # first copy every file the manifest names to the rerun folder, check
+                                               # each copy by hash, and rerun inside that copy; every program a
+                                               # stage runs has to be listed under fixed_files for this
     python run_pipeline.py --write-manifest    # only after an approved change of rules, programs or inputs:
                                                # records the current frozen inputs and formal outputs as expected;
                                                # the previous manifest is kept in archive/
@@ -124,10 +127,29 @@ def rerun(config: dict, out: Path) -> tuple[bool, list[str]]:
     return True, lines
 
 
+def rerun_in_copy(out: Path) -> int:
+    """Copy what the manifest names to a fresh place, check every copy by hash, and rerun there."""
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    names = sorted(set(manifest["fixed"]) | set(manifest["outputs"]) | {CONFIG.name, MANIFEST.name, Path(__file__).name})
+    copy = out / "project"
+    for name in names:
+        target = copy / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(PROJECT / name, target)
+        if sha256_of(target) != sha256_of(PROJECT / name):
+            raise ValueError(f"the copy of {name} differs from its source")
+    print(f"copied {len(names)} files to {copy}", flush=True)
+    done = subprocess.run([sys.executable, Path(__file__).name, "--output", str(out / "rerun")], cwd=copy)
+    if (copy / REPORT.name).is_file():
+        shutil.copy2(copy / REPORT.name, REPORT)
+    return done.returncode
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--output", type=Path, help="a new folder outside the project for the rerun outputs")
     parser.add_argument("--write-manifest", action="store_true")
+    parser.add_argument("--copy", action="store_true", help="copy the files the manifest names to the rerun folder and rerun inside the copy")
     args = parser.parse_args(argv)
     try:
         config = load_config()
@@ -144,6 +166,8 @@ def main(argv: list[str] | None = None) -> int:
         if out == PROJECT or PROJECT in out.parents:
             raise ValueError("the rerun folder must be outside the project")
         out.mkdir(parents=True)
+        if args.copy:
+            return rerun_in_copy(out)
         ok, lines = rerun(config, out)
     except (OSError, ValueError, KeyError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

@@ -27,7 +27,7 @@ FOLDERS = {
     "plans": "Stage plans, open decisions and change-impact records. STAGE_PLAN.md is the blank form: copy it to <STAGE>_PLAN.md for each stage that calls an AI and fill the copy.",
     "codebook": "Canonical eligibility and coding rules.",
     "prompts": "Prompt templates; render only after filling and reviewing the codebook.",
-    "search": "Exact queries, dates, raw exports, the deduplication rules and ledger. dedup_rules.json is read by the skill's dedupe_records.py; a project that removes duplicates in a reference manager does not need it.",
+    "search": "Exact queries, dates, raw exports, the deduplication rules and ledger. dedupe_records.py and dedup_rules.json are the project's own copies of the deduplication script and its rules; a project that removes duplicates in a reference manager does not need them.",
     "screening": "Screening rules and program, record decisions, same-study rule.",
     "papers": "Authorized sources and per-paper preparation; do not publish by default.",
     "validation": "One folder per audit: screening/ and coding/, each with memo, codebook, config and prompts; frozen frames and auditor outputs.",
@@ -38,7 +38,7 @@ FOLDERS = {
 }
 DECISIONS = """# Decisions
 
-No operational choices have been approved yet.
+Approved decisions are marked in the index below.
 
 ## Index
 

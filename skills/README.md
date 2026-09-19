@@ -13,7 +13,7 @@ The folder follows the [Agent Skills specification](https://agentskills.io/speci
 | `raes/assets/` | A copy of the repository's `templates/` folder, so the skill works on its own after installation |
 | `raes/scripts/new_project.py` | Creates a draft project folder from the templates |
 | `raes/scripts/check_templates.py` | After an update of the skill: shows which templates of an existing project are outdated, and replaces only the copies that are still unfilled |
-| `raes/scripts/dedupe_records.py` | Stage S2 without a reference manager: removes duplicates from exports in PubMed, Web of Science or RIS format and writes the records table, a ledger, the uncertain pairs and the counts |
+| `raes/assets/search/dedupe_records.py` | Copied into every new project. Stage S2 without a reference manager: removes duplicates from exports in PubMed, Web of Science or RIS format and writes the records table, a ledger, the uncertain pairs and the counts |
 | `raes/scripts/check_codebook.py` | Checks a codebook, in draft mode or in `--ready` mode |
 | `raes/scripts/check_dispersion.py` | Before a coding audit is adjudicated, flags standard deviations that look like standard errors |
 | `raes/scripts/release.py` | Writes a release of a project as a hash inventory of the files in place, names the active release, and verifies the working copy against it |

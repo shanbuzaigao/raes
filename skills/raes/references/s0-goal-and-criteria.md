@@ -17,7 +17,7 @@ Goal: the research question, the numbered eligibility criteria and the outcome m
 
 - Every criterion can be answered by reading a paper: one can point to the passage that shows whether it is met.
 - The criteria are numbered and the file has a version. `clarifications` is one text or a list of texts.
-- `python scripts/check_codebook.py --eligibility codebook/eligibility.json` checks the file on its own, before any codebook exists, and prints its SHA-256; add `--ready` once no placeholder is left.
+- `python scripts/check_codebook.py --eligibility codebook/eligibility.json` checks the file on its own, before any codebook exists, and prints its SHA-256; it requires the version and `mixed_condition_rule`. Add `--ready` once no placeholder is left. For this file `--ready` means only that: the approval of the criteria is a decision in `plans/DECISIONS.md`, and a passing check is not an approval.
 - Compute the SHA-256 of the exact file bytes, for example `python -c "import hashlib,pathlib; print(hashlib.sha256(pathlib.Path('codebook/eligibility.json').read_bytes()).hexdigest())"`, and keep it: the screening rules, the audit codebooks and the coding codebook all record it.
 
 ## Watch for

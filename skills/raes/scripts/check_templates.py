@@ -74,7 +74,8 @@ def main(argv: list[str] | None = None) -> int:
         if refreshed:
             record["refreshed_to"] = skill_version()
             record_path.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
-        print(f"project templates from RAES {record.get('raes_version', 'unknown')}; skill is {skill_version()}. "
+        origin = record.get("raes_version", "unknown") + (f", refreshed to {record['refreshed_to']}" if record.get("refreshed_to") else "")
+        print(f"project templates from RAES {origin}; skill is {skill_version()}. "
               + ", ".join(f"{n} {name}" for name, n in counts.items()) + (f"; refreshed {len(refreshed)}" if refreshed else ""))
     except (OSError, ValueError, KeyError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

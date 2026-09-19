@@ -49,7 +49,10 @@ class ReleaseTests(unittest.TestCase):
             # Verifying without a name needs an active release.
             self.assertEqual(call(RELEASE, *p, "verify").returncode, 2)
             self.assertEqual(call(RELEASE, *p, "activate", "2026-01-01_v1").returncode, 0)
-            self.assertEqual(call(RELEASE, *p, "verify").returncode, 0)
+            record = (project / "releases/2026-01-01_v1/ACTIVATION.md").read_text(encoding="utf-8")
+            self.assertIn("Supersedes: none", record)
+            self.assertIn(call(RELEASE, *p, "verify", "2026-01-01_v1").stdout.split()[1].rstrip(":"), record)
+            self.assertEqual(call(RELEASE, *p, "verify").returncode, 0, "the activation record is outside every inventory")
             # A report that every run rewrites may change; an inventoried file may not.
             (project / "run_report.md").write_text("another run\n", encoding="utf-8")
             self.assertEqual(call(RELEASE, *p, "verify").returncode, 0)
@@ -64,6 +67,10 @@ class ReleaseTests(unittest.TestCase):
             second = [f["path"] for f in load_json(project / "releases/2026-01-02_v2/MANIFEST.json")["files"]]
             self.assertFalse([x for x in second if x.startswith("releases/2026-")])
             self.assertEqual(call(RELEASE, *p, "verify", "2026-01-02_v2").returncode, 0)
+            self.assertEqual(call(RELEASE, *p, "activate", "2026-01-02_v2").returncode, 0)
+            self.assertIn("Supersedes: 2026-01-01_v1",
+                          (project / "releases/2026-01-02_v2/ACTIVATION.md").read_text(encoding="utf-8"))
+            self.assertEqual(call(RELEASE, *p, "verify").returncode, 0)
 
     def test_bad_names_are_refused(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.4.1 (2026-09-18)
+
+Ten small fixes from a retrial of version 0.4.0, which ran stages S0 to S2 and a release on a small topic. Every new tool worked as documented.
+
+- The eligibility check requires `mixed_condition_rule`. The references say that `--ready` on an eligibility file means only that no placeholder is left; the approval of the criteria is a decision in `plans/DECISIONS.md`.
+- Every new project receives its own copy of the deduplication script in `search/`, recorded in `raes_templates.json`, so that a rerun does not depend on the installed skill. The script moved from the skill's `scripts/` to `templates/search/`.
+- RIS: every `M3` label is read, and a label line is split on semicolons; the record identifier includes the DOI, so that a journal article and its preprint no longer depend on their order in the file. The example lists say that the `TY` codes of a RIS source have to be neutral.
+- A preprint and its journal version are two reports of one study: `not_duplicate` in S2, linked in S6.
+- `plans/DECISIONS.md` no longer starts with a sentence that becomes false after the first approval.
+- `check_templates.py` names the version a project was refreshed to.
+- `run_pipeline.py --copy` copies every file the manifest names to the rerun folder, checks each copy by hash and reruns inside the copy, which is the copy step S12 asks for.
+- `release.py activate` writes `releases/<name>/ACTIVATION.md` with the time, the manifest's hash and the release it supersedes. The log entry about a release is written before the release is created.
+
 ## 0.4.0 (2026-09-18)
 
 This version takes in what the first two trials of the skill found. The second trial ran every stage, S0 to S12, on a topic from another field.

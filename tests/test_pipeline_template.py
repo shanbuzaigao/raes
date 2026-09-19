@@ -65,6 +65,12 @@ class PipelineTemplateTests(unittest.TestCase):
             shutil.copy2(Path(tmp) / "rerun3/total/total.txt", project / "results/total.txt")
             self.assertEqual(self.run_pipeline(project, "--write-manifest").returncode, 0)
             self.assertEqual(self.run_pipeline(project, "--output", str(Path(tmp) / "rerun4")).returncode, 0)
+            # --copy reruns inside a fresh copy of the files the manifest names.
+            copied = self.run_pipeline(project, "--copy", "--output", str(Path(tmp) / "rerun5"))
+            self.assertEqual(copied.returncode, 0, copied.stdout + copied.stderr)
+            self.assertTrue((Path(tmp) / "rerun5/project/stage.py").is_file())
+            self.assertTrue((Path(tmp) / "rerun5/rerun/total/total.txt").is_file())
+            self.assertFalse((Path(tmp) / "rerun5/project/plans").exists(), "only files named in the manifest are copied")
 
 
 if __name__ == "__main__":

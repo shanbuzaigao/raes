@@ -32,6 +32,7 @@ class TemplateRecordTests(unittest.TestCase):
             self.assertEqual(record["raes_version"], version)
             self.assertEqual(record["files"]["plans/STAGE_PLAN.md"]["template"], "plan_memo.md")
             self.assertIn("run_pipeline.py", record["files"])
+            self.assertIn("search/dedupe_records.py", record["files"], "the project keeps its own copy of the deduplication script")
             self.assertIn("## Index", (project / "plans/DECISIONS.md").read_text(encoding="utf-8"))
             fresh = call(CHECK, "--project", str(project), "--templates", str(templates))
             self.assertEqual(fresh.returncode, 0, fresh.stderr)

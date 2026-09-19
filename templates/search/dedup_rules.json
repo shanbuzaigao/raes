@@ -1,5 +1,5 @@
 {
-  "purpose": "Rules for removing duplicates in stage S2, read by the skill's dedupe_records.py. A project that removes duplicates in a reference manager does not need this file. The values below work as they are; change them deliberately, raise the version and record the change.",
+  "purpose": "Rules for removing duplicates in stage S2, read by search/dedupe_records.py, the project's own copy of the deduplication script. A project that removes duplicates in a reference manager does not need this file. The values below work as they are; change them deliberately, raise the version and record the change.",
   "version": "0.1.0-draft",
   "status": "draft",
   "source_precedence": ["pubmed", "wos"],
@@ -25,14 +25,16 @@
     "neutral": {"pubmed": [], "wos": [], "default": []}
   },
   "example_doc_type_lists": {
-    "note": "An example from one project, not a default. PubMed puts Journal Article on nearly every record, so it has to be neutral or the rule removes almost nothing. Web of Science labels some primary studies Review by their number of references, so read a sample of what the rule removes before approving it.",
+    "note": "An example from one project, not a default. PubMed puts Journal Article on nearly every record, so it has to be neutral or the rule removes almost nothing. Web of Science labels some primary studies Review by their number of references, so read a sample of what the rule removes before approving it. For a source in RIS format the types are the TY code and the M3 labels, so the TY codes of ordinary records (JOUR, UNPB) have to be neutral too, or no record of that source is ever removable.",
     "listed": {
       "pubmed": ["Review", "Systematic Review", "Meta-Analysis", "Network Meta-Analysis", "Scoping Review", "Editorial", "Comment", "Letter", "Clinical Trial Protocol", "Published Erratum"],
-      "wos": ["Review", "Editorial Material", "Letter", "Meeting Abstract", "Correction"]
+      "wos": ["Review", "Editorial Material", "Letter", "Meeting Abstract", "Correction"],
+      "default": ["Review", "Systematic Review", "Meta-Analysis", "Editorial", "Letter"]
     },
     "neutral": {
       "pubmed": ["Journal Article", "English Abstract", "Research Support, *"],
-      "wos": ["Early Access"]
+      "wos": ["Early Access"],
+      "default": ["JOUR", "UNPB", "Journal Article", "Research Support, *"]
     }
   }
 }

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Remove duplicates from the raw search exports and write the records table (stage S2).
 
-For a project without a reference manager. Standard library only. Reads exports in PubMed
+For a project without a reference manager. Every new project receives its own copy of this
+script in search/, so that a rerun does not depend on the installed skill. Standard library only. Reads exports in PubMed
 (MEDLINE) format, Web of Science plain text and RIS, which most databases and reference
 managers can write; the format of each file is recognized from its content. It never edits
 the raw files and never merges an uncertain pair. It writes into a new folder:
@@ -127,7 +128,9 @@ def parse_ris(text: str, source: str) -> list[dict]:
     """RIS: a two-character tag, two spaces, a hyphen, a space, the value; ER ends a record.
 
     RIS has no stable identifier, so the record_id is built from the source name and a hash of the
-    normalized title, the year and the first author; a repeated hash gets a running number.
+    normalized title, the year, the first author and the DOI when there is one. Only records that
+    agree in all four get a running number, in file order. The document types are the TY code and
+    every M3 label; a label line may hold several labels separated by semicolons.
     """
     records, seen = [], defaultdict(int)
     for block in re.split(r"^ER\s{2}-.*$", text, flags=re.M):
@@ -147,13 +150,16 @@ def parse_ris(text: str, source: str) -> list[dict]:
         year = re.search(r"\d{4}", first("PY", "Y1", "DA"))
         author = surname(first("AU", "A1"))
         doi = first("DO") or next((m.group(0) for v in fields.get("UR", []) for m in [re.search(r"10\.\d{4,9}/\S+", v)] if m), "")
-        key = hashlib.sha1("|".join([norm_text(title), year.group(0) if year else "", norm_text(author)]).encode("utf-8")).hexdigest()[:10]
+        key = hashlib.sha1("|".join([norm_text(title), year.group(0) if year else "", norm_text(author),
+                                     norm_doi(doi)]).encode("utf-8")).hexdigest()[:10]
         seen[key] += 1
         records.append({
             "record_id": f"{source.upper()}-{key}" + (f"-{seen[key]}" if seen[key] > 1 else ""), "source": source,
             "pmid": "", "doi": doi, "title": title, "abstract": first("AB", "N2"),
             "year": year.group(0) if year else "", "first_author": author, "journal": first("JO", "JF", "T2", "J2"),
-            "language": first("LA"), "doc_types": [t for t in [first("TY"), first("M3")] if t],
+            "language": first("LA"),
+            "doc_types": [t for t in [first("TY")] + [part.strip() for value in fields.get("M3", [])
+                                                      for part in value.split(";")] if t],
         })
     return records
 
