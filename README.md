@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-**Status:** early development, v0.4.1. I am keeping this repository private until I have reviewed the first release.
+**Status:** version 0.4.1. I have used the method from start to finish in my own meta-analysis. The skill has been tried three times, once through every stage on a topic from another field. The repository is still changing; the [changelog](CHANGELOG.md) says what changed.
 
 ## What this is
 
@@ -13,6 +13,55 @@ RAES is the workflow I built for my own meta-analysis, where I used large langua
 It is meant for meta-analyses, systematic reviews and similar evidence syntheses. It is not another auto-screening tool. Tools that rank abstracts or extract fields automate one task. RAES is about how the whole synthesis is run, so that someone else can check it.
 
 All domain knowledge sits in a versioned codebook, so the workflow itself does not depend on the field. I developed it and used it end to end in a social-science project, the meta-analysis in my working paper *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments*. That meta-analysis covers 54 papers and 757 effect sizes on how LLMs behave in classic economic games.
+
+## What you get
+
+- **A working manual** for the whole synthesis, from the research question to the release: [PROTOCOL.md](PROTOCOL.md) ([中文](PROTOCOL.zh-CN.md)).
+- **Templates** for every file the method asks you to write, and a starter project that already contains its programs: a deduplication script, a rule-based screening program, and one command that rebuilds every result.
+- **A skill, `raes`,** for Claude Code, Codex and other hosts that support Agent Skills. It walks you through the workflow stage by stage: it asks for the decisions a stage needs, writes the files from the templates and runs the checks.
+- **A small invented example** that runs the whole pipeline offline, with saved AI answers, an audit that finds a wrongly excluded paper, and a coding error that the audit corrects.
+
+## How to use this repository
+
+You need Python 3.10 or newer and nothing else. No package has to be installed, and nothing here calls a model or needs a key.
+
+**0. Get it.**
+
+```sh
+git clone https://github.com/shanbuzaigao/raes.git
+cd raes
+```
+
+Or use "Download ZIP" on the repository page.
+
+**1. See it run.**
+
+```sh
+python examples/synthetic/reproduce.py
+```
+
+Everything in the example is invented. It rebuilds all results from saved answers and shows a duplicate record, a paper that was wrongly screened out and then brought back by the audit, a missing SD, a failed model answer followed by a retry, and a coding error caught by the audit. [examples/synthetic/](examples/synthetic/README.md) explains what to look for.
+
+**2. Read the method.** [PROTOCOL.md](PROTOCOL.md) expands every stage of the figure below in the same format: who does it, what goes in and comes out, what I do, and what I check before moving on.
+
+**3. Start your own project.**
+
+```sh
+python tools/new_project.py ../my-evidence-project
+python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eligibility.json
+```
+
+The first command creates a project folder outside the repository, with the templates in the order of the pipeline and three programs of its own: `search/dedupe_records.py`, `screening/screen_rules_template.py` and `run_pipeline.py`. The second command checks the first file you fill in, the eligibility criteria. [templates/](templates/README.md) says what each file is for and at which stage you fill it in; a [field-by-field guide in Chinese](templates/GUIDE.zh-CN.md) explains every entry.
+
+**4. Or let an AI assistant walk you through it.** Install the skill into Claude Code, restart Claude Code, and type `/raes` with a sentence about where you are:
+
+```sh
+python tools/install_skill.py --destination ~/.claude/skills
+```
+
+> /raes I have a research question about structured versus plain feedback and no files yet. Start at S0.
+
+For Codex, use `--destination ~/.agents/skills` and invoke it as `$raes`. After the repository has changed, update the installed copy with the same command plus `--replace`. The skill asks, drafts, checks and records. It does not decide for you, and it never sends a request to a model provider. Other hosts are listed in [skills/](skills/README.md).
 
 ## The pipeline at a glance
 
@@ -46,34 +95,17 @@ Grey boxes are done by me or by deterministic code. The purple box is executed b
 
 The goal and the eligibility rules come first, because everything else refers to them. Every step that calls an AI is then prepared in the same order: a plan, the codebook, the prompts, and only then the run.
 
-The working manual is [PROTOCOL.md](PROTOCOL.md). It expands every stage of the figure in the same format. It is a draft.
-
 ## What is in this repository
 
 | Where | What it is |
 |---|---|
 | [PROTOCOL.md](PROTOCOL.md) ([中文](PROTOCOL.zh-CN.md)) | The working manual, stage by stage |
-| [templates/](templates/README.md) | Files to fill in: plan memo, eligibility criteria, codebook, prompts, validation memo and settings, project folders; a [field-by-field guide in Chinese](templates/GUIDE.zh-CN.md) |
-| [skills/](skills/README.md) | `raes`, a skill that walks you through the workflow stage by stage: it asks, writes the files from the templates and runs the checks |
+| [templates/](templates/README.md) | Files to fill in: eligibility criteria, deduplication rules, screening rules and program, plan memo, codebook, prompts, the two audit sets, and the starter project with its pipeline runner; a [field-by-field guide in Chinese](templates/GUIDE.zh-CN.md) |
+| [skills/](skills/README.md) | `raes`, the skill: instructions, one reference per stage, a copy of the templates, and its scripts (new project, codebook check, template check, dispersion check, release, offline run) |
 | [examples/synthetic/](examples/synthetic/README.md) | A small invented example that runs the whole pipeline offline, including the effect-size code it uses and the [notes on its formulas](examples/synthetic/NUMERICAL_METHODS.md) |
 | [raes_core/](raes_core) | Small general tools: stable row IDs, hash freezes, JSON reading and writing |
-| [tests/](tests) and [tools/](tools) | Tests and helper commands |
-
-To try the example you only need Python 3.10 or newer:
-
-```sh
-python examples/synthetic/reproduce.py
-```
-
-Everything in the example is invented. It makes no API calls and needs no key. It shows a duplicate record, a paper that was wrongly screened out and then rescued by the audit, a missing SD, a failed model answer followed by a retry, and a coding error caught by the audit. To run all checks, use `python tools/check_repository.py`.
-
-To install the skill into Claude Code, run this from the repository folder, then restart Claude Code and type `/raes`:
-
-```sh
-python tools/install_skill.py --destination ~/.claude/skills
-```
-
-For Codex, use `--destination ~/.agents/skills` and invoke it as `$raes`. Other hosts that support the Agent Skills format are listed in [skills/README.md](skills/README.md).
+| [tools/](tools) | The commands used above, and `python tools/check_repository.py`, which runs every check and test of this repository |
+| [tests/](tests) | The tests; they also run on GitHub after every push, on Linux and Windows with Python 3.10 and 3.13 |
 
 A note on the name: a Python package called `raes` exists on PyPI. It is a different project and has nothing to do with this repository.
 
@@ -90,7 +122,7 @@ The first half of the pipeline follows PRISMA 2020 (Page et al., 2021). The two 
 | Layer | Question it answers | Form in this repository |
 |---|---|---|
 | Pipeline | What happens at each stage, in what order, producing which files | Protocol, project template, synthetic example |
-| Authoring | How to write the plan, the codebook, the prompts and the validation design | Templates, agent skills |
+| Authoring | How to write the plan, the codebook, the prompts and the validation design | Templates, the skill |
 | Validation and provenance | Why others can trust the result | The audit steps of the example, freeze and hash tools, release conventions |
 
 ## Principles
@@ -110,18 +142,36 @@ These are the rules I ended up following. Each one came from a problem I actuall
 11. **Cached attributes keep entities consistent across studies.** The same entity receives the same coded attributes wherever it appears.
 12. **Say what each validation shows and what it does not.**
 
-## What I plan to add
+## What is not included
 
-- A second skill, for designing the validation, once the first one has been tried on a real project.
-- Runners that call the model providers for the AI steps. They are not included yet.
-
-## What will not be in this repository
-
-Copyrighted paper PDFs, author-provided data, the research data from my own study, raw model responses that quote sources at length, and any credentials.
+- Programs that send requests to model providers for the AI steps (S5, S8, S9). The templates and the skill prepare those steps up to the point where everything is frozen and ready; each project sends the requests with its own runner. A general runner may come later.
+- Copyrighted paper PDFs, author-provided data, the research data from my own study, raw model responses that quote sources at length, and any credentials.
 
 ## Use of AI tools
 
 I used AI coding and writing assistants while preparing the code and documentation in this repository. The workflow design, the rules, and all methodological decisions are my own, and I review everything before it is released. Any remaining errors are mine.
+
+## How to cite
+
+If you use RAES, its templates or its skill, please cite this repository. If you build on the method, please also cite the working paper it comes from. GitHub's "Cite this repository" button gives the same reference in other formats; it reads [CITATION.cff](CITATION.cff).
+
+> Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.4.1) [Computer software]. https://github.com/shanbuzaigao/raes
+
+```bibtex
+@software{zhu_raes_2026,
+  author  = {Zhu, Qijun},
+  title   = {{RAES}: Reproducible {AI}-assisted Evidence Synthesis},
+  year    = {2026},
+  version = {0.4.1},
+  url     = {https://github.com/shanbuzaigao/raes}
+}
+```
+
+Replace the version with the one you used. The working paper: Zhu, Q. (2026). *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments*. Working paper, George Mason University.
+
+## License
+
+Code is released under the [MIT License](LICENSE). Documentation and templates are released under [CC BY 4.0](LICENSE-docs.md), which allows reuse and adaptation with attribution.
 
 ## References
 
@@ -129,14 +179,6 @@ I used AI coding and writing assistants while preparing the code and documentati
 - Page, M. J., McKenzie, J. E., Bossuyt, P. M., et al. (2021). The PRISMA 2020 statement: An updated guideline for reporting systematic reviews. *BMJ*, 372, n71. https://doi.org/10.1136/bmj.n71
 - Robleto, E., & Shehadeh, L. A. (2025). Accelerating systematic reviews: A novel 1-wk screening protocol using rule-based automation with AI-assisted Python coding. *American Journal of Physiology-Heart and Circulatory Physiology*, 329(5), H1391–H1413. https://doi.org/10.1152/ajpheart.00374.2025
 - Thomas, J., Flemyng, E., Noel-Storr, A., et al. (2025). *Responsible use of AI in evidence SynthEsis (RAISE): Recommendations and guidance*. Open Science Framework. https://doi.org/10.17605/OSF.IO/FWAUD
-
-## License
-
-Code is released under the [MIT License](LICENSE). Documentation and templates are released under [CC BY 4.0](LICENSE-docs.md).
-
-## Citation
-
-If you use RAES, please cite it; see [CITATION.cff](CITATION.cff). The workflow comes out of my working paper, *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments*.
 
 ## Contact
 

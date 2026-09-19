@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Continuous integration: every push runs `python tools/check_repository.py` on GitHub, on Linux and Windows with Python 3.10 and 3.13.
+- README rewritten around what a reader wants to do: what the repository offers, how to get it, how to run the example, how to start a project from the templates, how to install and update the skill, and how to cite. `CITATION.cff` names the working paper as a reference.
 
 ## 0.4.1 (2026-09-18)
 

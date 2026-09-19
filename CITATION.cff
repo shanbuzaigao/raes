@@ -7,10 +7,19 @@ authors:
     given-names: "Qijun"
     affiliation: "George Mason University"
 version: "0.4.1"
-date-released: "2026-09-17"
+date-released: "2026-09-18"
 license: MIT
 repository-code: "https://github.com/shanbuzaigao/raes"
+url: "https://github.com/shanbuzaigao/raes"
 abstract: "A rule-governed workflow for meta-analyses, systematic reviews and other evidence syntheses that use large language models for screening and coding. Humans write the rules, AI executes them, independent AIs audit the execution, every number is computed by deterministic code or extracted directly from the literature, and the whole run can be reproduced offline."
+references:
+  - type: unpublished
+    title: "Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments"
+    authors:
+      - family-names: "Zhu"
+        given-names: "Qijun"
+    year: 2026
+    notes: "Working paper, George Mason University. The workflow was developed for the meta-analysis in this paper."
 keywords:
   - evidence synthesis
   - meta-analysis
