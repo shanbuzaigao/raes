@@ -1,4 +1,5 @@
 .gitattributes
+.github/workflows/check.yml
 .gitignore
 CHANGELOG.md
 CITATION.cff

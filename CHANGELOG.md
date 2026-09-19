@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Continuous integration: every push runs `python tools/check_repository.py` on GitHub, on Linux and Windows with Python 3.10 and 3.13.
+
 ## 0.4.1 (2026-09-18)
 
 Ten small fixes from a retrial of version 0.4.0, which ran stages S0 to S2 and a release on a small topic. Every new tool worked as documented.
