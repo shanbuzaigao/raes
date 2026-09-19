@@ -135,6 +135,67 @@ class ScreeningSkeletonTests(unittest.TestCase):
             self.assertEqual(code, 1)
             self.assertIn("text file exists: R1", err)
 
+    def test_patterns_title_only_blockers_and_field_checks(self):
+        module = load_module()
+        module.CRITERIA = {
+            # A criterion about the type of report comes first: the first failed criterion is the reported reason.
+            "C2": {"label": "full report in English", "title_none_of": ["systematic review"],
+                   "field": "language", "field_any_of": ["english", "eng"], "check_at": ["ta"]},
+            "C1": {"label": "depressive symptoms at entry",
+                   "any_of_regex": [r"\bwith (?:\S+ ){0,3}depressive symptoms\b"], "check_at": ["ta"]},
+        }
+        records = [
+            {"record_id": "A", "title": "Exercise for adults with mild depressive symptoms", "language": "English",
+             "abstract": "A randomized trial. A systematic review had suggested a benefit."},
+            {"record_id": "B", "title": "Exercise for depression: a systematic review", "language": "eng",
+             "abstract": "Trials of adults with depressive symptoms were pooled."},
+            {"record_id": "C", "title": "Bewegung bei Depression", "language": "German",
+             "abstract": "Adults with severe depressive symptoms took part."},
+            {"record_id": "D", "title": "A walking programme", "language": "",
+             "abstract": "Older adults with clinically relevant depressive symptoms were randomized."},
+            {"record_id": "E", "title": "A walking programme, abstract missing", "language": "eng", "abstract": ""},
+            {"record_id": "F", "title": "Walking in healthy adults", "language": "eng", "abstract": "Healthy adults walked."},
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "records.csv"
+            with path.open("w", encoding="utf-8", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=["record_id", "title", "abstract", "language"], lineterminator="\n")
+                writer.writeheader()
+                writer.writerows(records)
+            out = Path(tmp) / "ta"
+            self.assertEqual(module.main(["ta", str(path), "--output", str(out)]), 0)
+            rows = {row["record_id"]: row for row in csv.DictReader((out / "decisions.csv").open(encoding="utf-8"))}
+            self.assertEqual(rows["A"]["decision"], "keep", "'systematic review' in the abstract does not block")
+            self.assertEqual((rows["B"]["decision"], rows["B"]["failed_criteria"]), ("exclude", "C2"), "blocked by its title")
+            self.assertEqual((rows["C"]["decision"], rows["C"]["failed_criteria"]), ("exclude", "C2"), "language field")
+            self.assertEqual(rows["D"]["decision"], "keep", "an empty field passes; the phrase pattern matches")
+            self.assertEqual(rows["E"]["decision"], "keep", "no abstract: kept for the full text")
+            self.assertEqual((rows["F"]["decision"], rows["F"]["failed_criteria"]), ("exclude", "C1"))
+            evidence = {e["record_id"]: e for e in json.loads((out / "evidence.json").read_text(encoding="utf-8"))}
+            self.assertEqual(evidence["B"]["criteria"]["C2"]["evidence"][0]["where"], "title")
+            self.assertEqual(evidence["C"]["criteria"]["C2"]["evidence"][0]["field"], "language")
+            # A criterion that checks a column needs that column.
+            plain = write_records(Path(tmp))
+            self.assertEqual(module.main(["ta", str(plain), "--output", str(Path(tmp) / "ta2")]), 1)
+
+    def test_full_text_phase_can_have_its_own_rules(self):
+        module = load_module()
+        module.CRITERIA_FT = {"C1": {"label": "random allocation in this study",
+                                     "any_of_regex": [r"\bwere randomly (?:assigned|allocated)\b"], "check_at": ["ft"]}}
+        with tempfile.TemporaryDirectory() as tmp:
+            records = write_records(Path(tmp))
+            texts = Path(tmp) / "fulltext"
+            texts.mkdir()
+            ta_out = Path(tmp) / "ta"
+            self.assertEqual(module.main(["ta", str(records), "--output", str(ta_out)]), 0)
+            (texts / "R1.txt").write_text("Models were randomly assigned to two payoff conditions.", encoding="utf-8")
+            (texts / "R4.txt").write_text("An earlier study [3] used random assignment; ours did not.", encoding="utf-8")
+            out = Path(tmp) / "ft"
+            self.assertEqual(module.main(["ft", str(records), "--after-ta", str(ta_out / "decisions.csv"),
+                                          "--texts", str(texts), "--output", str(out)]), 0)
+            rows = {row["record_id"]: row["decision"] for row in csv.DictReader((out / "decisions.csv").open(encoding="utf-8"))}
+            self.assertEqual(rows, {"R1": "keep", "R4": "exclude"})
+
     def test_refuses_existing_output_and_wrong_hash(self):
         module = load_module()
         with tempfile.TemporaryDirectory() as tmp:

@@ -116,6 +116,8 @@ python tools/new_project.py ../my-evidence-project
 | Supported when | 判定规则。例：`at least one supporting term and no blocking term` |
 | Evidence recorded | 保留模板的写法 `matched term and surrounding text`（命中的词和上下文） |
 
+`{{SAME_AS_ABOVE_OR_LIST_THE_DIFFERENCES}}`：全文阶段的规则。和上表一样就写 `same as above`；不一样就列出差别。全文规则通常更窄，见第 3 节的 `CRITERIA_FT`。
+
 `{{LIST_OR_NONE}}`：词表判断不了的标准，留给全文阅读，或留给按 codebook 筛选的模型。例：`whether the prompt steered the behaviour`（prompt 是否引导了行为）。
 
 模板的表格下方已有一个标着 **Example** 的填好的表，来自我的项目，可以对照。
@@ -150,6 +152,18 @@ python tools/new_project.py ../my-evidence-project
 | `none_of` | 阻断词表：出现任意一个就算不符合。没有写 `[]` |
 | `check_at` | 哪个阶段检查：`["ta", "ft"]`、`["ta"]` 或 `["ft"]` |
 
+词表不够用时的可选键：
+
+| 键 | 填什么 |
+|---|---|
+| `any_of_regex`、`none_of_regex` | 正则表达式，作用分别同 `any_of`、`none_of`，用来写短语，例如 `r"\bwith (?:\S+ ){0,3}depressive symptoms\b"`。在转成小写的文本里搜索 |
+| `title_none_of`、`title_none_of_regex` | 只在标题里生效的阻断词（或正则）。例：`"systematic review"`——很多合格论文的摘要里会提到它，但标题里出现就说明这篇本身是综述 |
+| `field`、`field_any_of` | 检查 `records.csv` 的某一列（例如 `"language"`）：这一列填了内容、却不含 `field_any_of` 里任何一个词时，这条标准不符合；空着算通过。用到的列必须在 `records.csv` 里 |
+
+没有支持词也没有支持正则的标准，只要没被阻断就算符合。各项的先后有意义：第一条不符合的标准就是 PRISMA 流程图里报告的排除理由，所以关于文献类型的标准（语言、综述、方案）放在最前面。
+
+另外两处设置：`CRITERIA_FT` 是只用于全文阶段的规则表，填了它，全文阶段就不再用 `CRITERIA`。全文规则通常要比题目摘要的规则窄，因为全文里也会谈到别的研究，每个词都要落在这篇报告自己的研究上（入组条件、分组方式、结局测量）。`KEEP_WITHOUT_ABSTRACT = True` 表示没有摘要的记录在题目摘要阶段直接保留，留给全文判断。
+
 模板里的三项（经典经济学博弈、生成式 AI 做决策、报告了行为结果）是例子，换成你自己的标准。词表判断不了的标准不写进程序。
 
 **输入**
@@ -178,6 +192,7 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 |---|---|---|
 | `records.csv needs the columns record_id, title and abstract` | 缺列 | 导出时带上这三列，列名要完全一致 |
 | `record_id must be present and unique` | 有空的或重复的编号 | 回到去重那一步 |
+| `criterion … checks the column …, which records.csv does not have` | 某条标准要检查的列不在记录文件里 | 导出时带上这一列，或者去掉这条字段检查 |
 | `the full-text phase needs --after-ta …` | 全文阶段没指定题目摘要阶段的结果 | 加 `--after-ta` |
 | `retrieve the full text of every kept record first; missing: …` | 有保留记录还没有全文 | 先取来列出的记录的全文；确实取不到的写进清单，用 `--not-retrieved` 传入 |
 | `--not-retrieved applies to the full-text phase only` | 题目摘要阶段用了这个参数 | 去掉；题目摘要阶段不用全文 |

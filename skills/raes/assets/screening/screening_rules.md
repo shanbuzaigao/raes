@@ -22,6 +22,10 @@ One row per criterion, with the same IDs as the eligibility file. Add rows as ne
 | C2 {{LABEL}} | {{TA, FT}} | {{TERMS}} | {{TERMS_OR_NONE}} | {{RULE}} | matched term and surrounding text |
 | C{{N}} {{LABEL}} | {{TA, FT}} | {{TERMS}} | {{TERMS_OR_NONE}} | {{RULE}} | matched term and surrounding text |
 
+A term is a whole word or phrase. Where that is not enough, the program also takes patterns (regular expressions, for a phrase such as "with ... depressive symptoms"), blocking terms that count only in the title (for example "systematic review", which many eligible papers mention in their abstract), and a check on a field of the record, such as the language. The order of the rows matters: the first failed criterion is the reason the PRISMA flow reports, so the criteria about the type of report come first.
+
+The full-text phase can have its own, narrower rules (`CRITERIA_FT` in the program). A full text also talks about other studies, so tie each term to the report's own study: its entry criteria, its allocation, its outcome measures. Rules for the full-text phase: {{SAME_AS_ABOVE_OR_LIST_THE_DIFFERENCES}}.
+
 Criteria that cannot be decided from terms: {{LIST_OR_NONE}}. Say so here and leave them to the full-text reading, or to a model that screens under a codebook.
 
 **Example**, from a review of language-model behaviour in classic economic games. It shows one way to fill the table, not the required one.

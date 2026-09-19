@@ -41,7 +41,18 @@ RULES_VERSION = "0.1.0-draft"
 #   any_of    : the record supports the criterion if at least one term appears
 #   none_of   : the criterion fails if any of these terms appears
 #   check_at  : the phases that check this criterion: "ta" = title and abstract, "ft" = full text
-# Terms are matched as whole words, case-insensitively.
+# Terms are matched as whole words, case-insensitively. Optional keys, for what terms cannot express:
+#   any_of_regex        : regular expressions with the same role as any_of, for phrases such as
+#                         r"\bwith (?:\S+ ){0,3}depressive symptoms\b"; they are searched in the lower-cased text
+#   none_of_regex       : regular expressions with the same role as none_of
+#   title_none_of       : blocking terms that count only in the title, for example "systematic review",
+#                         which many eligible papers mention in their abstract
+#   title_none_of_regex : the same, as regular expressions
+#   field, field_any_of : a column of records.csv, such as "language", and the terms it must contain;
+#                         the criterion fails when the column is filled and contains none of them
+# A criterion without supporting terms or patterns is supported unless something blocks it.
+# The order of the entries matters: the first failed criterion is the reason that the PRISMA flow
+# reports, so put the criteria about the type of report (language, review, protocol) first.
 #
 # EXAMPLE ENTRIES. The three entries below are only an illustration, modelled on
 # a review of how language models behave in classic economic games. Replace them
@@ -73,6 +84,15 @@ CRITERIA = {
     },
 }
 
+# Optional rules for the full-text phase only. When this table is not empty, the full-text phase
+# uses it instead of CRITERIA. Full-text rules usually have to be narrower than the rules for titles
+# and abstracts: a full text also talks about other studies, so tie each term to the report's own
+# study (its entry criteria, its allocation, its outcome measures).
+CRITERIA_FT: dict = {}
+
+# A record without an abstract cannot be judged at the title-and-abstract phase; it is kept for the full text.
+KEEP_WITHOUT_ABSTRACT = True
+
 SNIPPET_CHARS = 120
 MAX_SNIPPETS = 3
 
@@ -101,18 +121,49 @@ def find_terms(text: str, terms: list[str]) -> list[dict]:
     return hits
 
 
-def check_criterion(spec: dict, text: str) -> dict:
-    """Evaluate one criterion on one text. Never raises on empty text."""
-    blocked = find_terms(text, spec["none_of"])
+def find_patterns(text: str, patterns: list[str]) -> list[dict]:
+    """Return up to MAX_SNIPPETS regular-expression matches with a short context window."""
+    hits = []
+    for pattern in patterns:
+        for match in re.finditer(pattern, text):
+            start = max(0, match.start() - SNIPPET_CHARS // 2)
+            end = min(len(text), match.end() + SNIPPET_CHARS // 2)
+            hits.append({"pattern": pattern, "snippet": text[start:end]})
+            if len(hits) >= MAX_SNIPPETS:
+                return hits
+    return hits
+
+
+def check_criterion(spec: dict, text: str, title: str = "", row: dict | None = None) -> dict:
+    """Evaluate one criterion on one text and, where the entry says so, on the title or a field.
+
+    Never raises on empty text.
+    """
+    if "field" in spec:
+        value = normalize((row or {}).get(spec["field"]) or "")
+        if value and not find_terms(value, spec.get("field_any_of", [])):
+            return {"supported": False, "reason": f"the {spec['field']} field is not accepted",
+                    "evidence": [{"field": spec["field"], "value": value}]}
+    title = normalize(title)
+    in_title = find_terms(title, spec.get("title_none_of", [])) + find_patterns(title, spec.get("title_none_of_regex", []))
+    blocked = (find_terms(text, spec.get("none_of", [])) + find_patterns(text, spec.get("none_of_regex", []))
+               + [dict(hit, where="title") for hit in in_title])
     if blocked:
-        return {"supported": False, "reason": "blocking term present", "evidence": blocked}
-    supporting = find_terms(text, spec["any_of"])
+        return {"supported": False, "reason": "blocking term present", "evidence": blocked[:MAX_SNIPPETS]}
+    if not spec.get("any_of") and not spec.get("any_of_regex"):
+        return {"supported": True, "reason": "nothing blocks this criterion", "evidence": []}
+    supporting = find_terms(text, spec.get("any_of", [])) or find_patterns(text, spec.get("any_of_regex", []))
     if supporting:
         return {"supported": True, "reason": "supporting term present", "evidence": supporting}
     return {"supported": False, "reason": "no supporting term found", "evidence": []}
 
 
-def screen_text(text: str, phase: str) -> dict:
+def criteria_for(phase: str) -> dict:
+    """The full-text phase uses CRITERIA_FT when that table is filled."""
+    return CRITERIA_FT if phase == "ft" and CRITERIA_FT else CRITERIA
+
+
+def screen_text(text: str, phase: str, title: str = "", row: dict | None = None) -> dict:
     """Apply every criterion that is checked at this phase and derive the decision.
 
     Title-and-abstract phase: aim for recall. A record is excluded only when a
@@ -122,10 +173,10 @@ def screen_text(text: str, phase: str) -> dict:
     text = normalize(text)
     results = {}
     failed = []
-    for cid, spec in CRITERIA.items():
+    for cid, spec in criteria_for(phase).items():
         if phase not in spec["check_at"]:
             continue
-        result = check_criterion(spec, text)
+        result = check_criterion(spec, text, title, row)
         results[cid] = result
         if not result["supported"]:
             failed.append(cid)
@@ -176,12 +227,23 @@ def screen_records(rows: list[dict], phase: str, texts: Path | None) -> list[dic
     output = []
     for row in rows:
         entry = {"record_id": row["record_id"], "phase": phase, "rules_version": RULES_VERSION}
-        if phase == "ta":
-            entry.update(screen_text(row["title"] + " " + row["abstract"], "ta"))
+        if phase == "ta" and KEEP_WITHOUT_ABSTRACT and not row["abstract"].strip():
+            entry.update({"decision": "keep", "reason": "no abstract: kept for full-text screening",
+                          "failed": [], "criteria": {}})
+        elif phase == "ta":
+            entry.update(screen_text(row["title"] + " " + row["abstract"], "ta", row["title"], row))
         else:
-            entry.update(screen_text((texts / f"{row['record_id']}.txt").read_text(encoding="utf-8"), "ft"))
+            text = (texts / f"{row['record_id']}.txt").read_text(encoding="utf-8")
+            entry.update(screen_text(text, "ft", row["title"], row))
         output.append(entry)
     return output
+
+
+def require_fields(rows: list[dict], phase: str) -> None:
+    """A criterion that checks a column needs that column in records.csv."""
+    for cid, spec in criteria_for(phase).items():
+        if phase in spec["check_at"] and "field" in spec and spec["field"] not in rows[0]:
+            raise ValueError(f"criterion {cid} checks the column {spec['field']}, which records.csv does not have")
 
 
 def write_outputs(results: list[dict], output: Path, input_path: Path, not_retrieved: list[str] | None = None) -> None:
@@ -226,6 +288,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.phase == "ta" and args.not_retrieved:
             raise ValueError("--not-retrieved applies to the full-text phase only")
         rows = read_records(args.records)
+        require_fields(rows, args.phase)
         if args.phase == "ft":
             kept = kept_at_ta(args.after_ta)
             rows = [row for row in rows if row["record_id"] in kept]

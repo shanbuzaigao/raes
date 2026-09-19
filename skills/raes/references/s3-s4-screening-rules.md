@@ -14,6 +14,14 @@ Goal: rule-based screens written from the criteria. Every record receives a deci
 - `screening/screening_rules.md` from `assets/screening/screening_rules.md`: one row per criterion, the decision logic of each phase, the checks before a run, the version log.
 - The `CRITERIA` table at the top of `screening/screen_rules_template.py` (copied from `assets/screening/`): one entry per criterion with the same IDs as the eligibility file. The program's example entries are only an illustration; replace them.
 
+## Writing the rules
+
+- Besides whole-word terms, the program takes patterns (`any_of_regex`, `none_of_regex`), blocking terms that count only in the title (`title_none_of`, for example "systematic review"), and a check on a field of the record (`field` with `field_any_of`, for example the language). A record without an abstract is kept for the full text.
+- The first failed criterion is the reason the PRISMA flow reports. Put the criteria about the type of report first, and treat the reason of every exclusion as an output that must be right, not only the decision.
+- Full-text rules written from the criteria alone are usually wrong, because a full text also talks about other studies: "randomized" for a cited trial, depression in the discussion, an age range from a background sentence. Give the full-text phase its own table (`CRITERIA_FT`) and tie each term to the report's own study: its entry criteria, its allocation, its outcome measures.
+- Text extracted from PDFs splits words at line breaks ("ran- domized") and ends "sentences" at the period of "et al."; allow for both in the patterns.
+- Write the full-text rules on a set of papers that were read, and check them there. After every revision, read the exclusions whose reason changed; that finds rule errors the decisions alone do not show.
+
 ## Run
 
 - Title and abstract: `python screening/screen_rules_template.py ta records.csv --output <new folder>`. The records file is the export from S2, with the columns `record_id`, `title`, `abstract`.
