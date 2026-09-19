@@ -15,7 +15,8 @@ Audit rules:
 
 Decide RETAIN_FOR_FULL_TEXT or EXCLUDE. Choose EXCLUDE only when the title or the
 abstract clearly establishes that a criterion fails; when information is missing,
-unstated or ambiguous, choose RETAIN_FOR_FULL_TEXT. Retention means that the full
-text should be read; it does not establish eligibility. Return one JSON object with:
+unstated or ambiguous, choose RETAIN_FOR_FULL_TEXT. Where a clarification of a
+criterion says what the title or abstract must show, that clarification decides.
+Retention means that the full text should be read; it does not establish eligibility. Return one JSON object with:
 record_id; decision; reason_code; evidence, quoted only from the supplied title or
 abstract; rationale, without speculation about the unseen full text.

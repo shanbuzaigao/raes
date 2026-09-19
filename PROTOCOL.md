@@ -1,6 +1,6 @@
 # RAES Protocol
 
-Version 0.2, draft. 2026-09-17.
+Version 0.3, draft. 2026-09-18.
 
 [English](PROTOCOL.md) | [简体中文](PROTOCOL.zh-CN.md)
 
@@ -340,7 +340,7 @@ The audit runner never touches the production rows. After a codebook clarificati
 
 **What I do.** Code builds the master table from the per-paper outputs. Each row receives a stable identifier from a registry. Normal builds are read-only and fail if they meet an unregistered row; allocating new identifiers requires an explicit flag; retired identifiers are never reused. A deterministic engine computes the effect sizes. Mine has three paths: means and standard deviations, event counts, and a reported paired test statistic.
 
-**Before moving on.** Every effect is recomputed independently, and pooled results are cross-checked in a second statistical package.
+**Before moving on.** Every effect is recomputed by a separately written script from the stored inputs. Pooled results are cross-checked in a second statistical package, which is part of S11.
 
 ### S11 Analysis and statistical validation
 

@@ -16,10 +16,13 @@ Goal: the research question, the numbered eligibility criteria and the outcome m
 ## Check before moving on
 
 - Every criterion can be answered by reading a paper: one can point to the passage that shows whether it is met.
-- The criteria are numbered and the file has a version.
+- The criteria are numbered and the file has a version. `clarifications` is one text or a list of texts.
+- `python scripts/check_codebook.py --eligibility codebook/eligibility.json` checks the file on its own, before any codebook exists, and prints its SHA-256; add `--ready` once no placeholder is left.
 - Compute the SHA-256 of the exact file bytes, for example `python -c "import hashlib,pathlib; print(hashlib.sha256(pathlib.Path('codebook/eligibility.json').read_bytes()).hexdigest())"`, and keep it: the screening rules, the audit codebooks and the coding codebook all record it.
 
 ## Watch for
 
 - A criterion that depends on something papers do not report; it cannot be screened or audited.
 - Confusing eligibility with computability: a study that reports no standard deviation can still be eligible.
+- Clarifications about the title-and-abstract stage decide what a rule-based screen can exclude. "Kept when the abstract does not show ..." protects recall and sends most records to the full text; "excluded unless the abstract shows ..." does the opposite. Point this out when the clarifications are written, not when the screen is run.
+- When a study reports several measures of one outcome, say which one represents the study, and give the order in which the others take its place if the first cannot be computed.

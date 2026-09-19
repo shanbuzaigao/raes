@@ -12,6 +12,15 @@ Goal: answer one narrow question, specified in advance and answered by independe
 - The candidate route: what happens to an abstract "retain" (for example: retrieve the full text, run the frozen full-text screen, and let the full-text reviewers read what the screen includes).
 - The stopping rule, the rule-change policy (rules stay fixed during an audit), the retry policy, the budget, and what will be reported.
 
+## Rules the runner and the audit codebook need
+
+- Evidence quotes: an exact-substring check rejects many honest answers, because reviewers drop citation markers, write "..." and tidy table cells. Check that enough of the quote's word sequences occur in the source (for example at least half of its four-word sequences); that still catches invented quotes.
+- A provider's content filter can block a harmless paper on every attempt. Decide in advance what happens then (for example: the third reviewer answers in its place), and record it; a blocked request is a technical failure, never a vote.
+- Mixed samples: tell the reviewers to apply the outcome criteria to the subgroup that meets the population criterion, not to the whole sample.
+- The abstract audit and strict clarifications. The abstract prompt says to retain when information is missing. If the eligibility file says what the abstract must show for a criterion, that clarification decides; say so in the audit codebook. Such an audit can then find only errors in applying the clarifications, not errors of the clarifications themselves: a paper whose abstract is silent is excluded by the rule and by the reviewer alike. When the clarifications are strict, add a small stratum that is read under the plain criteria.
+- Record the prices and the cost that the provider reports for every request, so that "stop when it becomes too expensive" can be applied during the run.
+- A runner that was started before its validation code changed keeps the old code. Stop it and start it again.
+
 ## Write
 
 - `validation/screening/memo.md`, `codebook.json` and `config.json` from `assets/validation/screening/`. The audit codebook records the eligibility file's SHA-256 and quotes nothing else about the criteria.

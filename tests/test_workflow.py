@@ -57,6 +57,21 @@ class CodebookTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p=Path(d)/'bad.json';p.write_text('{')
             self.assertFalse(CHECKER.check(p)['checks_passed'])
+    def test_eligibility_file_alone_and_list_of_clarifications(self):
+        template=CHECKER.check_eligibility(ROOT/'templates/eligibility.json')
+        self.assertTrue(template['checks_passed']);self.assertTrue(template['findings'])
+        self.assertFalse(CHECKER.check_eligibility(ROOT/'templates/eligibility.json',True)['checks_passed'])
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/'eligibility.json'
+            rules=load_json(ROOT/'examples/synthetic/inputs/eligibility.json')
+            rules.setdefault('version','1.0.0')
+            rules['criteria'][0]['clarifications']=['Include: adults.','Exclude: children.']
+            path.write_text(pretty_json(rules))
+            report=CHECKER.check_eligibility(path,True)
+            self.assertTrue(report['checks_passed'],report['findings']);self.assertEqual(len(report['sha256']),64)
+            rules['criteria'][0]['clarifications']=[]
+            path.write_text(pretty_json(rules))
+            self.assertFalse(CHECKER.check_eligibility(path)['checks_passed'])
     def test_row_columns_and_duplicates(self):
         cb=load_json(ROOT/'examples/synthetic/inputs/codebook.json')
         row={v['name']:v['example'] for v in cb['variables'] if v['owner']=='executor'}

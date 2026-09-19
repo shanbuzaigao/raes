@@ -12,6 +12,7 @@
 | `raes/references/` | 每个阶段一个文件：问什么、写什么、进入下一步前检查什么 |
 | `raes/assets/` | 仓库 `templates/` 文件夹的副本，装到别处后 skill 也能独立工作 |
 | `raes/scripts/new_project.py` | 用模板建一个草稿项目文件夹 |
+| `raes/scripts/check_templates.py` | skill 更新之后：显示已有项目里哪些模板过期了，并且只替换还没填过的副本 |
 | `raes/scripts/dedupe_records.py` | 不用文献管理软件时做 S2：对 PubMed、Web of Science、RIS 三种格式的导出文件去重，写出记录表、台账、拿不准的配对和各项数量 |
 | `raes/scripts/check_codebook.py` | 检查 codebook，草稿模式或 `--ready` 模式 |
 | `raes/scripts/check_dispersion.py` | 编码审计进入裁决之前，标出看起来其实是标准误的标准差 |

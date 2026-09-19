@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-**Status:** early development, v0.3.0-rc.1. I am keeping this repository private until I have reviewed the first release.
+**Status:** early development, v0.4.0. I am keeping this repository private until I have reviewed the first release.
 
 ## What this is
 

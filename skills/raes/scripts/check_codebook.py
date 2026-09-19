@@ -79,6 +79,60 @@ def validate_rows(rows: list[dict], codebook: dict) -> list[str]:
     return errors
 
 
+def criteria_errors(criteria: list, emit, required_text) -> None:
+    """Every criterion needs an id, a text and clarifications: one text, or a list of texts."""
+    cids=[]
+    for i,c in enumerate(criteria):
+        where=f"eligibility.criteria[{i}]"
+        if not isinstance(c,dict): emit("error","eligibility.criteria","objects required"); continue
+        for name in ("id","text"):
+            required_text(c,name,where)
+        notes=c.get("clarifications")
+        if isinstance(notes,list):
+            if not notes or any(not isinstance(x,str) or not x.strip() for x in notes):
+                emit("error",where+".clarifications","a list of clarifications needs nonempty texts")
+        else:
+            required_text(c,"clarifications",where)
+        cids.append(c.get("id"))
+    if any(not isinstance(x,str) for x in cids) or len(cids)!=len(set(cids)):
+        emit("error","eligibility.criteria","unique criterion IDs required")
+
+
+def check_eligibility(path: Path, ready: bool = False) -> dict:
+    """Check an eligibility file on its own, before a codebook exists, and report its SHA-256."""
+    findings = []
+    def emit(level: str, field: str, message: str) -> None:
+        findings.append({"level": level, "field": field, "message": message})
+    def required_text(obj, field, where):
+        value = obj.get(field) if isinstance(obj, dict) else None
+        if not isinstance(value, str) or not value.strip():
+            emit("error", where + "." + field, "nonempty text required")
+    def placeholders(obj, where="eligibility"):
+        if isinstance(obj,str) and PLACEHOLDER.search(obj):
+            emit("error" if ready else "warning", where, "unresolved placeholder")
+        if isinstance(obj,dict):
+            for k,v in obj.items(): placeholders(v,where+"."+k)
+        if isinstance(obj,list):
+            for i,v in enumerate(obj): placeholders(v,f"{where}[{i}]")
+    digest = None
+    try:
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        rules = strict_load(path)
+        criteria = rules.get("criteria") if isinstance(rules, dict) else None
+        if not isinstance(criteria, list) or not criteria:
+            emit("error", "eligibility.criteria", "nonempty array required")
+        else:
+            criteria_errors(criteria, emit, required_text)
+        if isinstance(rules, dict):
+            required_text(rules, "version", "eligibility")
+        placeholders(rules)
+    except (OSError, ValueError, TypeError, KeyError, OverflowError) as exc:
+        emit("error", "file", str(exc))
+    passed = not any(f["level"] == "error" for f in findings)
+    return {"mode": "ready" if ready else "draft", "checks_passed": passed, "sha256": digest,
+            "semantic_validity_assessed": False, "findings": findings}
+
+
 def check(path: Path, ready: bool = False) -> dict:
     findings = []
     def emit(level: str, field: str, message: str) -> None:
@@ -202,14 +256,7 @@ def check(path: Path, ready: bool = False) -> dict:
                     if not isinstance(criteria,list) or not criteria:
                         emit("error","eligibility.criteria","nonempty array required")
                     else:
-                        cids=[]
-                        for i,c in enumerate(criteria):
-                            if not isinstance(c,dict): emit("error","eligibility.criteria","objects required"); continue
-                            for name in ("id","text","clarifications"):
-                                required_text(c,name,f"eligibility.criteria[{i}]")
-                            cids.append(c.get("id"))
-                        if any(not isinstance(x,str) for x in cids) or len(cids)!=len(set(cids)):
-                            emit("error","eligibility.criteria","unique criterion IDs required")
+                        criteria_errors(criteria,emit,required_text)
                     placeholders(rules,"eligibility")
     except (OSError,ValueError,TypeError,KeyError,OverflowError) as exc:
         emit("error","file",str(exc))
@@ -220,10 +267,11 @@ def check(path: Path, ready: bool = False) -> dict:
 
 def main() -> int:
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument("codebook",type=Path)
+    p.add_argument("codebook",type=Path,help="the codebook, or with --eligibility the eligibility file")
     p.add_argument("--ready",action="store_true")
+    p.add_argument("--eligibility",action="store_true",help="check an eligibility file on its own and print its SHA-256 (stage S0, before a codebook exists)")
     a=p.parse_args()
-    report=check(a.codebook, a.ready)
+    report=check_eligibility(a.codebook, a.ready) if a.eligibility else check(a.codebook, a.ready)
     print(json.dumps(report,ensure_ascii=False,indent=2,allow_nan=False))
     return 0 if report["checks_passed"] else 1
 

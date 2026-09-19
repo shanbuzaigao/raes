@@ -108,8 +108,8 @@
     },
     {
       "path": "raes_core/__init__.py",
-      "sha256": "d12475ddd2e3e2e0f30551b118f31d365f3985db93397ade38b3418fe549d157",
-      "size": 120
+      "sha256": "177e65c1fad7cc66285bf5c0bb627d5833c040805a0995d1d9c4629d1b1d3af5",
+      "size": 115
     },
     {
       "path": "raes_core/freeze.py",
@@ -128,8 +128,8 @@
     },
     {
       "path": "skills/raes/scripts/check_codebook.py",
-      "sha256": "a55c28a6cb51b7638982d45f15636fee94f32d35c328303fab2786c6a78785ef",
-      "size": 12629
+      "sha256": "46b7f32fb40d3c7fd5ee3acc0ff76b519980c7155b5055cf8c60aaaf8e7a25a3",
+      "size": 15149
     }
   ],
   "schema_version": 1,

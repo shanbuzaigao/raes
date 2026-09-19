@@ -80,6 +80,7 @@ skills/raes/references/s8-coding.md
 skills/raes/references/s9-coding-audit.md
 skills/raes/scripts/check_codebook.py
 skills/raes/scripts/check_dispersion.py
+skills/raes/scripts/check_templates.py
 skills/raes/scripts/dedupe_records.py
 skills/raes/scripts/new_project.py
 skills/raes/scripts/release.py
@@ -116,12 +117,14 @@ tests/test_core.py
 tests/test_dedupe_records.py
 tests/test_pipeline_template.py
 tests/test_project_release.py
+tests/test_project_templates.py
 tests/test_release.py
 tests/test_screening_template.py
 tests/test_workflow.py
 tools/check_codebook.py
 tools/check_dispersion.py
 tools/check_repository.py
+tools/check_templates.py
 tools/dedupe_records.py
 tools/freeze.py
 tools/install_skill.py

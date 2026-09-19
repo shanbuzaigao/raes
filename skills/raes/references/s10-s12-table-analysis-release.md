@@ -7,13 +7,15 @@ These stages differ from project to project. The skill helps with the structure 
 - Code builds the master table from the per-paper outputs. Each row receives a stable identifier from a registry: normal builds are read-only and fail on an unregistered row; allocating new identifiers needs an explicit flag; retired identifiers are never reused.
 - Effect sizes are computed by code from the coded inputs, by the paths the analysis plan declares. The synthetic example in the RAES repository (`examples/synthetic/effect_sizes.py`) shows two paths (means and standard deviations; events and totals) with their formulas documented; a project uses the paths its plan specifies.
 - Ask: the identity fields; the computation paths and formulas the plan specifies; which second package will recompute the pooled results.
-- Check: every effect recomputed independently; pooled results cross-checked in a second package.
+- Check: every effect is recomputed by a separately written script from the stored inputs. That is the independence meant here; a second statistical package comes in S11, for the pooled results.
+- Three rules the plan should give before the table is built: how a dispersion with an unclear label is read (SD and SE labels in conflict, no label, or a label that the report's own numbers contradict), and that every effect read this way is flagged; which measure represents a study when its main measure cannot be computed, which needs the rank of every measure in the table; and what happens when a planned imputation finds nothing to impute from. Check a special-case rule against the coded values before writing it down.
+- Analysis scripts read the master table and nothing else, so everything they need has to be in it, including readable study labels for tables and figures.
 
 ## S11 Analysis and statistical validation
 
 - Analysis scripts read the frozen master table and nothing else.
 - The skill does not choose models or tests. Ask what the analysis plan specifies, including which construction choices will be checked (dependence among effects from the same paper, alternative constructions, sensitivity to comparison-data sources, publication-bias diagnostics, power), and help record it in `analysis/PLAN.md`.
-- Check: each block ends with an independent numerical check of the reported values.
+- Check: each block ends with an independent numerical check of the reported values. The check is independent of the selection code only if the second package rebuilds every block's dataset from the master table itself, instead of reading the datasets the first script wrote.
 
 ## S12 Release and reproduction
 

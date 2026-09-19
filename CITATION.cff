@@ -6,7 +6,7 @@ authors:
   - family-names: "Zhu"
     given-names: "Qijun"
     affiliation: "George Mason University"
-version: "0.3.0-rc.1"
+version: "0.4.0"
 date-released: "2026-09-17"
 license: MIT
 repository-code: "https://github.com/shanbuzaigao/raes"

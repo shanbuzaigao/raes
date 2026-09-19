@@ -62,10 +62,18 @@ python tools/new_project.py ../my-evidence-project
 | `version` | 这份标准的版本 | 起始 `0.1.0-draft`；标准一改就升版本 |
 | `criteria[].id` | 标准编号 | `C1`、`C2`……筛选规则和审计 codebook 都用这个编号引用它，定了不要改 |
 | `criteria[].text` | 一条标准 | 一句话，能逐条核对。写"什么算符合"，不写"相关研究"这类话 |
-| `criteria[].clarifications` | 澄清 | 纳入、排除、拿不准的情形各举一例；什么证据算数；缺统计量不等于不纳入 |
+| `criteria[].clarifications` | 澄清 | 纳入、排除、拿不准的情形各举一例；什么证据算数；缺统计量不等于不纳入。可以是一段文字，也可以是几条文字组成的列表 |
 | `mixed_condition_rule` | 一篇论文里既有符合的条件也有不符合的条件时怎么办 | 写清在哪一级判断（论文、实验还是实验条件）；不符合的条件跳过并记录，不因它们排除整篇 |
 
 模板给了三条，按需增删。
+
+写的时候留意一点：澄清里关于题目摘要阶段的说法，决定了规则筛选能排除多少。写成"摘要没说就保留"，召回有保障，但大部分记录都要去取全文；写成"摘要必须写明才保留"，则相反。这个取舍在这里就要想好。
+
+这个文件可以单独检查，不用等 codebook 写好。下面的命令核对结构，并打印它的 SHA-256；没有占位符之后加 `--ready`：
+
+```sh
+python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eligibility.json
+```
 
 **例**
 
@@ -556,7 +564,9 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 - `README.md`：项目文件夹的说明。开头补上项目名和一句话的研究问题；其余说明可以保留。
 - `CURRENT_STATUS.md`：项目状态。`Status` 一行在批准运行前保持 `DRAFT — no collection authorized`（草稿，未批准收集）；`Completed scope` 每完成一个阶段更新，只写已经完成的，不写推测的下一步。
 - `.gitignore`：不进版本库的东西：密钥（`.env`、`*.key`、`secrets/`）、软件环境、缓存、`_internal/`，以及默认不公开的研究材料：`search/raw/`、`papers/`、`validation/raw/`。分享前检查一遍；已经跟踪的文件不会因为加了规则而消失。
-- `plans/DECISIONS.md`（程序生成）：所有操作选择的记录。每个提议先写在这里，标明是提议还是已批准。
+- `plans/DECISIONS.md`（程序生成）：所有操作选择的记录。每个提议先写在这里，标明是提议还是已批准。文件开头有一张索引表（编号、决定了什么、状态、日期），随时更新，读的人不用往下翻；除了这张索引和提议的状态行，其余内容只追加、不修改。日志里的时间用 UTC，写之前先读系统时钟，不要估。
+- `plans/STAGE_PLAN.md` 是空白的计划表。每个调用 AI 的阶段复制一份，改名为 `<阶段>_PLAN.md` 再填。
+- `raes_templates.json`（程序生成）：记下建项目时复制了哪些模板、各自的哈希，以及当时 skill 的版本。skill 更新之后，`python tools/check_templates.py --project <项目>` 会告诉你哪些文件还是没填过的旧模板（`outdated`）、哪些已经填过（`filled`）；加 `--refresh` 只替换没填过的那些，填过的一律不动。
 - `pipeline.json` 和 `run_pipeline.py`：一条命令重跑所有由程序完成的阶段，并把每个输出和正式输出比对。每做完一个阶段，就在 `pipeline.json` 的 `stages` 里加一项：`name` 阶段名；`command` 命令（写成列表，输出目录用 `{out}` 表示）；`outputs` 正式输出文件对应重跑出来的哪个文件（默认逐字节比对；带时间戳注释的文件写成 `{"rerun": "...", "compare": "records"}`，只比对非注释行）。`fixed_files`、`fixed_folders` 列出冻结的输入和程序；浏览器取全文、调用模型这类不能重跑的步骤，把它们的产物列在这里。文件里的 `example` 是一个例子，程序不读它。规则、程序或输入经批准改动之后，运行 `python run_pipeline.py --write-manifest` 记下新的预期状态（旧清单自动存进 `archive/`），把新清单的哈希写进对应的决策；平时运行 `python run_pipeline.py`，它把结果写到项目之外，遇到第一处不一致就停下并指出位置。
 - `releases/LEFT_OUT.txt`：做发布时不记入清单的路径，每行一个。默认只有 `pipeline_report.md`，因为每次运行都会重写它。
 
