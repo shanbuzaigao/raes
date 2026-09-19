@@ -557,6 +557,8 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 - `CURRENT_STATUS.md`：项目状态。`Status` 一行在批准运行前保持 `DRAFT — no collection authorized`（草稿，未批准收集）；`Completed scope` 每完成一个阶段更新，只写已经完成的，不写推测的下一步。
 - `.gitignore`：不进版本库的东西：密钥（`.env`、`*.key`、`secrets/`）、软件环境、缓存、`_internal/`，以及默认不公开的研究材料：`search/raw/`、`papers/`、`validation/raw/`。分享前检查一遍；已经跟踪的文件不会因为加了规则而消失。
 - `plans/DECISIONS.md`（程序生成）：所有操作选择的记录。每个提议先写在这里，标明是提议还是已批准。
+- `pipeline.json` 和 `run_pipeline.py`：一条命令重跑所有由程序完成的阶段，并把每个输出和正式输出比对。每做完一个阶段，就在 `pipeline.json` 的 `stages` 里加一项：`name` 阶段名；`command` 命令（写成列表，输出目录用 `{out}` 表示）；`outputs` 正式输出文件对应重跑出来的哪个文件（默认逐字节比对；带时间戳注释的文件写成 `{"rerun": "...", "compare": "records"}`，只比对非注释行）。`fixed_files`、`fixed_folders` 列出冻结的输入和程序；浏览器取全文、调用模型这类不能重跑的步骤，把它们的产物列在这里。文件里的 `example` 是一个例子，程序不读它。规则、程序或输入经批准改动之后，运行 `python run_pipeline.py --write-manifest` 记下新的预期状态（旧清单自动存进 `archive/`），把新清单的哈希写进对应的决策；平时运行 `python run_pipeline.py`，它把结果写到项目之外，遇到第一处不一致就停下并指出位置。
+- `releases/LEFT_OUT.txt`：做发布时不记入清单的路径，每行一个。默认只有 `pipeline_report.md`，因为每次运行都会重写它。
 
 ## 10. 检查器提示对照
 

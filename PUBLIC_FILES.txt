@@ -50,6 +50,9 @@ skills/raes/assets/plan_memo.md
 skills/raes/assets/project/.gitignore
 skills/raes/assets/project/CURRENT_STATUS.md
 skills/raes/assets/project/README.md
+skills/raes/assets/project/pipeline.json
+skills/raes/assets/project/releases/LEFT_OUT.txt
+skills/raes/assets/project/run_pipeline.py
 skills/raes/assets/prompts/coding_paper.md
 skills/raes/assets/prompts/coding_system.md
 skills/raes/assets/screening/screen_rules_template.py
@@ -90,6 +93,9 @@ templates/plan_memo.md
 templates/project/.gitignore
 templates/project/CURRENT_STATUS.md
 templates/project/README.md
+templates/project/pipeline.json
+templates/project/releases/LEFT_OUT.txt
+templates/project/run_pipeline.py
 templates/prompts/coding_paper.md
 templates/prompts/coding_system.md
 templates/screening/screen_rules_template.py
@@ -108,6 +114,7 @@ templates/validation/screening/prompt_full_text.md
 tests/test_check_dispersion.py
 tests/test_core.py
 tests/test_dedupe_records.py
+tests/test_pipeline_template.py
 tests/test_project_release.py
 tests/test_release.py
 tests/test_screening_template.py

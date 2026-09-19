@@ -40,7 +40,7 @@ The rows follow the order of the pipeline. The plan memo is written once for eve
 | [codebook.json](codebook.json) | Coding (S8) | The variables: type, whether null is allowed, who fills the field (executor or code), the rule, the permitted evidence, what to do when a value is missing, an example and a counterexample. Then the outcome map, the pairing, aggregation and direction rules, source precedence and worked cases |
 | [prompts/](prompts/coding_system.md) | Coding (S8) | The coding system prompt and the coding paper prompt |
 | [validation/coding/](validation/coding/memo.md) | Coding audit (S9) | The coding audit as one set: memo, audit codebook, config and two prompts. For example, one auditor checks every paper and a blinded adjudicator resolves each challenge |
-| [project/](project/README.md) | All | The starting files of a new project folder |
+| [project/](project/README.md) | All | The starting files of a new project folder, including `run_pipeline.py` with `pipeline.json`: one command that reruns every coded stage and compares each output with the formal one |
 
 The screening program is a skeleton in the spirit of Robleto and Shehadeh (2025): edit the term lists at the top so that each entry mirrors one criterion of `eligibility.json`, try it on the papers you already know should be included, then freeze it with a version. `python templates/screening/screen_rules_template.py --help` shows the two phases.
 

@@ -1,0 +1,3 @@
+# Paths that a release does not inventory: reports that every run rewrites.
+# One path per line, relative to the project.
+pipeline_report.md

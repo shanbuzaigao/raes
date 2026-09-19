@@ -1,0 +1,29 @@
+{
+  "schema_version": "raes-pipeline/1",
+  "purpose": "The stages that run_pipeline.py reruns, in order, and the frozen files they start from. Add a stage when its program and its formal output exist. After every approved change run `python run_pipeline.py --write-manifest` and record the manifest's hash with the decision.",
+  "fixed_files": [],
+  "fixed_folders": [],
+  "stages": [],
+  "example": {
+    "note": "An example of how the three lists can be filled, from a review that removed duplicates and screened with the skill's programs. The runner does not read this block.",
+    "fixed_files": ["codebook/eligibility.json", "search/dedup_rules.json", "search/dedupe_records.py", "screening/screen_rules_template.py", "screening/not_retrieved.txt"],
+    "fixed_folders": ["search/raw/search_through_2026-04-30", "papers/fulltext_txt"],
+    "stages": [
+      {
+        "name": "dedup",
+        "command": ["python", "search/dedupe_records.py", "--inputs", "search/raw/search_through_2026-04-30/pubmed.txt", "--rules", "search/dedup_rules.json", "--output", "{out}/dedup"],
+        "outputs": {"search/dedup/v1/records.csv": "{out}/dedup/records.csv", "search/dedup/v1/ledger.csv": "{out}/dedup/ledger.csv"}
+      },
+      {
+        "name": "ta",
+        "command": ["python", "screening/screen_rules_template.py", "ta", "search/dedup/v1/records.csv", "--output", "{out}/ta"],
+        "outputs": {"screening/runs/ta_v1/decisions.csv": "{out}/ta/decisions.csv", "screening/runs/ta_v1/evidence.json": "{out}/ta/evidence.json"}
+      },
+      {
+        "name": "ft",
+        "command": ["python", "screening/screen_rules_template.py", "ft", "search/dedup/v1/records.csv", "--after-ta", "screening/runs/ta_v1/decisions.csv", "--texts", "papers/fulltext_txt", "--not-retrieved", "screening/not_retrieved.txt", "--output", "{out}/ft"],
+        "outputs": {"screening/runs/ft_v1/decisions.csv": {"rerun": "{out}/ft/decisions.csv", "compare": "bytes"}}
+      }
+    ]
+  }
+}
