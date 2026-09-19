@@ -76,6 +76,8 @@ skills/raes/references/s8-coding.md
 skills/raes/references/s9-coding-audit.md
 skills/raes/scripts/check_codebook.py
 skills/raes/scripts/new_project.py
+skills/raes/scripts/release.py
+skills/raes/scripts/run_offline.py
 templates/GUIDE.zh-CN.md
 templates/README.md
 templates/README.zh-CN.md
@@ -100,6 +102,7 @@ templates/validation/screening/memo.md
 templates/validation/screening/prompt_abstract.md
 templates/validation/screening/prompt_full_text.md
 tests/test_core.py
+tests/test_project_release.py
 tests/test_release.py
 tests/test_screening_template.py
 tests/test_workflow.py
@@ -109,4 +112,6 @@ tools/freeze.py
 tools/install_skill.py
 tools/new_project.py
 tools/package_release.py
+tools/release.py
 tools/render_prompt.py
+tools/run_offline.py

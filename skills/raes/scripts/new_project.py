@@ -27,7 +27,7 @@ FOLDERS = {
     "validation": "One folder per audit: screening/ and coding/, each with memo, codebook, config and prompts; frozen frames and auditor outputs.",
     "table_build": "Read-only ID registry during builds; versions for explicit ID allocation.",
     "analysis": "Analysis plan, scripts, assumptions and verification.",
-    "releases": "Immutable completed artifacts; update pointers separately.",
+    "releases": "One folder per release, written once by the skill's release.py as a hash inventory of the project files; CURRENT names the active release; LEFT_OUT.txt lists reports that every run rewrites.",
     "archive": "Superseded records with hashes, never silently rewritten.",
 }
 

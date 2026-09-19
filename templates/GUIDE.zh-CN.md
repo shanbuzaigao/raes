@@ -544,3 +544,4 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 5. 试跑三到五篇；有问题改规则（改一般规则，不改单篇），升版本。
 6. 冻结（`tools/freeze.py` 写哈希清单），然后运行。运行程序是你自己的；RAES 不向任何服务商发请求。
 7. 更新 `CURRENT_STATUS.md` 和 `plans/DECISIONS.md`。
+8. 阶段完成后做一次发布：`python tools/release.py --project <项目> create <名字>`，再 `activate <名字>`。它原地记录每个文件的哈希，不复制文件；之后 `verify` 能查出任何改动。重建全部结果时，用 `python tools/run_offline.py -- <命令>` 在断网状态下跑。

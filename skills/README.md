@@ -13,6 +13,8 @@ The folder follows the [Agent Skills specification](https://agentskills.io/speci
 | `raes/assets/` | A copy of the repository's `templates/` folder, so the skill works on its own after installation |
 | `raes/scripts/new_project.py` | Creates a draft project folder from the templates |
 | `raes/scripts/check_codebook.py` | Checks a codebook, in draft mode or in `--ready` mode |
+| `raes/scripts/release.py` | Writes a release of a project as a hash inventory of the files in place, names the active release, and verifies the working copy against it |
+| `raes/scripts/run_offline.py` | Runs a command, such as the rebuild of all results, with network access switched off for the Python processes it starts |
 
 ## Install
 

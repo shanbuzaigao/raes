@@ -13,6 +13,8 @@
 | `raes/assets/` | 仓库 `templates/` 文件夹的副本，装到别处后 skill 也能独立工作 |
 | `raes/scripts/new_project.py` | 用模板建一个草稿项目文件夹 |
 | `raes/scripts/check_codebook.py` | 检查 codebook，草稿模式或 `--ready` 模式 |
+| `raes/scripts/release.py` | 给项目做发布：原地记录每个文件的哈希，不复制文件；指定当前生效的发布；核对工作副本与发布是否一致 |
+| `raes/scripts/run_offline.py` | 在切断网络的情况下运行一条命令（比如重建全部结果的命令），对它启动的 Python 进程生效 |
 
 ## 安装
 

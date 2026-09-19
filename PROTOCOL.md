@@ -354,7 +354,7 @@ The audit runner never touches the production rows. After a codebook clarificati
 **Done by:** code.
 **In:** every completed stage. **Out:** immutable releases, pointers, and one command that rebuilds the results offline.
 
-**What I do.** Each completed stage is saved as a dated, immutable release with a manifest of hashes. A `CURRENT` file names the active release, and an activation record documents what changed in the working copies. The project status file records completed work as complete and does not attach inferred next steps.
+**What I do.** Each completed stage is saved as a dated, immutable release with a manifest of hashes. A release can be a copy of the files, or an inventory of their hashes in place, which avoids duplicating a large project inside a synchronized folder. A `CURRENT` file names the active release, and an activation record documents what changed in the working copies. The project status file records completed work as complete and does not attach inferred next steps.
 
 **Before moving on.** One command copies the formal inputs to a fresh location, switches off network access, and rebuilds the results from the saved responses. Software environments and disposable caches live outside synchronized folders.
 
@@ -398,7 +398,7 @@ The validations are targeted checks, not proof of zero error. Auditors from diff
 - **Near miss:** a full-text exclusion that failed exactly one criterion.
 - **Snapshot:** one cumulative state of the search, with its own identifier and audit history.
 - **Frozen frame:** the fixed set of rows or records a validation refers to.
-- **Release:** an immutable, dated copy of a completed stage.
+- **Release:** an immutable, dated record of a completed stage: a copy of its files, or an inventory of their hashes.
 - **Pointer:** the `CURRENT` file that names the active release.
 
 ## Appendix B. Folder conventions
