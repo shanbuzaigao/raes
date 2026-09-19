@@ -44,7 +44,7 @@ Corrections: keep originals; require a separate reconciliation record.
 ## 6. Operation and technical failures
 Offline preflight and schema checks: {{PREFLIGHT}}
 Finite attempts per invocation, global attempt IDs and resume: {{RETRY_POLICY}}
-Refusal/timeout/invalid JSON != EXCLUDE/PASS/vote.
+A refusal, a timeout or invalid JSON is never an exclusion, a pass or a vote.
 Budget, allowed provider and explicit live authorization: {{BUDGET_AND_APPROVAL}}
 A plan is not an authorization to run; that is recorded in section 6 and signed in section 7.
 

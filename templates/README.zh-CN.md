@@ -15,7 +15,7 @@ python tools/new_project.py ../my-evidence-project
 python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json
 ```
 
-第一条命令建好项目的各个文件夹，每个里面放一份简短的 README，把模板复制进去，并从 codebook 生成两份列名清单：全部列，以及由执行模型填写的列。第二条命令检查 codebook，列出还没填的占位符。
+第一条命令建好项目的各个文件夹，每个里面放一份简短的 README，把模板复制进去，同时复制进去的还有属于项目自己的三个程序：去重脚本、筛选程序和流水线运行程序。它从 codebook 生成两份列名清单（全部列，以及由执行模型填写的列），并把复制的每个模板记进 `raes_templates.json`；以后用 `python tools/check_templates.py --project <项目>` 就能看出哪些文件还是没填过的旧模板。第二条命令检查 codebook，列出还没填的占位符。纳入标准文件从第一天起就可以单独检查：`python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eligibility.json`。
 
 codebook 填完并经过批准后，把 `status` 设为 `ready`，记录批准信息，把 `eligibility.json` 的 SHA-256 填进 codebook，然后运行：
 

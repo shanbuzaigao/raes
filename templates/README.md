@@ -15,7 +15,7 @@ python tools/new_project.py ../my-evidence-project
 python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json
 ```
 
-The first command creates the project folders, each with a short README, copies the templates in, and writes two column lists from the codebook: all columns, and the columns the executor fills. The second command checks the codebook and lists the placeholders that are still open.
+The first command creates the project folders, each with a short README, and copies the templates in, together with three programs that belong to the project: the deduplication script, the screening program and the pipeline runner. It writes two column lists from the codebook (all columns, and the columns the executor fills) and records every copied template in `raes_templates.json`, so that `python tools/check_templates.py --project <project>` can later tell which files are still unfilled copies of an older template. The second command checks the codebook and lists the placeholders that are still open. The eligibility file can be checked on its own from the first day: `python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eligibility.json`.
 
 When the codebook is complete and approved, set `status` to `ready`, record the approval, put the SHA-256 of `eligibility.json` into the codebook, and run:
 
