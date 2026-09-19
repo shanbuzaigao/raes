@@ -24,7 +24,7 @@
     "seed": null,
     "round_size": null
   },
-  "routing": "{{e.g. the auditor checks every paper; each challenge goes to the blinded adjudicator; exact agreement confirms the correction, otherwise bounded human adjudication}}",
+  "routing": "{{e.g. the auditor checks every paper; each challenge goes to the blinded adjudicator; current coding supported: the challenge is rejected; correction supported and equal to the hidden proposal: confirmed; any other result: bounded human adjudication}}",
   "payload_policy": {
     "downstream_statistics_hidden": true,
     "executor_rationale_hidden": true,

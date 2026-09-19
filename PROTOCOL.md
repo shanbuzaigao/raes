@@ -47,7 +47,7 @@ The first half follows the PRISMA 2020 flow (Page et al., 2021): identification,
 | S2 Remove duplicates | Researcher, in a reference manager | Deduplicated library exported as a text file, counts before and after, optional rule-based pre-filter | Identification |
 | S3 Title and abstract screening | Code | Decision and reason for every record | Screening |
 | S4 Full-text screening | Code | Criterion-by-criterion evidence and a decision for every retrieved paper | Screening |
-| S5 AI cross-validation of screening | AI auditors | Audited samples of exclusions, confirmed misses, records added back | Screening |
+| S5 AI cross-validation of screening | AI auditors | Audited samples of exclusions, confirmed misses, and the rule revisions they cause | Screening |
 | S6 Same-study check | Code | Groups of records that report the same study, one representative each | Included |
 | S7 Data preparation (optional) | Code, optionally with AI assistance | Per-paper data summary, matched comparison data, tracker | |
 | S8 AI coding | AI executor | Per-paper coded rows in a fixed column template | |
@@ -229,12 +229,12 @@ The exported text file is the source from here on, and spreadsheets are only for
 
 **What I do.** This is the second phase of the same rule-based design. The program parses each PDF, retrieves the passages relevant to each criterion, and records for every criterion whether it is supported, together with the evidence. The decision follows from the criteria.
 
-**Before moving on.** Keep the criterion-level record, because S5 uses it to find near misses. Full texts that could not be retrieved are counted separately from eligibility exclusions, as the PRISMA flow diagram requires.
+**Before moving on.** Keep the criterion-level record, because S5 uses it to find near misses. Full texts that could not be retrieved are counted separately from eligibility exclusions, as the PRISMA flow diagram requires. I also look at every paper the screen kept before it goes on to coding, because terms cannot decide every criterion. A paper that should not have been kept shows that a full-text rule is wrong, and it is handled as S5 describes.
 
 ### S5 AI cross-validation of screening
 
 **Done by:** independent AI auditors, three in my project; code for sampling, validation of responses and majority decisions; the researcher for a bounded adjudication.
-**In:** the exclusions of S3 and S4 for one search snapshot. **Out:** audited samples, confirmed misses, and the records added back to the included set.
+**In:** the exclusions of S3 and S4 for one search snapshot. **Out:** audited samples, confirmed misses, and what they change: a revised full-text rule, or a frozen list of records added to the input of the full-text screen.
 
 The question here is narrow: did the screens exclude anything they should have kept? Robleto and Shehadeh (2025) recommend reading a random sample of excluded records by hand. This stage turns that spot check into an audit that is specified in advance and carried out by independent AIs.
 
@@ -250,11 +250,16 @@ The question here is narrow: did the screens exclude anything they should have k
 
 *Title-and-abstract audit.* Draw rounds of previously unaudited exclusions, stratified by search batch. One blinded auditor reads each record. A "retain" answer is a candidate, not an error. The candidate's full text is retrieved and run through the frozen full-text screen, and papers that pass are then read by the independent auditors.
 
-*Stopping.* A round in which no candidate passes the full-text screen ends the audit. Rounds in which candidates pass the screen but are all excluded by the independent auditors count toward a cumulative total, and three such rounds end the audit. A confirmed miss is added back to the included set, and the audit continues. Every third confirmed miss triggers a review for systematic failure.
+*Stopping.* A round in which no candidate passes the full-text screen ends the audit. Rounds in which candidates pass the screen but are all excluded by the independent auditors count toward a cumulative total, and three such rounds end the audit. After a confirmed miss the audit continues, and every third confirmed miss triggers a review for systematic failure.
 
-*If the audit finds a problem, the rule changes, not the sample.* Rules stay fixed during an audit. If inspection shows that a rule should change, the change is versioned, the current run is archived, and a fresh sample is frozen under the new rule. Records from a run that actually started are withheld from later samples within the same snapshot.
+*What a confirmed miss changes.* No record enters or leaves the included set by hand. The included set is always what the rules produce. Rules stay fixed while an audit round runs, and they are revised after it.
 
-**Before moving on.** The stopping rule has been met under the current rule versions, and every confirmed miss is in the included set.
+- A miss confirmed in the full-text audit shows that a full-text rule is wrong. I make the smallest general revision of the rule, give it a new version, rerun the full-text screen on every paper, archive the current audit run and freeze a fresh sample under the new rule. The paper is included when the revised rules include it. Records from a run that actually started are withheld from later samples within the same snapshot.
+- The title-and-abstract rules stay frozen, because changing them would change the input of every later stage. A record confirmed in the title-and-abstract audit goes onto a frozen list, which the full-text screen reads as additional input, and the full-text rules decide it.
+- A wrong inclusion is handled like a wrong exclusion, wherever it surfaces: when I look at the kept papers, during coding, or in the coding audit. The full-text rules are revised and rerun. If the criterion itself was unclear, the clarifications in the eligibility file are revised too.
+- When I test a revised rule, I do not require that earlier exclusions stay excluded. An exclusion that nobody has read is not known to be right.
+
+**Before moving on.** The stopping rule has been met under the current rule versions. Every confirmed miss is included by the current rules, and one run of the programs reproduces the included set.
 
 ### S6 Same-study check
 
@@ -274,7 +279,7 @@ The question here is narrow: did the screens exclude anything they should have k
 
 An AI can assist with this stage, for example by reading a repository and writing the processing script. When it does, it must be given the same eligibility criteria as the screening and coding stages, word for word, so that the conditions it prepares are exactly the eligible ones.
 
-1. Look for usable data: reported statistics, supplements, repositories. If there is none, record what is missing, send a data request, mark the paper as waiting, and move on. The paper stays in the coding queue.
+1. Look for usable data: reported statistics, supplements, repositories. If there is none, record what is missing, send a data request, mark the paper as waiting, and move on. The paper stays in the coding queue. Data files that the authors send are processed in this stage like any other data. A single corrected value from the authors, or a published erratum, enters through the reconciliation record of S9, with its source.
 2. List the eligible conditions from the main text. Extra conditions that appear only in a repository are not included automatically.
 3. Match comparison data with a fixed hierarchy. Mine is: data from the same paper, then a source the paper names, then a project-wide bank of baselines. Finding no match is allowed. The row is kept and its effect size is left uncomputed.
 4. Aggregate within independent units and write a per-paper summary file. Repeated rounds are not independent observations.
@@ -316,9 +321,13 @@ The runner does not overwrite earlier output, saves the raw response, and report
 
 **Codebook.** The auditor returns a pass unless the sources and the frozen rules support a specific correction at an exact row and field.
 
-**Prompts.** The auditor sees the sources, the frozen rules and the rows. The adjudicator of a challenge sees the same material but not the value the auditor proposed.
+**Prompts.** The auditor sees the sources, the frozen rules and the rows. The adjudicator of a challenge sees the same material and the challenged fields with their current values, but not the value the auditor proposed or the evidence for it.
 
-**Operate.** Each challenge goes to the blinded adjudicator. Exact agreement confirms the correction. Anything else goes to restricted human adjudication. The audit runner never touches the production rows. Confirmed corrections are propagated in a separate, controlled step. After a codebook clarification, only the affected papers are audited again, and earlier passes keep the codebook version they were obtained under.
+**Operate.** Each challenge goes to the blinded adjudicator, who returns one of three results. *The current coding is supported:* the challenge is rejected and the coding stays. No human is needed, because two independent readings agree. *A correction is supported:* it is confirmed only when the adjudicator's corrected values match the auditor's hidden proposal exactly. Any difference goes to restricted human adjudication. *The source or the rule is ambiguous:* the item goes to restricted human adjudication.
+
+A confirmed error takes one of two routes. An error that belongs to one paper, under a rule that was already clear, is corrected by code from a reconciliation record that keeps the value before and after. An error that shows an unclear or wrong rule is fixed in the codebook: the smallest general change, a new version, and a new coding run of the papers the rule affects. Isolated rows are not patched. Running the coder again is for technical failures only. It is not a way to fix a content error, because the errors of one model are not independent, and keeping the run that looks right selects by outcome.
+
+The audit runner never touches the production rows. After a codebook clarification, only the affected papers are audited again, and earlier passes keep the codebook version they were obtained under.
 
 **Before moving on.** Every row in the frozen frame has an audit result.
 
@@ -351,7 +360,7 @@ The runner does not overwrite earlier output, saves the raw response, and report
 
 ## 7. Rules that apply to every audit
 
-**Blinding.** Screening auditors get the source and the rules. They do not get the original decision or its reason, the sampling rank, the batch, keyword flags or any later result. Coding auditors get the source, the rules and the coded rows, but not the executor's reasoning or any computed effect. When a coded value is challenged, the second auditor sees the same material and the challenged field, but not the value the first auditor proposed.
+**Blinding.** Screening auditors get the source and the rules. They do not get the original decision or its reason, the sampling rank, the batch, keyword flags or any later result. Coding auditors get the source, the rules and the coded rows, but not the executor's reasoning or any computed effect. When a coded value is challenged, the second auditor sees the same material and the challenged field with its current value, but not the value the first auditor proposed or the evidence for it.
 
 **Staged execution.** Auditors run in a fixed order with a checkpoint after each. The pauses exist to catch schema failures and provider errors before every reviewer has been paid for. They are not an opportunity to choose which records continue. No record may be added to or removed from the queue for the next reviewer.
 

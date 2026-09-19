@@ -25,6 +25,13 @@ Goal: rule-based screens written from the criteria. Every record receives a deci
 - Title-and-abstract phase: the goal is recall; a record is excluded only when a criterion checked at that phase clearly fails. Full-text phase: every criterion must be supported.
 - Every record has a decision and a reason; the rules file and the program carry the same version; any change to a term list is a new version.
 
+## When a decision turns out wrong
+
+- Before coding, look at the papers the full-text screen kept, at least when terms cannot decide every criterion. Record who read them; a reading by the model that helped write the rules is not independent of the rules.
+- No record enters or leaves the included set by hand. A wrong full-text decision, an inclusion as much as an exclusion, wherever it surfaces (this reading, the screening audit, coding, the coding audit), changes the full-text rules: the smallest general revision, a new version, a full rerun. If the criterion itself was unclear, revise the clarifications in the eligibility file too.
+- The title-and-abstract rules stay frozen once the full-text stage has started, because changing them changes the input of every later stage. A record that the title-and-abstract audit confirms goes onto a frozen list that the full-text screen reads as additional input.
+- When testing a revised rule, do not require that earlier exclusions stay excluded. An exclusion that nobody has read is not known to be right.
+
 ## If a model screens instead of code
 
 Prepare it as an AI step (`ai-step-order.md`): the eligibility file is the codebook, and the prompts in `assets/validation/screening/` are a starting point for the screening prompts. The audit in S5 is the same in both cases.

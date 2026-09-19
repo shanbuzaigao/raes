@@ -8,8 +8,8 @@
     },
     {
       "path": "examples/synthetic/expected/results.json",
-      "sha256": "ac2d6e19d1037504d07e1781673c5837d64206bd7acf15913740d1992c493a36",
-      "size": 12844
+      "sha256": "6b2a6bca88086034f4fe331c0c4e5b0ea87430f5e7fb9e7e0502ee118c8dc237",
+      "size": 12878
     },
     {
       "path": "examples/synthetic/inputs/codebook.json",
@@ -98,8 +98,8 @@
     },
     {
       "path": "examples/synthetic/pipeline.py",
-      "sha256": "db7fe969dc5f94347cf5340c0aaf9322a2fd4c283cbc1f136b39915ff4d21196",
-      "size": 23178
+      "sha256": "352525d71fb9f3b81e88f47b18b5a9b9641755b6cba619fccfa054dab67010a6",
+      "size": 23692
     },
     {
       "path": "examples/synthetic/reproduce.py",

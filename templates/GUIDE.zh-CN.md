@@ -292,8 +292,8 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | 4 | `{{STRATA_ROUND_SIZE_SEED}}` | 例：按检索批次分层，按比例分配，种子顺序 |
 | 4 | `{{REVIEWERS}}`、`{{INPUTS}}`、`{{HIDDEN}}` | 例：每条记录一位审计者；给记录编号、题目、完整摘要或 null、标准原文；不给程序的决定、检索批次、任何 PDF、其他答案 |
 | 4 | `{{CANDIDATE_ROUTE}}` | "保留"意味着什么、去哪里。例：保留是候选，不是错误；取全文，跑冻结的全文筛选，筛选纳入的交给第 3 节的全文审计者读 |
-| 5 | `{{STOPPING_RULE}}` | 停止规则。例：一轮里没有候选通过冻结的全文筛选，审计结束；有候选通过但全被审计者排除的轮次计入累计；确认的漏排加回纳入集合，审计继续；每累计若干个确认漏排就检查是否有系统性错误。没做完的事（缺 PDF、答案未定）不算零 |
-| 6 | `{{RULE_CHANGE_POLICY}}` | 例：审计期间规则不变；要改就升版本、归档当前运行、在新规则下重新冻结样本 |
+| 5 | `{{STOPPING_RULE}}` | 停止规则。例：一轮里没有候选通过冻结的全文筛选，审计结束；有候选通过但全被审计者排除的轮次计入累计；确认漏排之后审计继续；每累计若干个确认漏排就检查是否有系统性错误。没做完的事（缺 PDF、答案未定）不算零 |
+| 6 | `{{RULE_CHANGE_POLICY}}` | 规则怎么改、确认的漏排改变什么。例：一轮审计期间规则不变，轮次结束后才改；任何记录都不靠手工加入纳入集；全文审计确认的漏排改全文规则（最小的一般性修订、升版本、全部重跑、归档当前审计、重新冻结样本）；题目摘要规则保持冻结，该审计确认的记录进入一份冻结清单，由全文筛选作为追加输入读取 |
 | 7 | `{{RETRY_POLICY}}` | 例：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算排除、投票或干净的一轮 |
 | 7 | `{{WHAT_IS_REPORTED}}` | 例：每个阶段的总体大小、分层、轮数、种子、审了多少、候选数、确认漏排数、触发的停止条件、审计查不出什么 |
 
@@ -464,11 +464,11 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 | 2 | `{{UNIT}}` | 每次请求的单位。例：一篇论文；这篇的每一行都查 |
 | 2 | `{{DESIGN_AND_JUSTIFICATION}}`、`{{FIXED_BEFORE_REVIEW}}` | 全查还是抽样，及理由；抽样时的分层、种子、顺序，审前定死 |
 | 3 | 审计者 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给来源、编码 codebook、这份审计 codebook、这篇论文的编码行；不给执行模型的推理、之前的审计答案、抽样信息、任何算出的效应 |
-| 3 | 裁决者 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给同样的来源和规则、原始行、被质疑的字段；不给审计者提出的值、理由、置信度。要说明裁决者是否知道哪个字段被质疑 |
+| 3 | 裁决者 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给同样的来源和规则、原始行、被质疑的字段及其当前值；不给审计者提出的值、证据、理由、置信度。看到被审的当前值不影响独立性，看到建议值才会 |
 | 4 | `{{DOMAINS}}` | 查什么。例：1. 效应量输入及出处；2. 每行与对照行的配对和计算路径；3. 需要判断的调节变量 |
-| 5 | `{{ROUTING}}` | 流转。例：审计者返回通过，或一条质疑（行、字段、建议值、规则、证据），或待定项；每条质疑交裁决者；两者完全一致才确认改正；否则交人裁决，范围受限 |
+| 5 | `{{ROUTING}}` | 流转。例：审计者返回通过，或一条质疑（行、字段、建议值、规则、证据），或待定项；每条质疑交裁决者，裁决者返回三种结果之一：现有编码成立（驳回质疑，不需要人）；改正成立（与审计者的隐藏建议完全一致才确认，有差异交人裁决）；来源或规则有歧义（交人裁决） |
 | 5 | `{{PROHIBITED}}` | 审计者不能做什么。例：增、删、拆、并行；重审纳入资格 |
-| 6 | `{{CORRECTION_POLICY}}` | 例：审计从不改原始行；确认的改正写在单独的调和记录里，由程序生成新版本的表；codebook 澄清后只重审受影响的论文，之前的通过结果保留当时的 codebook 版本 |
+| 6 | `{{CORRECTION_POLICY}}` | 例：审计从不改原始行；属于单篇、规则本来清楚的错误，写进单独的调和记录（保留改前改后的值），由程序生成新版本的表；暴露出规则不清或有错的错误，改 codebook、升版本、受影响的论文重新编码；重跑编码模型只用于技术故障；作者更正的数值和已发表的勘误也通过这份调和记录进入，注明来源；codebook 澄清后只重审受影响的论文，之前的通过结果保留当时的 codebook 版本 |
 | 7 | `{{RETRY_POLICY}}` | 例：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算通过 |
 | 7 | `{{WHAT_IS_REPORTED}}` | 例：总体的行数和论文数、查了多少、质疑数、确认改正数、待定项、人裁决数、审计不覆盖什么 |
 
@@ -482,7 +482,7 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 | `scope.frame` | 总体的编号。例：`frame-2026-09-17-v1` |
 | `scope.units` | 审哪些行。例：`all Row_UIDs in the frame` |
 | `scope.allowed_domains`、`prohibited_actions` | 同 memo 第 4、5 节 |
-| `modes.coding_audit.*`、`modes.coding_adjudication.*` | 两个角色各自的输入、隐藏项、返回字段。已按常见设计填好；与 memo 不一致时改这里 |
+| `modes.coding_audit.*`、`modes.coding_adjudication.*` | 两个角色各自的输入、隐藏项、返回字段。已按常见设计填好；与 memo 不一致时改这里。裁决者的 `outcomes` 是三种结果：现有编码成立、改正成立、来源或规则有歧义 |
 | `pass_rule` | 什么算通过。例：`Every checked Row_UID is covered in every allowed domain and no unresolved evidence remains.` |
 | `challenge_rule` | 一条质疑要包含什么。例：行和字段、有来源支持的替代值、规则编号、能找到的位置 |
 | `conflict_rule` | 来源冲突怎么办。例：按 `source_precedence`；否则人裁决；从不编造值 |
@@ -505,9 +505,9 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 
 ### 8.4 `prompt_audit.md`、`prompt_adjudicator.md`
 
-运行时代入，不手填：`{{ELIGIBILITY_JSON}}`、`{{CODEBOOK_JSON}}`、`{{AUDIT_CODEBOOK_JSON}}`、`{{SOURCES_JSON}}`、`{{TARGET_ROWS_JSON}}`（原始的目标行，效应量字段留空）、`{{COORDINATE_JSON}}`（裁决者要判断的行和字段）。
+运行时代入，不手填：`{{ELIGIBILITY_JSON}}`、`{{CODEBOOK_JSON}}`、`{{AUDIT_CODEBOOK_JSON}}`、`{{SOURCES_JSON}}`、`{{TARGET_ROWS_JSON}}`（原始的目标行，效应量字段留空）、`{{COORDINATE_JSON}}`（裁决者要判断的行、字段和当前值）。
 
-裁决者的 prompt 里没有审计者的建议值，这是设计的一部分，不要加进去。
+裁决者的 prompt 里有当前值，没有审计者的建议值和证据，这是设计的一部分，不要加进去。它返回三种结果之一：现有编码成立、改正成立（附改正值）、来源或规则有歧义。
 
 ## 9. 项目起始文件 `project/`
 

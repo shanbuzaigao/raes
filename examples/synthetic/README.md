@@ -56,7 +56,7 @@ The runner is written for these seven fictional reports. It is not a screening t
 
 `inputs/requests.jsonl` holds every request with its hash; `inputs/responses.jsonl` holds the raw text of every attempt, failures included. The auditor and the adjudicator receive the same audit codebook; the adjudicator receives the original target rows and the disputed field, not the proposed correction or its rationale. The full-text audit requests do not contain the screen's decision or reason.
 
-The outputs are the original coded rows, the reconciled rows, the corrections, the computability record, the unresolved items, the report-to-study map, the two audit logs, the attempt log, the flow counts, and the effect sizes as JSON and CSV. Matching a quotation to its line confirms where a value came from, not that it was read correctly; that is why the SE/SD error passes the evidence check and needs the audit.
+The outputs are the original coded rows, the reconciled rows, the corrections, the challenges the adjudicator rejected (none in this example), the computability record, the unresolved items, the report-to-study map, the two audit logs, the attempt log, the flow counts, and the effect sizes as JSON and CSV. Matching a quotation to its line confirms where a value came from, not that it was read correctly; that is why the SE/SD error passes the evidence check and needs the audit.
 
 The freeze covers the source texts, the rules, the requests and answers, the expected outputs and the computation code, and it rejects added files in `inputs/` and `expected/`. Changing a frozen file means a new version and a new manifest.
 

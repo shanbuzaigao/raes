@@ -292,7 +292,7 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
         computability.append({"Study_ID":key[0],"Condition_ID":key[1],"computable":not missing,"missing":missing})
         if not missing:targets.extend(rows)
     # S9: census of computable pre-g rows. Original targets remain unchanged.
-    reconciled=deepcopy(original);corrections=[];coding_audit=[]
+    reconciled=deepcopy(original);corrections=[];rejected=[];coding_audit=[]
     by_uid={r["Row_UID"]:r for r in reconciled}
     by_study=defaultdict(list)
     for row in targets:by_study[row["Study_ID"]].append(row)
@@ -334,9 +334,14 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
                 if obj["rule"] not in audit_rules["rule_ids"]:raise ValueError("Unknown adjudication rule")
                 evidence_check(obj["evidence"],{representatives[study]["source_id"]:sources[representatives[study]["source_id"]]})
             adjud=rp.get(adjud_request,check_adjud)
+            old=by_uid[uid][field]
+            if canonical_json(adjud["value"]) == canonical_json(old):
+                # The adjudicator supports the current coding: the challenge is rejected, and no human is needed.
+                rejected.append({"Row_UID":uid,"field":field,"kept":old,"auditor_request":request_id(request),
+                                 "adjudicator_request":request_id(adjud_request),"rule":adjud["rule"],"evidence":adjud["evidence"]})
+                continue
             if canonical_json(challenge["proposed"]) != canonical_json(adjud["value"]):
                 raise ValueError("Auditors disagree: bounded human adjudication required, not majority-by-retry")
-            old=by_uid[uid][field]
             by_uid[uid][field]=adjud["value"]
             corrections.append({"Row_UID":uid,"field":field,"old":old,"new":adjud["value"],
                                 "auditor_request":request_id(request),"adjudicator_request":request_id(adjud_request),
@@ -366,6 +371,7 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
     return {"flow_counts.json":counts,"effect_sizes.json":effects,"coded_original.json":original,
             "coded_reconciled.json":reconciled,"computability.json":computability,"unresolved_items.json":unresolved,
             "screening_audit.json":screening_audit,"coding_audit.json":coding_audit,"corrections.json":corrections,
+            "rejected_challenges.json":rejected,
             "study_map.json":study_map,"attempt_log.json":rp.trace}
 
 

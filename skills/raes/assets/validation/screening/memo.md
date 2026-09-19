@@ -32,11 +32,11 @@ What error the audit looks for: {{TARGET}} (for example: records excluded by the
 
 ## 5. Stopping rule
 
-{{STOPPING_RULE}} (for example: a round in which no candidate passes the frozen full-text screen ends the audit; rounds in which candidates pass but all are excluded by the reviewers count toward a cumulative total; a confirmed miss is added back and the audit continues; every so many confirmed misses trigger a review for systematic failure). Anything unfinished, such as a missing PDF or an unresolved answer, never counts as zero.
+{{STOPPING_RULE}} (for example: a round in which no candidate passes the frozen full-text screen ends the audit; rounds in which candidates pass but all are excluded by the reviewers count toward a cumulative total; after a confirmed miss the audit continues; every so many confirmed misses trigger a review for systematic failure). Anything unfinished, such as a missing PDF or an unresolved answer, never counts as zero.
 
-## 6. Rules during the audit
+## 6. Rule changes and confirmed misses
 
-{{RULE_CHANGE_POLICY}} (for example: rules stay fixed while an audit runs; a change gets a new version, the current run is archived, and a fresh sample is frozen under the new rule).
+{{RULE_CHANGE_POLICY}} (for example: rules stay fixed while a round runs and are revised after it; no record is added to the included set by hand; a miss confirmed in the full-text audit changes the full-text rule: the smallest general revision, a new version, a full rerun, the current audit run archived and a fresh sample frozen; the title-and-abstract rules stay frozen, and a record confirmed in that audit goes onto a frozen list that the full-text screen reads as additional input).
 
 ## 7. Technical failures and reporting
 

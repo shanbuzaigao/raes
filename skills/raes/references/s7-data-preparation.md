@@ -14,6 +14,8 @@ Goal: for a paper that comes with data files or needs matched comparison data, a
 
 Record what is missing, draft the data request for the researcher to send, mark the paper as waiting, and move on. The paper stays in the coding queue.
 
+When the authors answer: data files are processed in this stage like any other data. A single corrected value, or a published erratum, enters through the reconciliation record of the coding audit (S9), with its source.
+
 ## Write
 
 - `papers/<id>/data_summary.csv`, produced by a processing script kept with the paper, with the sources of every number.

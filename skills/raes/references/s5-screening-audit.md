@@ -21,5 +21,7 @@ Goal: answer one narrow question, specified in advance and answered by independe
 
 - Memo, codebook and config agree with each other; every placeholder is resolved or listed as an open decision.
 - The frames are frozen with hashes before the first request.
-- A "retain" is a candidate, not an error; a confirmed miss is added back to the included set.
+- A "retain" is a candidate, not an error.
+- No record is added to the included set by hand. A miss confirmed in the full-text audit changes the full-text rule after the round: the smallest general revision, a new version, a full rerun, the current audit run archived and a fresh sample frozen; the paper is included when the revised rules include it. The title-and-abstract rules stay frozen; a record confirmed in that audit goes onto a frozen list that the full-text screen reads as additional input. See "When a decision turns out wrong" in `s3-s4-screening-rules.md`.
+- Every confirmed miss is included by the current rules, and one run of the programs reproduces the included set.
 - Anything unfinished (a missing PDF, an unresolved answer) never counts as a clean round.

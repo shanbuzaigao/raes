@@ -473,6 +473,7 @@
     "technical_failures": 1,
     "uncomputed_comparisons": 1
   },
+  "rejected_challenges.json": [],
   "screening_audit.json": [
     {
       "final": "exclude",

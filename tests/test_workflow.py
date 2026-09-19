@@ -190,6 +190,15 @@ class AuditFailureTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'bounded human adjudication required'):
             pipeline.run(ROOT, replay)
 
+    def test_adjudicator_supporting_current_value_rejects_challenge(self):
+        # Two independent readings agree on the current value: no correction and no human.
+        replay = self.modified_replay('coding_adjudicator', lambda obj: obj.update(value=1.58))
+        result = pipeline.run(ROOT, replay)
+        self.assertEqual(result['corrections.json'], [])
+        self.assertEqual([r['Row_UID'] for r in result['rejected_challenges.json']], ['SYN-R000001'])
+        row = next(r for r in result['coded_reconciled.json'] if r['Row_UID'] == 'SYN-R000001')
+        self.assertEqual(row['sd'], 1.58)
+
     def test_audit_cannot_skip_target(self):
         replay = self.modified_replay('coding_audit', lambda obj: obj['checked_rows'].pop())
         with self.assertRaisesRegex(ValueError, 'No valid response'):

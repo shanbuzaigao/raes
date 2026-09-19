@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- First complete trial of the skill (S0 to S12 on a topic from another field) found three places where the protocol's summary had lost a branch of my own procedure. They are restored in the protocol, the skill and the templates:
+  - S5: no record enters the included set by hand. A miss confirmed in the full-text audit changes the full-text rule, with a new version and a full rerun; the title-and-abstract rules stay frozen, and a record confirmed in that audit goes onto a frozen list that the full-text screen reads. A wrong inclusion is handled like a wrong exclusion.
+  - S9: the adjudicator sees the challenged fields with their current values and returns one of three results: current coding supported, correction supported, or source or rule ambiguous. A two-to-one result needs no human.
+  - S9: a confirmed error in one paper is corrected by code from a reconciliation record; an error that shows an unclear rule changes the codebook and the affected papers are coded again; a rerun of the coder is for technical failures only. Author data files go through S7; corrected values and errata through the reconciliation record.
+- Synthetic example: the replay rejects a challenge when the adjudicator supports the current value, and writes `rejected_challenges.json`; expected results and manifest regenerated.
 - Plain wording in the synthetic example's READMEs and numerical notes, the rehearsal, the plan memo and the code docstrings: the facts stay, the disclaimers go. The example's frozen manifest was regenerated for the changed docstrings.
 - Synthetic example: the audit roles are now called auditor, adjudicator, auditor_1, auditor_2 and third, as in the templates. The request identifiers, the expected results and the frozen manifest were regenerated; the replayed results are unchanged apart from the identifiers.
 - Protocol S3 and the screening rule sheet say how the deduplicated export becomes the three-column records table that the template program reads; my own program parses the EndNote export directly.

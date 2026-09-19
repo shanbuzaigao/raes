@@ -42,18 +42,25 @@
         "the same original rows and sources",
         "the same production codebook",
         "this same audit codebook",
-        "the disputed field only"
+        "the challenged rows and fields, with their current values"
       ],
       "hidden": [
         "the auditor's proposed value",
+        "the auditor's evidence",
         "the auditor's rationale",
         "the auditor's confidence",
         "downstream effects"
       ],
+      "outcomes": {
+        "CURRENT_CODING_SUPPORTED": "the challenge is rejected and the coding stays; no corrected value; no human needed",
+        "CORRECTION_SUPPORTED": "confirmed only when the corrected values equal the auditor's hidden proposal exactly; any difference goes to restricted human adjudication",
+        "SOURCE_OR_RULE_AMBIGUOUS": "no corrected value; goes to restricted human adjudication"
+      },
       "response": [
+        "outcome",
         "Row_UID",
         "field",
-        "independent_value",
+        "corrected_value",
         "rule_id",
         "evidence",
         "unresolved_items"

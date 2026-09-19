@@ -31,9 +31,9 @@
       "{{ROLE, e.g. auditor}}": {"provider": "{{PROVIDER}}", "model_snapshot": "{{EXACT_MODEL_ID}}", "settings": {}}
     },
     "candidate_route": "{{e.g. retrieve the full text; run the frozen full-text screen; if it includes the record, review it with the full_text reviewers}}",
-    "stopping_rule": "{{APPROVED_RULE, e.g. a round with no candidate passing the frozen full-text screen ends the audit; rounds in which candidates pass but the reviewers exclude all of them count toward a cumulative total; a confirmed miss is added back and the audit continues}}"
+    "stopping_rule": "{{APPROVED_RULE, e.g. a round with no candidate passing the frozen full-text screen ends the audit; rounds in which candidates pass but the reviewers exclude all of them count toward a cumulative total; after a confirmed miss the audit continues}}"
   },
-  "rule_change": "{{e.g. rules stay fixed during an audit; a change is a new version, the current run is archived and a fresh sample is frozen}}",
+  "rule_change": "{{e.g. rules stay fixed during a round; a full-text miss changes the full-text rule: new version, full rerun, fresh sample; a record confirmed in the abstract audit goes onto a frozen list read by the full-text screen; nothing is added to the included set by hand}}",
   "payload_policy": {
     "program_decision_hidden": true,
     "other_answers_hidden": true,
