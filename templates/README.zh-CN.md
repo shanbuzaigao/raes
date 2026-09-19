@@ -32,6 +32,7 @@ python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json --r
 | 文件 | 用在哪个阶段 | 内容 |
 |---|---|---|
 | [eligibility.json](eligibility.json) | 目标与纳入标准（S0）；之后每个阶段都读它 | 纳入标准，带编号，每条附澄清。整个项目只有这一个文件 |
+| [search/dedup_rules.json](search/dedup_rules.json) | 去重（S2）；只在不用文献管理软件、改用 skill 的去重脚本时需要 | 记录怎么配对、重复时保留哪个来源的那一条、哪些配对交给研究者决定、筛选前按文献类型去掉哪些 |
 | [screening/screening_rules.md](screening/screening_rules.md) | 筛选（S3、S4） | 用文字写的筛选规则：每条标准一条规则、两个阶段各自的判定逻辑、运行前的检查、版本记录 |
 | [screening/screen_rules_template.py](screening/screen_rules_template.py) | 筛选（S3、S4） | 同一套规则的可运行程序：每条标准一组词表，每条记录一个判断和理由，逐条标准的证据供审计使用 |
 | [plan_memo.md](plan_memo.md) | 任何调用 AI 的阶段：筛选审计（S5）、编码（S8）、编码审计（S9）；如果由模型做筛选，也包括筛选（S3、S4） | 一个阶段的计划：问题、判断单位、输入和输出、模型能看什么和不能看什么、试跑、完成标准、批准 |

@@ -1,0 +1,137 @@
+"""Tests for the deduplication script (stage S2) and its rules template."""
+from __future__ import annotations
+
+import csv
+import importlib.util
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "skills/raes/scripts/dedupe_records.py"
+RULES = ROOT / "templates/search/dedup_rules.json"
+
+T_WALK = "A randomized trial of walking for depression in older adults"
+T_TAI = "Tai chi for late life depression a randomized controlled trial"
+T_QI = "Qigong exercise and depressive symptoms in nursing home residents"
+
+
+def load_module():
+    spec = importlib.util.spec_from_file_location("dedupe_records", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def pm(pmid, title, year, types, doi="", author="Smith, A"):
+    doi_line = f"LID - {doi} [doi]\n" if doi else ""
+    type_lines = "".join(f"PT  - {t}\n" for t in types)
+    return (f"PMID- {pmid}\nTI  - {title}\n{doi_line}AB  - Abstract of {pmid}.\nFAU - {author}\n"
+            f"DP  - {year} Jan\n{type_lines}LA  - eng\nJT  - Journal\n")
+
+
+def wos(accession, title, year, doc_type, doi="", pmid="", author="Smith, A"):
+    lines = ["PT J", f"AU {author}", f"TI {title}", "SO JOURNAL", "LA English", f"DT {doc_type}", f"AB Abstract {accession}."]
+    lines += [f"DI {doi}"] if doi else []
+    lines += [f"PY {year}", f"UT WOS:{accession}"] + ([f"PM {pmid}"] if pmid else [])
+    return "\n".join(lines) + "\nER\n\n"
+
+
+def ris(title, year, doi="", author="Smith, A", abstract="An abstract."):
+    lines = ["TY  - JOUR", f"AU  - {author}", f"TI  - {title}", f"PY  - {year}", f"AB  - {abstract}", "JO  - Journal", "LA  - English"]
+    lines += [f"DO  - {doi}"] if doi else []
+    return "\n".join(lines) + "\nER  - \n\n"
+
+
+PUBMED = "\n".join([
+    pm("111", T_WALK, 2010, ["Journal Article", "Randomized Controlled Trial"], "10.1/a"),
+    pm("222", T_TAI, 2012, ["Journal Article"], "10.1/b"),
+    pm("333", T_QI, 2015, ["Journal Article"]),
+    pm("444", "Exercise for depression in older people: a systematic review", 2018,
+       ["Journal Article", "Research Support, Non-U.S. Gov't", "Systematic Review", "Meta-Analysis"], "10.1/d"),
+    pm("555", "Dance intervention improves mood in elderly women", 2019, ["Journal Article"], author="Kim, B"),
+    pm("666", "Walking and mood in older adults a review with a trial", 2020,
+       ["Journal Article", "Review", "Randomized Controlled Trial"]),
+])
+WOS = "FN Clarivate Analytics Web of Science\nVR 1.0\n" + "".join([
+    wos("0001", T_WALK.upper(), 2010, "Article", pmid="111"),                          # M1 with PM111
+    wos("0002", T_TAI, 2012, "Article", doi="10.1/B"),                                # M2 with PM222
+    wos("0003", T_QI.replace("nursing home", "nursing-home") + ".", 2015, "Article"),  # M3 with PM333
+    wos("0004", T_QI, 2016, "Article"),                                               # R1 with the PM333 group
+    wos("0005", "Exercise for depression in older people", 2018, "Review", doi="10.1/d"),  # M2 with PM444; removed
+    wos("0006", T_TAI, 2012, "Article", doi="10.1/e"),                                # R2: the DOIs conflict
+    wos("0007", "Dance interventions improve mood in elderly women", 2019, "Article", author="Kim, B"),  # R3
+]) + "EF\n"
+RIS = ris(T_WALK, 2010, doi="https://doi.org/10.1/A") + ris("A study found only in this database of older adults", 2021)
+
+
+def project_rules() -> dict:
+    rules = json.loads(RULES.read_text(encoding="utf-8"))
+    rules["doc_type_removal"]["listed"] = rules["example_doc_type_lists"]["listed"]
+    rules["doc_type_removal"]["neutral"] = rules["example_doc_type_lists"]["neutral"]
+    return rules
+
+
+class DedupeTests(unittest.TestCase):
+    def test_rules_of_the_trial_data(self):
+        module = load_module()
+        records = module.parse_pubmed(PUBMED) + module.parse_wos(WOS)
+        result = module.run([dict(r) for r in records], project_rules(), [])
+        counts = result["counts"]
+        self.assertEqual(counts["records_identified"], 13)
+        self.assertEqual(counts["duplicates_by_rule"], {"M1": 1, "M2": 2, "M3": 1, "D": 0})
+        self.assertEqual(counts["removed_by_document_type"], 1, "PM444 with WOS0005")
+        self.assertEqual(counts["records_passed_to_screening"], 8)
+        self.assertTrue(counts["check_identified_equals_removed_plus_passed"])
+        kept = {r["record_id"] for r in result["records"]}
+        self.assertIn("PM666", kept, "a review label next to a trial label is not removed")
+        self.assertIn("WOS0006", kept, "a DOI conflict is not merged")
+        self.assertEqual(sorted(r["rule"] for r in result["review"]), ["R1", "R2", "R3"])
+        # The researcher's decision merges the R3 pair.
+        pair = next(r for r in result["review"] if r["rule"] == "R3")
+        decisions = [{"record_id_a": pair["record_id_a"], "record_id_b": pair["record_id_b"], "decision": "duplicate", "note": ""}]
+        second = module.run([dict(r) for r in records], project_rules(), decisions)["counts"]
+        self.assertEqual((second["duplicates_by_rule"]["D"], second["records_passed_to_screening"], second["review_pairs_pending"]), (1, 7, 2))
+
+    def test_empty_lists_remove_nothing_and_old_accessions_stay_distinct(self):
+        module = load_module()
+        records = module.parse_pubmed(PUBMED) + module.parse_wos(WOS)
+        counts = module.run([dict(r) for r in records], json.loads(RULES.read_text(encoding="utf-8")), [])["counts"]
+        self.assertEqual(counts["removed_by_document_type"], 0)
+        old = module.parse_wos(wos("A1993LX74100006", "Old record one about exercise", 1993, "Article")
+                               + wos("A1993LQ74100006", "Old record two about exercise", 1993, "Article"))
+        self.assertEqual([r["record_id"] for r in old], ["WOSA1993LX74100006", "WOSA1993LQ74100006"])
+
+    def test_command_with_three_formats(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / "pubmed.txt").write_text(PUBMED, encoding="utf-8")
+            (folder / "wos_1.txt").write_text(WOS, encoding="utf-8")
+            (folder / "scopus.ris").write_text(RIS, encoding="utf-8")
+            rules = folder / "dedup_rules.json"
+            rules.write_text(json.dumps(project_rules()), encoding="utf-8")
+            out = folder / "dedup_v1"
+            argv = ["--inputs", str(folder / "pubmed.txt"), str(folder / "wos_1.txt"), str(folder / "scopus.ris"),
+                    "--rules", str(rules), "--output", str(out)]
+            self.assertEqual(module.main(argv), 0)
+            with (out / "records.csv").open(encoding="utf-8", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(list(rows[0])[:3], ["record_id", "title", "abstract"], "the columns the screening program reads")
+            summary = json.loads((out / "summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(summary["counts"]["by_source"], {"pubmed": 6, "wos": 7, "scopus": 2})
+            # The RIS copy of the walking trial joins the PubMed group through its DOI; the other RIS record is new.
+            walking = next(r for r in rows if r["record_id"] == "PM111")
+            self.assertEqual(len(walking["also_found_as"].split("; ")), 2)
+            self.assertEqual(sum(r["source"] == "scopus" for r in rows), 1)
+            self.assertEqual(summary["status"], "provisional: review pairs pending")
+            # Earlier output is never overwritten, and an unknown format is an error.
+            self.assertEqual(module.main(argv), 2)
+            (folder / "notes.txt").write_text("not an export\n", encoding="utf-8")
+            self.assertEqual(module.main(["--inputs", str(folder / "notes.txt"), "--rules", str(rules),
+                                          "--output", str(folder / "other")]), 2)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -25,6 +25,7 @@ python tools/new_project.py ../my-evidence-project
 | 项目里的文件 | 来自哪个模板 | 用在哪一步 | 本指南的节 |
 |---|---|---|---|
 | `codebook/eligibility.json` | `eligibility.json` | 目标与纳入标准（S0） | 1 |
+| `search/dedup_rules.json` | `search/dedup_rules.json` | 去重（S2），不用文献管理软件时 | 1b |
 | `screening/screening_rules.md`、`screening/screen_rules_template.py` | `screening/` | 筛选（S3、S4） | 2、3 |
 | `plans/STAGE_PLAN.md` | `plan_memo.md` | 每个调用 AI 的阶段一份 | 4 |
 | `validation/screening/`（memo、codebook、config、两个 prompt） | `validation/screening/` | 筛选审计（S5） | 5 |
@@ -79,6 +80,32 @@ python tools/new_project.py ../my-evidence-project
 （C1：研究至少报告一种经典经济学博弈。澄清里写了纳入、排除、拿不准各一例。）
 
 `mixed_condition_rule` 例：`"Apply the criteria to each experimental condition. Code the eligible conditions and list each skipped condition with the criterion it failed."`（按实验条件逐个判断；符合的编码，不符合的记下来并注明是哪条标准不符合。）
+
+## 1b. 去重规则 `search/dedup_rules.json`（去重，S2）
+
+只有不用文献管理软件、改用 skill 自带的去重脚本时才需要这个文件。用 EndNote 之类去重的项目可以不管它。文件里的值可以直接用；要改就想清楚再改，升版本并记录。
+
+| 字段 | 是什么 | 填什么 |
+|---|---|---|
+| `version`、`status` | 规则版本和状态 | 起始 `0.1.0-draft`、`draft`；你审过之后改成批准的说明 |
+| `source_precedence` | 同一篇在几个库里都找到时，保留哪个来源的那一条 | 来源名的先后。PubMed 格式的文件叫 `pubmed`，Web of Science 纯文本叫 `wos`，RIS 文件按文件名叫（`scopus.ris` 就是 `scopus`）。例：`["pubmed", "wos", "scopus"]` |
+| `min_title_words` | 标题至少几个词才按"标题加年份"自动合并 | 默认 6。标题太短容易撞车，短标题只列为待定配对 |
+| `similarity_threshold` | 标题相似到什么程度列为待定配对 | 默认 0.9 |
+| `doc_type_removal.listed` | 筛选前按文献类型去掉哪些 | 按来源分别列出类型标签，可用 `*` 通配。空着就什么都不去掉 |
+| `doc_type_removal.neutral` | 中性标签：带着它不影响判断 | PubMed 几乎每条记录都带 "Journal Article"，不把它列为中性，规则就几乎去不掉任何记录 |
+| `example_doc_type_lists` | 一个项目用过的类型清单 | 只是例子，脚本不读它；要用就抄到上面两项里 |
+
+其余几项（`match_rules`、`review_rules`、`kept_record`、`normalization`）是用文字写下的脚本做法，供你写进论文方法部分，一般不改。
+
+**运行**
+
+```sh
+python tools/dedupe_records.py --inputs search/raw/<快照>/* --rules search/dedup_rules.json --output search/dedup/<新文件夹>
+```
+
+它读 PubMed（MEDLINE）格式、Web of Science 纯文本和 RIS 三种导出文件，按 PubMed 编号、DOI、"标题加年份"依次配对；编号互相矛盾的从不合并。输出四个文件：`records.csv`（筛选程序读的就是它）、`ledger.csv`（每条输入记录的去向和依据）、`review_pairs.csv`（拿不准的配对）、`summary.json`（各项数量，以及"检索到的 = 去掉的 + 进入筛选的"这项核对）。
+
+拿不准的配对由你决定：建一个 CSV，四列 `record_id_a`、`record_id_b`、`decision`（`duplicate` 或 `not_duplicate`）、`note`，再用 `--decisions <文件>` 重跑到一个新文件夹。按文献类型去掉记录之前，先在导出的标签上试一遍规则，并抽读一些被去掉的记录：Web of Science 会按参考文献数量把一些原始研究标成 "Review"。
 
 ## 2. 筛选规则 `screening/screening_rules.md`（筛选，S3、S4）
 

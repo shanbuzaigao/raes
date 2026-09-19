@@ -1,0 +1,38 @@
+{
+  "purpose": "Rules for removing duplicates in stage S2, read by the skill's dedupe_records.py. A project that removes duplicates in a reference manager does not need this file. The values below work as they are; change them deliberately, raise the version and record the change.",
+  "version": "0.1.0-draft",
+  "status": "draft",
+  "source_precedence": ["pubmed", "wos"],
+  "source_precedence_note": "When a record was found in several sources, the first source in this list supplies the kept record. A source is named after its format (pubmed, wos) or, for RIS, after the export file (scopus.ris is scopus). Sources not listed come last, in alphabetical order.",
+  "min_title_words": 6,
+  "similarity_threshold": 0.9,
+  "match_rules": [
+    {"id": "M1", "text": "Same PubMed ID."},
+    {"id": "M2", "text": "Same normalized DOI, unless the two records, or the groups of duplicates they already belong to, carry different PubMed IDs."},
+    {"id": "M3", "text": "Same normalized title of at least min_title_words words and same year, unless PubMed IDs or DOIs conflict."}
+  ],
+  "review_rules": [
+    {"id": "R1", "text": "Same normalized title of at least min_title_words words, years one apart, no conflicting identifiers."},
+    {"id": "R2", "text": "A pair that meets M2 or M3 except for conflicting identifiers, or that has the same title and year but a title shorter than min_title_words words."},
+    {"id": "R3", "text": "Same first-author surname and year, title similarity of at least similarity_threshold, not already in one group."}
+  ],
+  "review_note": "Pairs found by R1 to R3 are never merged by the script. The researcher decides each pair in a decisions file with the columns record_id_a, record_id_b, decision (duplicate or not_duplicate) and note.",
+  "normalization": "Titles and surnames: Unicode NFKD, accents removed, lower case, every character other than a-z and 0-9 replaced by a space, spaces collapsed. DOIs: lower case, the prefixes doi: and https://doi.org/ removed.",
+  "kept_record": "In a group of duplicates the kept record is the first by source precedence, then a record with an abstract, then the smallest record_id. If the kept record has no abstract, the longest abstract in the group is used and its record_id is noted.",
+  "doc_type_removal": {
+    "rule": "A record is removable when it carries at least one listed type and every other type it carries is listed or neutral. A group of duplicates is removed only when every record in it is removable. Patterns may use * and ?. With empty lists nothing is removed.",
+    "listed": {"pubmed": [], "wos": [], "default": []},
+    "neutral": {"pubmed": [], "wos": [], "default": []}
+  },
+  "example_doc_type_lists": {
+    "note": "An example from one project, not a default. PubMed puts Journal Article on nearly every record, so it has to be neutral or the rule removes almost nothing. Web of Science labels some primary studies Review by their number of references, so read a sample of what the rule removes before approving it.",
+    "listed": {
+      "pubmed": ["Review", "Systematic Review", "Meta-Analysis", "Network Meta-Analysis", "Scoping Review", "Editorial", "Comment", "Letter", "Clinical Trial Protocol", "Published Erratum"],
+      "wos": ["Review", "Editorial Material", "Letter", "Meeting Abstract", "Correction"]
+    },
+    "neutral": {
+      "pubmed": ["Journal Article", "English Abstract", "Research Support, *"],
+      "wos": ["Early Access"]
+    }
+  }
+}

@@ -209,6 +209,8 @@ For each search I record the databases, the exact query strings, the date range 
 
 An optional step can follow: a one-line rule that removes records which plainly fail an eligibility rule on a field that needs no reading, such as document type. For example, if the synthesis needs studies that report data, records whose title marks them as a review can be removed here. In the PRISMA 2020 flow diagram these removals are reported under "records removed before screening", which has one line for duplicates and one for records marked as ineligible by automation tools.
 
+A reader without a reference manager can use the deduplication script that ships with the skill. It produces the same things from the raw exports: the table of records, a ledger with the reason for every removal, the pairs it is not sure about for the researcher to decide, and the counts.
+
 The exported text file is the source from here on, and spreadsheets are only for viewing. A spreadsheet silently truncated one long abstract in my project, and the preflight check of S3 now requires exact equality between the screened text and the parsed source.
 
 **Before moving on.** Records identified equals records removed plus records passed to screening. A pre-filter rule is kept only if I would defend every single removal it makes. Anything less clear is left to S3, where it receives a reason and can be audited.

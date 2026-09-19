@@ -8,7 +8,7 @@ This document states the screening rules in words. The program `screen_rules_tem
 
 - Title and abstract phase (S3; "TA" below): {{RECORD_FILE_AND_FORMAT}} (for example: records.csv with the columns record_id, title and abstract, made from the reference manager's export after deduplication). Fields used: {{FIELDS}}.
 - Full-text phase (S4; "FT" below): only the records kept at S3, read from the decisions file of that run. Retrieve every kept full text first; the program stops if a text file is missing. The input text is extracted from each PDF, one file per record. Use one extraction tool for the whole project and record its version, because different tools produce different text from the same PDF. Tool and version: {{EXTRACTION_TOOL_AND_VERSION, e.g. PyMuPDF 1.27}}. A full text that truly cannot be obtained is listed, one record identifier per line, in a file passed to the program with `--not-retrieved`: {{NOT_RETRIEVED_FILE_OR_NONE}}. The program skips those records and lists them in `summary.json`; they are reported as "not retrieved" in the PRISMA counts, separate from the eligibility exclusions. The title-and-abstract phase does not use PDFs.
-- Removals by document type, if any, happen in the reference manager (S2), before this program runs: {{TITLE_PHRASES_OR_NONE}}. They are logged there and reported under "records removed before screening". This program does not repeat them.
+- Removals by document type, if any, happen in stage S2 (in the reference manager, or with the deduplication script), before this program runs: {{TITLE_PHRASES_OR_NONE}}. They are logged there and reported under "records removed before screening". This program does not repeat them.
 
 ## 2. One rule per criterion
 

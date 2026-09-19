@@ -21,7 +21,7 @@ FOLDERS = {
     "plans": "Stage plans, open decisions and change-impact records.",
     "codebook": "Canonical eligibility and coding rules.",
     "prompts": "Prompt templates; render only after filling and reviewing the codebook.",
-    "search": "Exact queries, dates, raw exports and deduplication ledger.",
+    "search": "Exact queries, dates, raw exports, the deduplication rules and ledger. dedup_rules.json is read by the skill's dedupe_records.py; a project that removes duplicates in a reference manager does not need it.",
     "screening": "Screening rules and program, record decisions, same-study rule.",
     "papers": "Authorized sources and per-paper preparation; do not publish by default.",
     "validation": "One folder per audit: screening/ and coding/, each with memo, codebook, config and prompts; frozen frames and auditor outputs.",
@@ -51,9 +51,10 @@ def create(dest: Path, templates: Path) -> None:
         encoding="utf-8")
     for source in (templates / "prompts").glob("*.md"):
         shutil.copy2(source, dest / "prompts" / source.name)
-    for source in (templates / "screening").iterdir():
-        if source.is_file():
-            shutil.copy2(source, dest / "screening" / source.name)
+    for folder in ("screening", "search"):
+        for source in (templates / folder).iterdir():
+            if source.is_file():
+                shutil.copy2(source, dest / folder / source.name)
     codebook = json.loads((dest / "codebook" / "codebook.json").read_text(encoding="utf-8"))
     columns = codebook["columns"]
     executor_columns = [v["name"] for v in codebook["variables"] if v["owner"] == "executor"]

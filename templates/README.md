@@ -32,6 +32,7 @@ The rows follow the order of the pipeline. The plan memo is written once for eve
 | File | Stage | What it holds |
 |---|---|---|
 | [eligibility.json](eligibility.json) | Goal and criteria (S0); read by every later stage | The eligibility criteria, numbered, each with its clarifications. One file for the whole project |
+| [search/dedup_rules.json](search/dedup_rules.json) | Remove duplicates (S2), only when the skill's deduplication script is used instead of a reference manager | How records are matched, which source supplies the kept record, which pairs go to the researcher, and which document types are removed before screening |
 | [screening/screening_rules.md](screening/screening_rules.md) | Screening (S3, S4) | The screening rules in words: one rule per criterion, the decision logic of each phase, the checks before a run, the version log |
 | [screening/screen_rules_template.py](screening/screen_rules_template.py) | Screening (S3, S4) | The same rules as a runnable program: term lists per criterion, a decision and a reason for every record, criterion-level evidence for the audit |
 | [plan_memo.md](plan_memo.md) | Any stage that calls an AI: the screening audit (S5), the coding (S8), the coding audit (S9), and the screens (S3, S4) if a model does them | The plan for one stage: question, unit of judgment, inputs and outputs, what the model may and may not see, pilot, what counts as done, approval |
