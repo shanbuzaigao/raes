@@ -15,6 +15,10 @@ Goal: an audit of the frozen rows that feed the analysis, by an auditor from ano
 
 `validation/coding/memo.md`, `codebook.json`, `config.json`, `prompt_audit.md` and `prompt_adjudicator.md` from `assets/validation/coding/`.
 
+## A check by code before adjudication
+
+A single auditor can let a standard error labelled as SD through, and the adjudicator looks only at challenged fields. Before adjudication, run `python scripts/check_dispersion.py <coded rows.csv> --output <new file>`: it flags an SD that is less than a third of another SD of the same study and outcome, or that is small next to the same outcome in other studies and fits once multiplied by the square root of N. Every flag goes to the adjudicator as a challenge of the dispersion, whether or not the auditor raised it. List the fields the audit covers explicitly in the audit codebook; do not leave them to be read out of prose.
+
 ## Check before moving on
 
 - The frame is frozen with a hash before the first request.

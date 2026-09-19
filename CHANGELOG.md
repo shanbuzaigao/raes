@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `scripts/check_dispersion.py`: a check by code before a coding audit is adjudicated. It flags standard deviations that look like standard errors, and every flag goes to the adjudicator whether or not the auditor raised it. In the second trial a single auditor and the adjudicator both missed such a value.
 - Screening program: patterns (`any_of_regex`, `none_of_regex`), blocking terms that count only in the title (`title_none_of`, `title_none_of_regex`), a check on a field of the record (`field`, `field_any_of`), an optional rule table for the full-text phase (`CRITERIA_FT`), and records without an abstract are kept for the full text. The rule sheet and the skill reference say how to write full-text rules that refer to the report's own study, and that the first failed criterion is the reported reason.
 - The skill now ships the tools that stage S12 needs: `scripts/release.py` writes a release as a hash inventory of the project files in place (create, activate, verify; the manifest has the format of `tools/freeze.py`), and `scripts/run_offline.py` runs a command with network access switched off for the Python processes it starts. The protocol says that a release can be a copy or an inventory of hashes.
 - First complete trial of the skill (S0 to S12 on a topic from another field) found three places where the protocol's summary had lost a branch of my own procedure. They are restored in the protocol, the skill and the templates:
