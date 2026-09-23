@@ -6,14 +6,18 @@ the label, the auditor may not notice, and the adjudicator looks only at challen
 so the error survives and the effect comes out several times too large. This check reads
 the coded rows and flags an SD when
 
-  A. it is less than a third of the largest SD among the other rows of the same study and
-     outcome, or
-  B. it is less than a third of the typical SD of the same outcome in the other studies, and
+  A. it is less than 1/ratio of the largest SD among the other rows of the same study and
+     outcome (a third, with the default ratio of 3), or
+  B. it is less than 1/ratio of the typical SD of the same outcome in the other studies, and
      multiplying it by the square root of N brings it closer to that typical SD.
 
 The typical SD is the median of the study medians, so a study with many rows counts once.
-The check decides nothing. Every flag goes to the adjudicator as a challenge of the
-dispersion, whether or not the auditor raised it.
+The rows compared have to share the outcome's scale and unit under the codebook; a large
+ratio alone is not a conversion rule. The check decides nothing. Every flag goes to the
+adjudicator as a challenge of the dispersion, whether or not the auditor raised it. A flag
+carries no proposed value, so a correction the adjudicator supports on a flagged field has
+no auditor's proposal to match and goes to the researcher; only a challenge the auditor
+raised can be confirmed by agreement.
 
     python check_dispersion.py rows.csv --output dispersion_flags.csv
 
@@ -54,14 +58,15 @@ def find_flags(rows: list[dict], study: str, outcome: str, n_col: str, sd_col: s
         own.remove(sd)
         if own and sd < max(own) / ratio:
             flags.append({"row": index, "rule": "A", "reference": max(own),
-                          "note": "less than a third of another SD of the same study and outcome"})
+                          "note": f"less than 1/{ratio:g} of another SD of the same study and outcome"})
             continue
         others = [statistics.median(values) for name, values in studies.items() if name != row[study]]
         if others and n is not None and n >= 2:
             typical = statistics.median(others)
             if sd < typical / ratio and abs(math.log(sd * math.sqrt(n) / typical)) < abs(math.log(sd / typical)):
                 flags.append({"row": index, "rule": "B", "reference": typical,
-                              "note": "small next to the same outcome in other studies; times the square root of N it fits"})
+                              "note": f"less than 1/{ratio:g} of the typical SD of the same outcome in other studies; "
+                                      "times the square root of N it fits"})
     return flags
 
 
@@ -80,8 +85,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.output.exists():
             raise ValueError("the output file exists; choose a new one")
-        if args.ratio <= 1:
-            raise ValueError("--ratio must be greater than 1")
+        if not math.isfinite(args.ratio) or args.ratio <= 1:
+            raise ValueError("--ratio must be a finite number greater than 1")
         with args.rows.open(encoding="utf-8-sig", newline="") as handle:
             rows = list(csv.DictReader(handle))
         ids = [name.strip() for name in args.id_columns.split(",") if name.strip()]

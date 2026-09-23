@@ -7,12 +7,18 @@ eligibility file. Then run:
     python screen_rules_template.py ta records.csv --output out/ta_v0.1
     python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.csv --texts fulltext/ --output out/ft_v0.1
 
-The full-text phase screens only the records that the title-and-abstract phase
-kept; it reads that list from the decisions file of the earlier run. A kept record
-whose full text truly cannot be obtained is listed, one record_id per line, in a
-file passed with --not-retrieved: the program skips it and lists it in summary.json,
-so that it is reported as "not retrieved" in the PRISMA counts, not as an
-exclusion. Every other kept record needs its text file, or the program stops.
+The full-text phase screens the records that the title-and-abstract phase kept;
+it reads that list from the decisions file of the earlier run, and it checks that
+the earlier run covered exactly the records file it is given: every record_id, and
+the input hash that the run's summary.json recorded. A missing row therefore cannot
+pass as an exclusion. Records that the screening audit (S5) confirmed after a
+title-and-abstract exclusion are listed, one record_id per line, in a frozen file
+passed with --after-ta-audit: the full-text phase screens them in addition, and
+the title-and-abstract decisions stay as they are. A record whose full text truly
+cannot be obtained is listed, one record_id per line, in a file passed with
+--not-retrieved: the program skips it and lists it in summary.json, so that it is
+reported as "not retrieved" in the PRISMA counts, not as an exclusion. Every other
+record needs its text file, or the program stops.
 
 records.csv needs the columns record_id, title and abstract. It is written in
 stage S2, from a reference manager's export or by the project's search/dedupe_records.py;
@@ -23,7 +29,9 @@ record its version (for example PyMuPDF), because tools differ in the text they 
 
 The program never calls a model. Every record receives a decision and a reason,
 and every criterion receives its own evidence, which the audit stage (S5) uses to
-find near misses. Outputs go to a new directory and are never overwritten.
+find near misses. A record without an abstract is kept at the title-and-abstract
+phase with an empty criterion record, because nothing was assessed. Outputs go to
+a new directory and are never overwritten.
 """
 from __future__ import annotations
 
@@ -85,7 +93,9 @@ CRITERIA = {
 }
 
 # Optional rules for the full-text phase only. When this table is not empty, the full-text phase
-# uses it instead of CRITERIA. Full-text rules usually have to be narrower than the rules for titles
+# uses it instead of CRITERIA. It has to list every criterion of CRITERIA, with the same IDs, so
+# that none is skipped silently; a criterion that the full text does not check keeps an entry whose
+# check_at leaves out "ft". Full-text rules usually have to be narrower than the rules for titles
 # and abstracts: a full text also talks about other studies, so tie each term to the report's own
 # study (its entry criteria, its allocation, its outcome measures).
 CRITERIA_FT: dict = {}
@@ -103,7 +113,7 @@ def sha256_of(path: Path) -> str:
 
 def normalize(text: str) -> str:
     """Lower-case, collapse whitespace, and turn curly apostrophes into straight ones."""
-    text = (text or "").replace("\u2019", "'").replace("\u2018", "'")
+    text = (text or "").replace("’", "'").replace("‘", "'")
     return re.sub(r"\s+", " ", text).strip().lower()
 
 
@@ -163,6 +173,14 @@ def criteria_for(phase: str) -> dict:
     return CRITERIA_FT if phase == "ft" and CRITERIA_FT else CRITERIA
 
 
+def check_ft_table() -> None:
+    """CRITERIA_FT, when filled, must list every criterion of CRITERIA, so that none is skipped silently."""
+    if CRITERIA_FT and set(CRITERIA_FT) != set(CRITERIA):
+        raise ValueError("CRITERIA_FT must have the same criterion IDs as CRITERIA; a criterion the full text does not "
+                         "check keeps an entry whose check_at leaves out ft. Differs: "
+                         + ", ".join(sorted(set(CRITERIA_FT) ^ set(CRITERIA))))
+
+
 def screen_text(text: str, phase: str, title: str = "", row: dict | None = None) -> dict:
     """Apply every criterion that is checked at this phase and derive the decision.
 
@@ -198,26 +216,38 @@ def read_records(path: Path) -> list[dict]:
     return rows
 
 
-def kept_at_ta(decisions_path: Path) -> set[str]:
-    """Read the decisions file of the title-and-abstract run and return the kept record IDs."""
-    with decisions_path.open(encoding="utf-8", newline="") as handle:
+def read_ta_run(decisions_path: Path) -> tuple[set[str], set[str], str | None]:
+    """Read the decisions file of the title-and-abstract run.
+
+    Returns the kept record IDs, every record ID the run decided, and the hash of the records file
+    that the run's summary.json recorded, when that file is next to the decisions file.
+    """
+    with decisions_path.open(encoding="utf-8-sig", newline="") as handle:
         rows = list(csv.DictReader(handle))
     if not rows or not {"record_id", "phase", "decision"}.issubset(rows[0].keys()):
         raise ValueError("--after-ta must point to the decisions.csv written by the ta phase")
     if any(row["phase"] != "ta" for row in rows):
         raise ValueError("--after-ta must point to a title-and-abstract run, not a full-text run")
-    return {row["record_id"] for row in rows if row["decision"] == "keep"}
+    ids = [row["record_id"] for row in rows]
+    if len(set(ids)) != len(ids):
+        raise ValueError("the ta decisions file lists a record twice")
+    unknown = sorted({row["decision"] for row in rows} - {"keep", "exclude"})
+    if unknown:
+        raise ValueError("the ta decisions file has a decision other than keep or exclude: " + ", ".join(unknown))
+    summary = decisions_path.parent / "summary.json"
+    recorded = json.loads(summary.read_text(encoding="utf-8")).get("input_sha256") if summary.is_file() else None
+    return {row["record_id"] for row in rows if row["decision"] == "keep"}, set(ids), recorded
 
 
 def require_texts(rows: list[dict], texts: Path) -> None:
-    """Every kept record needs its extracted text before the full-text phase runs."""
+    """Every record to be screened needs its extracted text before the full-text phase runs."""
     missing = [row["record_id"] for row in rows if not (texts / f"{row['record_id']}.txt").is_file()]
     if missing:
         raise ValueError("retrieve the full text of every kept record first; missing: " + ", ".join(missing))
 
 
-def read_not_retrieved(path: Path) -> set[str]:
-    """Read the kept records whose full text could not be obtained: one record_id per line, # starts a comment."""
+def read_id_list(path: Path) -> set[str]:
+    """Read a list of record IDs: one record_id per line, # starts a comment."""
     lines = path.read_text(encoding="utf-8-sig").splitlines()
     return {line.strip() for line in lines if line.strip() and not line.lstrip().startswith("#")}
 
@@ -246,7 +276,8 @@ def require_fields(rows: list[dict], phase: str) -> None:
             raise ValueError(f"criterion {cid} checks the column {spec['field']}, which records.csv does not have")
 
 
-def write_outputs(results: list[dict], output: Path, input_path: Path, not_retrieved: list[str] | None = None) -> None:
+def write_outputs(results: list[dict], output: Path, input_path: Path, not_retrieved: list[str] | None = None,
+                  added: list[str] | None = None) -> None:
     if output.exists():
         raise ValueError("Output directory already exists; choose a new one")
     output.mkdir(parents=True)
@@ -262,7 +293,7 @@ def write_outputs(results: list[dict], output: Path, input_path: Path, not_retri
         counts[entry["decision"]] = counts.get(entry["decision"], 0) + 1
     summary = {"rules_version": RULES_VERSION, "input_file": input_path.name,
                "input_sha256": sha256_of(input_path), "records": len(results), "decisions": counts,
-               "not_retrieved": not_retrieved or []}
+               "not_retrieved": not_retrieved or [], "added_after_ta_audit": added or []}
     (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
 
 
@@ -271,32 +302,53 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("phase", choices=["ta", "ft"], help="ta = title and abstract, ft = full text")
     parser.add_argument("records", type=Path, help="CSV with record_id, title, abstract")
     parser.add_argument("--after-ta", type=Path, help="decisions.csv of the title-and-abstract run (full-text phase)")
+    parser.add_argument("--after-ta-audit", type=Path,
+                        help="frozen file listing, one record_id per line, the records the title-and-abstract audit confirmed; "
+                             "they are screened at full text in addition to the kept records (full-text phase)")
     parser.add_argument("--texts", type=Path, help="folder with <record_id>.txt files (full-text phase)")
     parser.add_argument("--output", type=Path, required=True, help="new directory for the results")
     parser.add_argument("--not-retrieved", type=Path,
-                        help="file listing, one record_id per line, the kept records whose full text could not be obtained (full-text phase)")
+                        help="file listing, one record_id per line, the records whose full text could not be obtained (full-text phase)")
     parser.add_argument("--expect-sha256", help="refuse to run unless the records file has this hash")
     args = parser.parse_args(argv)
     not_retrieved: set[str] = set()
+    added: set[str] = set()
     try:
+        check_ft_table()
         if args.expect_sha256 and sha256_of(args.records) != args.expect_sha256:
             raise ValueError("records file does not match the expected hash; the frozen input has changed")
         if args.phase == "ft" and not (args.texts and args.texts.is_dir()):
             raise ValueError("the full-text phase needs --texts pointing to a folder of .txt files")
         if args.phase == "ft" and not args.after_ta:
             raise ValueError("the full-text phase needs --after-ta pointing to the decisions.csv of the ta run")
-        if args.phase == "ta" and args.not_retrieved:
-            raise ValueError("--not-retrieved applies to the full-text phase only")
+        if args.phase == "ta" and (args.not_retrieved or args.after_ta_audit):
+            raise ValueError("--not-retrieved and --after-ta-audit apply to the full-text phase only")
         rows = read_records(args.records)
         require_fields(rows, args.phase)
         if args.phase == "ft":
-            kept = kept_at_ta(args.after_ta)
-            rows = [row for row in rows if row["record_id"] in kept]
-            if len(rows) != len(kept):
-                raise ValueError("some records kept at the ta phase are missing from the records file")
+            kept, decided, recorded = read_ta_run(args.after_ta)
+            all_ids = {row["record_id"] for row in rows}
+            if decided != all_ids:
+                parts = []
+                if all_ids - decided:
+                    parts.append("not in the ta decisions: " + ", ".join(sorted(all_ids - decided)[:10]))
+                if decided - all_ids:
+                    parts.append("not in the records file: " + ", ".join(sorted(decided - all_ids)[:10]))
+                raise ValueError("the ta run does not cover this records file exactly; " + "; ".join(parts))
+            if recorded and recorded != sha256_of(args.records):
+                raise ValueError("the ta run screened a different records file; its summary.json records another input hash")
+            if args.after_ta_audit:
+                added = read_id_list(args.after_ta_audit)
+                unknown = sorted(added - all_ids)
+                if unknown:
+                    raise ValueError("the ta-audit list names records that are not in the records file: " + ", ".join(unknown))
+                already = sorted(added & kept)
+                if already:
+                    raise ValueError("the ta-audit list names records that the ta phase kept already: " + ", ".join(already))
+            rows = [row for row in rows if row["record_id"] in kept | added]
             if args.not_retrieved:
-                not_retrieved = read_not_retrieved(args.not_retrieved)
-                unknown = sorted(not_retrieved - kept)
+                not_retrieved = read_id_list(args.not_retrieved)
+                unknown = sorted(not_retrieved - (kept | added))
                 if unknown:
                     raise ValueError("the not-retrieved list names records that were not kept at the ta phase: " + ", ".join(unknown))
                 present = sorted(i for i in not_retrieved if (args.texts / f"{i}.txt").is_file())
@@ -305,13 +357,14 @@ def main(argv: list[str] | None = None) -> int:
                 rows = [row for row in rows if row["record_id"] not in not_retrieved]
             require_texts(rows, args.texts)
         results = screen_records(rows, args.phase, args.texts)
-        write_outputs(results, args.output, args.records, sorted(not_retrieved))
+        write_outputs(results, args.output, args.records, sorted(not_retrieved), sorted(added))
     except (OSError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
-    kept = sum(1 for r in results if r["decision"] == "keep")
+    kept_count = sum(1 for r in results if r["decision"] == "keep")
     skipped = f", {len(not_retrieved)} not retrieved" if not_retrieved else ""
-    print(f"{len(results)} records screened at phase {args.phase}: {kept} kept{skipped}. Results in {args.output}")
+    extra = f", {len(added)} added from the title-and-abstract audit" if added else ""
+    print(f"{len(results)} records screened at phase {args.phase}: {kept_count} kept{skipped}{extra}. Results in {args.output}")
     return 0
 
 

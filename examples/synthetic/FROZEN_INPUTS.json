@@ -8,8 +8,8 @@
     },
     {
       "path": "examples/synthetic/expected/results.json",
-      "sha256": "6b2a6bca88086034f4fe331c0c4e5b0ea87430f5e7fb9e7e0502ee118c8dc237",
-      "size": 12878
+      "sha256": "da0d87c871792d7800bf8355b3f7efc969f9d10c9fa83568ca0abcfd967b47e6",
+      "size": 13949
     },
     {
       "path": "examples/synthetic/inputs/codebook.json",
@@ -98,8 +98,8 @@
     },
     {
       "path": "examples/synthetic/pipeline.py",
-      "sha256": "352525d71fb9f3b81e88f47b18b5a9b9641755b6cba619fccfa054dab67010a6",
-      "size": 23692
+      "sha256": "81c8667e459979cdc3c35097408c093e25271a47794c8b65923348d9fd0e5d4e",
+      "size": 26956
     },
     {
       "path": "examples/synthetic/reproduce.py",
@@ -108,7 +108,7 @@
     },
     {
       "path": "raes_core/__init__.py",
-      "sha256": "81b1ef3315492b4e872979a3b4f8f6e914dc5b8dbf5ffa539cbf31b0c5fa1c55",
+      "sha256": "8f6ba6f5dadae66862be3aa2814db90fbfec0d196fe88e17f286087213d92709",
       "size": 115
     },
     {

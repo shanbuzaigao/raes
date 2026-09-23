@@ -15,8 +15,9 @@
       "reviewers": "{{e.g. two primary auditors from different vendors; a third only on disagreement; majority by code}}",
       "inputs": ["record identifier", "title", "complete PDF", "the criteria, word for word"],
       "hidden": ["the program's decision and reason", "the program's criterion results", "stratum, rank and batch", "other reviewers' answers", "downstream results"],
-      "response": ["record_id", "criterion_results: one entry per criterion with supported (true/false) and page-level evidence", "decision", "reason_code", "unresolved_items"],
+      "response": ["record_id", "criterion_results: one entry per criterion with supported (true/false) and page-level evidence", "decision", "reason_code: the first criterion that is not supported", "unresolved_items: what was looked for and not found; it explains the decision and does not change it"],
       "decision_values": ["INCLUDE", "EXCLUDE"],
+      "not_established_rule": "A criterion that the paper does not establish is not supported. The paper has to show that the criterion is met; a paper that is silent on it is excluded under that criterion's reason code. There is no third answer, and an answer without a decision is a technical failure.",
       "human_adjudication": "{{WHEN_AND_WITH_WHAT_EVIDENCE, e.g. only when the reviewer majority says INCLUDE; confirmed only with a page citation}}"
     },
     "abstract": {
@@ -32,11 +33,11 @@
   },
   "reason_codes": {
     "POTENTIALLY_ELIGIBLE": "required for RETAIN_FOR_FULL_TEXT and for INCLUDE",
-    "{{CODE_FOR_C1}}": "the material clearly establishes that criterion C1 fails",
-    "{{CODE_FOR_C2}}": "the material clearly establishes that criterion C2 fails",
+    "{{CODE_FOR_C1}}": "the material clearly establishes that criterion C1 fails, or, at full text, does not establish that it is met",
+    "{{CODE_FOR_C2}}": "the material clearly establishes that criterion C2 fails, or, at full text, does not establish that it is met",
     "{{ONE_CODE_PER_FURTHER_CRITERION}}": "..."
   },
-  "technical_failure": "{{RETRY_POLICY, e.g. refusals, malformed output, missing fields and identity mismatches are retried with the same request and never become an EXCLUDE, a vote or a clean round}}",
+  "technical_failure": "{{RETRY_POLICY, e.g. refusals, malformed output, missing fields, identity mismatches and an incomplete or unreadable file (file_problem) are retried with the same request, or with the file replaced, and never become an EXCLUDE, a vote or a clean round}}",
   "evidence_contract": {
     "source_id": "record_id",
     "locator": "{{e.g. page or section for full text; 'title' or 'abstract' for the abstract mode}}",

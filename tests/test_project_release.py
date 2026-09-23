@@ -71,6 +71,12 @@ class ReleaseTests(unittest.TestCase):
             self.assertIn("Supersedes: 2026-01-01_v1",
                           (project / "releases/2026-01-02_v2/ACTIVATION.md").read_text(encoding="utf-8"))
             self.assertEqual(call(RELEASE, *p, "verify").returncode, 0)
+            # Version-control metadata is outside the inventory: a git operation does not change a release.
+            (project / ".git/refs/heads").mkdir(parents=True)
+            (project / ".git/HEAD").write_text("ref: refs/heads/main\n", encoding="utf-8")
+            self.assertEqual(call(RELEASE, *p, "verify").returncode, 0)
+            (project / ".git/HEAD").write_text("ref: refs/heads/other\n", encoding="utf-8")
+            self.assertEqual(call(RELEASE, *p, "verify").returncode, 0)
 
     def test_bad_names_are_refused(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -59,6 +59,23 @@ class DispersionCheckTests(unittest.TestCase):
             self.assertEqual(result.returncode, 2)
             self.assertIn("SD_value", result.stderr)
 
+    def test_ratio_must_be_finite_and_is_named_in_the_note(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for bad in ("nan", "inf", "1"):
+                folder = Path(tmp) / bad
+                folder.mkdir()
+                result, _ = self.run_check(folder, "--ratio", bad)
+                self.assertEqual(result.returncode, 2, bad)
+                self.assertIn("finite", result.stderr)
+            folder = Path(tmp) / "two"
+            folder.mkdir()
+            result, out = self.run_check(folder, "--ratio", "2")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            with out.open(encoding="utf-8", newline="") as handle:
+                notes = [row["note"] for row in csv.DictReader(handle)]
+            self.assertTrue(notes)
+            self.assertTrue(all("1/2" in note for note in notes), notes)
+
 
 if __name__ == "__main__":
     unittest.main()

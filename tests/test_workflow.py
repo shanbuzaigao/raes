@@ -91,7 +91,11 @@ class ReplayTests(unittest.TestCase):
         counts=result['flow_counts.json']
         self.assertEqual(counts['computed_effects'],3);self.assertEqual(counts['technical_failures'],1)
         self.assertEqual(counts['confirmed_coding_corrections'],1)
-        self.assertEqual(counts['FT_rescued'],1)
+        # The confirmed miss is included by the revised rule, not by hand: version 2 of the full-text rule includes it.
+        self.assertEqual((counts['FT_confirmed_misses'],counts['FT_rule_versions']),(1,2))
+        versions=result['ft_rule_versions.json']
+        self.assertNotIn('REC008',versions[0]['included']);self.assertIn('REC008',versions[1]['included'])
+        self.assertEqual(counts['included_reports'],len(versions[1]['included']))
     def test_original_preserved(self):
         result=pipeline.run(ROOT)
         old=next(r for r in result['coded_original.json'] if r['Row_UID']=='SYN-R000001')

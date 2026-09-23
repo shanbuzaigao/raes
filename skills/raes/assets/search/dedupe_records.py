@@ -2,24 +2,33 @@
 """Remove duplicates from the raw search exports and write the records table (stage S2).
 
 For a project without a reference manager. Every new project receives its own copy of this
-script in search/, so that a rerun does not depend on the installed skill. Standard library only. Reads exports in PubMed
-(MEDLINE) format, Web of Science plain text and RIS, which most databases and reference
-managers can write; the format of each file is recognized from its content. It never edits
-the raw files and never merges an uncertain pair. It writes into a new folder:
+script in search/, so that a rerun does not depend on the installed skill. Standard library only.
+Reads exports in PubMed (MEDLINE) format, Web of Science plain text and RIS, which most databases
+and reference managers can write; the format of each file is recognized from its content. It never
+edits the raw files and never merges an uncertain pair. It writes into a new folder:
 
   records.csv       what the screening program reads: record_id, title, abstract, then descriptive columns
-  ledger.csv        every input record, its status (kept, duplicate, removed_doc_type) and the rule that decided it
+  ledger.csv        every input record, the file it came from, its status (kept, duplicate, removed_doc_type)
+                    and the rule that decided it
   review_pairs.csv  uncertain pairs for the researcher, with the decision if one was given
   summary.json      the counts, the check identified = removed + passed, the rules version, and the SHA-256
                     of every input and output
 
-    python dedupe_records.py --inputs search/raw/<snapshot>/* --rules search/dedup_rules.json --output search/dedup/<new folder>
+    python dedupe_records.py --inputs search/raw/<snapshot>/pubmed.txt search/raw/<snapshot>/wos.txt --rules search/dedup_rules.json --output search/dedup/<new folder>
+    python dedupe_records.py --inputs search/raw/<snapshot>/* ...        # the shell expands * to the files of the folder
     python dedupe_records.py ... --decisions search/dedup/review_decisions.csv
 
-The decisions file holds the researcher's answers on uncertain pairs: the columns record_id_a,
-record_id_b, decision (duplicate or not_duplicate) and note. The rules file says how titles are
-compared, which source is kept when a record was found twice, and which document types are removed.
-A source is named after its format (pubmed, wos) or, for RIS, after the file (scopus.ris -> scopus).
+Exports may overlap: two exports of the same database, for example from two search strings, can
+contain the same record. A record_id that occurs again gets a running suffix (PM123, PM123-2), and
+the rules merge the two occurrences; the ledger keeps every occurrence with its file. The same file
+given twice is refused. The decisions file holds the researcher's answers on uncertain pairs: the
+columns record_id_a, record_id_b, decision (duplicate or not_duplicate) and note. A not_duplicate
+decision keeps two records apart even when a rule, or a chain of duplicates, would join their
+groups; such a contradiction is listed in review_pairs.csv and has to be resolved. The rules file
+says how titles are compared, which source is kept when a record was found twice, which
+document-type labels mark a preprint, and which document types are removed. A source is named after
+its format (pubmed, wos) or, for RIS, after the file (scopus.ris -> scopus). Exit code 0 when the
+counts reconcile and no decision conflicts with the rules.
 """
 from __future__ import annotations
 
@@ -38,7 +47,7 @@ from pathlib import Path
 DOI_PREFIXES = ("https://doi.org/", "http://doi.org/", "https://dx.doi.org/", "http://dx.doi.org/", "doi:")
 RECORD_COLUMNS = ["record_id", "title", "abstract", "source", "pmid", "doi", "year", "first_author", "journal",
                   "language", "doc_types", "also_found_as", "abstract_from"]
-LEDGER_COLUMNS = ["record_id", "source", "group", "status", "rule", "matched_to", "doc_types", "year", "title"]
+LEDGER_COLUMNS = ["record_id", "source", "group", "status", "rule", "matched_to", "doc_types", "year", "title", "input_file"]
 REVIEW_COLUMNS = ["pair_id", "rule", "record_id_a", "record_id_b", "similarity", "year_a", "year_b", "first_author_a",
                   "first_author_b", "doi_a", "doi_b", "pmid_a", "pmid_b", "title_a", "title_b", "decision", "note"]
 
@@ -175,6 +184,29 @@ def read_export(path: Path) -> list[dict]:
     raise ValueError(f"{path.name}: not PubMed (MEDLINE), Web of Science plain text or RIS")
 
 
+def collect(inputs: list[Path]) -> tuple[list[dict], list[dict]]:
+    """Read every export, in the order given. The same file twice is refused; a record_id that occurs again gets a running suffix."""
+    records, files, seen_files, seen_ids = [], [], {}, set()
+    for path in inputs:
+        digest = sha256_of(path)
+        if digest in seen_files:
+            raise ValueError(f"the same file was given twice: {seen_files[digest]} and {path.as_posix()}")
+        seen_files[digest] = path.as_posix()
+        parsed = read_export(path)
+        for record in parsed:
+            record["input_file"] = path.as_posix()
+            base, rid, n = record["record_id"], record["record_id"], 1
+            while rid in seen_ids:
+                n += 1
+                rid = f"{base}-{n}"
+            record["record_id"] = rid
+            seen_ids.add(rid)
+        records += parsed
+        files.append({"file": path.as_posix(), "sha256": digest, "source": parsed[0]["source"] if parsed else "",
+                      "records": len(parsed)})
+    return records, files
+
+
 # ---------------------------------------------------------------- grouping
 
 class Groups:
@@ -219,7 +251,7 @@ def removable(record: dict, doc_rules: dict) -> bool:
 def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
     ids = [r["record_id"] for r in records]
     if len(set(ids)) != len(ids):
-        raise ValueError("the same record_id occurs twice in the inputs; was one export given twice?")
+        raise ValueError("record_id must be unique; collect() gives a repeated identifier a running suffix")
     by_id = {r["record_id"]: r for r in records}
     for d in decisions:
         unknown = [d[k] for k in ("record_id_a", "record_id_b") if d[k] not in by_id]
@@ -227,10 +259,24 @@ def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
             raise ValueError("the decisions file names records that are not in the inputs: " + ", ".join(unknown))
     for r in records:
         r["ntitle"], r["nauthor"] = norm_text(r["title"]), norm_text(r["first_author"])
-    groups, edges, review = Groups(records), [], {}
+    groups, edges, review, conflicts = Groups(records), [], {}, []
     min_words, threshold = rules["min_title_words"], rules["similarity_threshold"]
+    version_labels = rules.get("report_version_labels", [])
+    cannot = [(d["record_id_a"], d["record_id_b"]) for d in decisions if d["decision"] == "not_duplicate"]
+
+    def versioned(rid: str) -> bool:
+        """Whether the record carries a label that marks a report version other than the journal article."""
+        return any(fnmatchcase(t, p) for t in by_id[rid]["doc_types"] for p in version_labels)
 
     def merge(a: str, b: str, rule: str) -> None:
+        ra, rb = groups.find(a), groups.find(b)
+        if ra == rb:
+            return
+        for x, y in cannot:
+            # A not_duplicate decision keeps the two records apart, also when a chain of duplicates would join them.
+            if {groups.find(x), groups.find(y)} == {ra, rb}:
+                conflicts.append({"rule": rule, "a": a, "b": b, "decision_a": x, "decision_b": y})
+                return
         if groups.union(a, b):
             edges.append((a, b, rule))
 
@@ -258,7 +304,8 @@ def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
                 flag(members[0], other, "R2")
             else:
                 merge(members[0], other, "M2")
-    # M3: same title and year, unless PubMed IDs or DOIs conflict; short titles go to review.
+    # M3: same title and year, unless PubMed IDs or DOIs conflict; short titles go to review; a preprint and
+    # its journal version (exactly one of the two carries a report-version label) go to review as well.
     by_title_year = defaultdict(list)
     for r in records:
         if r["ntitle"] and r["year"]:
@@ -273,6 +320,8 @@ def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
                     flag(a, other, "R2")
             elif groups.conflict(a, other, check_doi=True):
                 flag(a, other, "R2")
+            elif versioned(a) != versioned(other):
+                flag(a, other, "R4")
             else:
                 merge(a, other, "M3")
     # The researcher's decisions on earlier review pairs.
@@ -327,7 +376,7 @@ def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
                            "rule": "DT" if status == "removed_doc_type" else (rule if status == "duplicate" else ""),
                            "matched_to": matched if status == "duplicate" else "",
                            "doc_types": "; ".join(by_id[rid]["doc_types"]), "year": by_id[rid]["year"],
-                           "title": by_id[rid]["title"]})
+                           "title": by_id[rid]["title"], "input_file": by_id[rid].get("input_file", "")})
         if not drop:
             abstract, abstract_from = kept["abstract"], ""
             if not abstract:
@@ -352,6 +401,16 @@ def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
                             "first_author_b": b["first_author"], "doi_a": a["doi"], "doi_b": b["doi"],
                             "pmid_a": a["pmid"], "pmid_b": b["pmid"], "title_a": a["title"], "title_b": b["title"],
                             "decision": decision.get("decision", ""), "note": decision.get("note", "")})
+    # A rule that would join two records a not_duplicate decision keeps apart: reported, not resolved.
+    for n, c in enumerate(conflicts, 1):
+        a, b = by_id[c["a"]], by_id[c["b"]]
+        review_rows.append({"pair_id": f"X{n:03d}", "rule": f"{c['rule']} vs not_duplicate", "record_id_a": a["record_id"],
+                            "record_id_b": b["record_id"], "similarity": "", "year_a": a["year"], "year_b": b["year"],
+                            "first_author_a": a["first_author"], "first_author_b": b["first_author"], "doi_a": a["doi"],
+                            "doi_b": b["doi"], "pmid_a": a["pmid"], "pmid_b": b["pmid"], "title_a": a["title"],
+                            "title_b": b["title"], "decision": "not_duplicate",
+                            "note": f"rule {c['rule']} would join these records, or their groups, but the decision on "
+                                    f"{c['decision_a']} and {c['decision_b']} keeps them apart; resolve the decision or the identifiers"})
     # A pair decided as duplicate is merged and no longer appears as a review pair; list it for the record.
     for d in decisions:
         if d["decision"] == "duplicate":
@@ -368,8 +427,9 @@ def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
         "removed_by_document_type": removed_groups,
         "records_passed_to_screening": len(kept_rows),
         "passed_without_abstract": sum(1 for row in kept_rows if not row["abstract"]),
-        "review_pairs": sum(1 for row in review_rows if row["pair_id"] != "decided"),
-        "review_pairs_pending": sum(1 for row in review_rows if row["pair_id"] != "decided" and not row["decision"]),
+        "review_pairs": sum(1 for row in review_rows if row["pair_id"].startswith("P")),
+        "review_pairs_pending": sum(1 for row in review_rows if row["pair_id"].startswith("P") and not row["decision"]),
+        "decision_conflicts": len(conflicts),
     }
     counts["check_identified_equals_removed_plus_passed"] = (
         counts["records_identified"] == counts["duplicates_removed"] + counts["removed_by_document_type"]
@@ -412,30 +472,36 @@ def main(argv: list[str] | None = None) -> int:
         if args.output.exists():
             raise ValueError(f"{args.output} exists; earlier output is never overwritten")
         rules = json.loads(args.rules.read_text(encoding="utf-8"))
-        inputs = sorted(args.inputs)
-        records = [record for path in inputs for record in read_export(path)]
+        records, files = collect(sorted(args.inputs))
         if not records:
             raise ValueError("no records found in the inputs")
         result = run(records, rules, read_decisions(args.decisions))
+        counts = result["counts"]
+        if counts["decision_conflicts"]:
+            status = "provisional: decisions conflict with the rules"
+        elif counts["review_pairs_pending"]:
+            status = "provisional: review pairs pending"
+        else:
+            status = "complete"
         args.output.mkdir(parents=True)
         write_csv(args.output / "records.csv", result["records"], RECORD_COLUMNS)
         write_csv(args.output / "ledger.csv", result["ledger"], LEDGER_COLUMNS)
         write_csv(args.output / "review_pairs.csv", result["review"], REVIEW_COLUMNS)
         summary = {
             "rules_file": args.rules.name, "rules_version": rules.get("version", ""), "rules_sha256": sha256_of(args.rules),
-            "inputs": {path.name: sha256_of(path) for path in inputs},
-            "decisions_file": {args.decisions.name: sha256_of(args.decisions)} if args.decisions else None,
-            "counts": result["counts"],
-            "status": "provisional: review pairs pending" if result["counts"]["review_pairs_pending"] else "complete",
+            "inputs": files,
+            "decisions_file": {"file": args.decisions.as_posix(), "sha256": sha256_of(args.decisions)} if args.decisions else None,
+            "counts": counts,
+            "status": status,
             "outputs": {name: sha256_of(args.output / name) for name in ("records.csv", "ledger.csv", "review_pairs.csv")},
         }
         (args.output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     except (OSError, ValueError, KeyError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
-    print(json.dumps(summary["counts"], indent=2))
-    print("status:", summary["status"])
-    return 0 if result["counts"]["check_identified_equals_removed_plus_passed"] else 1
+    print(json.dumps(counts, indent=2))
+    print("status:", status)
+    return 0 if counts["check_identified_equals_removed_plus_passed"] and not counts["decision_conflicts"] else 1
 
 
 if __name__ == "__main__":

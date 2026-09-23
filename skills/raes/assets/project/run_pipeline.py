@@ -4,22 +4,30 @@
 The stages are listed in pipeline.json, in order. Each stage is a command that writes into a rerun
 folder ({out} in the command), and a list of formal outputs with the rerun file each is compared
 with. The run first checks the frozen inputs and programs against pipeline_manifest.json, then runs
-the stages and stops at the first difference, saying where it is. The rerun folder is outside the
+the stages and stops at the first difference, saying where it is. Every rerun file is compared with
+what the manifest recorded for the formal file, not with the formal file as it is after the stage
+ran, so a stage that writes into the project cannot pass by changing the formal file; after the last
+stage the frozen inputs and formal outputs are checked once more. The rerun folder is outside the
 project, so a run does not add files to a synchronized folder. A short report goes to
 pipeline_report.md.
 
     python run_pipeline.py                     # rerun and compare; exit code 0 when everything is reproduced
     python run_pipeline.py --output <folder>   # choose the rerun folder (new, outside the project)
-    python run_pipeline.py --copy              # first copy every file the manifest names to the rerun folder, check
-                                               # each copy by hash, and rerun inside that copy; every program a
-                                               # stage runs has to be listed under fixed_files for this
+    python run_pipeline.py --copy              # first check the project against the manifest, copy every file the
+                                               # manifest names to the rerun folder, check each copy by hash, and
+                                               # rerun inside that copy; every program a stage runs has to be
+                                               # listed under fixed_files for this
     python run_pipeline.py --write-manifest    # only after an approved change of rules, programs or inputs:
                                                # records the current frozen inputs and formal outputs as expected;
                                                # the previous manifest is kept in archive/
 
-A step that cannot be rerun, such as retrieving full texts in a browser or calling a model, enters
-as frozen files: list what it produced under fixed_files or fixed_folders. To rebuild with network
-access switched off, run this script through the skill's run_offline.py.
+This program is always one of the frozen files. Every fixed folder has to exist. The rerun file of
+an output is written with {out}, so it lies in the rerun folder. "compare": "records" compares the
+lines of a text file without blank lines and # comments, for outputs that carry a time stamp in a
+comment; it does not parse CSV fields. A step that cannot be rerun, such as retrieving full texts in
+a browser or calling a model, enters as frozen files: list what it produced under fixed_files or
+fixed_folders. To rebuild with network access switched off, run this script through the skill's
+run_offline.py.
 """
 from __future__ import annotations
 
@@ -36,6 +44,7 @@ PROJECT = Path(__file__).resolve().parent
 CONFIG = PROJECT / "pipeline.json"
 MANIFEST = PROJECT / "pipeline_manifest.json"
 REPORT = PROJECT / "pipeline_report.md"
+COMPARE_MODES = {"bytes", "records"}
 
 
 def sha256_of(path: Path) -> str:
@@ -47,19 +56,45 @@ def record_lines(path: Path) -> list[str]:
     return [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip() and not line.startswith("#")]
 
 
+def output_spec(target) -> dict:
+    return target if isinstance(target, dict) else {"rerun": target}
+
+
 def load_config() -> dict:
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
     if config.get("schema_version") != "raes-pipeline/1" or not isinstance(config.get("stages"), list):
         raise ValueError("pipeline.json needs schema_version raes-pipeline/1 and a list of stages")
+    for key in ("fixed_files", "fixed_folders"):
+        if not isinstance(config.get(key, []), list) or not all(isinstance(p, str) and p for p in config.get(key, [])):
+            raise ValueError(f"{key} must be a list of paths")
+    owners: dict[str, str] = {}
     for stage in config["stages"]:
-        if not isinstance(stage.get("name"), str) or not isinstance(stage.get("command"), list) or not isinstance(stage.get("outputs"), dict):
-            raise ValueError("every stage needs a name, a command (a list) and outputs (formal file -> rerun file)")
+        name = stage.get("name")
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError("every stage needs a name")
+        command = stage.get("command")
+        if not isinstance(command, list) or not command or not all(isinstance(p, str) and p for p in command):
+            raise ValueError(f"stage {name}: the command must be a list of non-empty strings")
+        if not isinstance(stage.get("outputs"), dict):
+            raise ValueError(f"stage {name}: outputs must map each formal file to its rerun file")
+        for formal, target in stage["outputs"].items():
+            spec = output_spec(target)
+            if not isinstance(spec.get("rerun"), str) or "{out}" not in spec["rerun"]:
+                raise ValueError(f"stage {name}: the rerun file of {formal} must be a path that contains {{out}}")
+            if spec.get("compare", "bytes") not in COMPARE_MODES:
+                raise ValueError(f"stage {name}: compare must be bytes or records")
+            if formal in owners:
+                raise ValueError(f"{formal} is an output of two stages: {owners[formal]} and {name}")
+            owners[formal] = name
     return config
 
 
 def fixed_paths(config: dict) -> list[str]:
-    paths = list(config.get("fixed_files", []))
+    """The frozen files: this program, fixed_files, and every file of every fixed folder."""
+    paths = [Path(__file__).name, *config.get("fixed_files", [])]
     for folder in config.get("fixed_folders", []):
+        if not (PROJECT / folder).is_dir():
+            raise ValueError(f"fixed folder not found: {folder}")
         paths += [p.relative_to(PROJECT).as_posix() for p in sorted((PROJECT / folder).rglob("*"))
                   if p.is_file() and "__pycache__" not in p.parts]
     missing = [p for p in paths if not (PROJECT / p).is_file()]
@@ -91,46 +126,67 @@ def write_manifest(config: dict) -> int:
     return 0
 
 
-def same(formal: Path, rerun: Path, mode: str) -> bool:
-    if mode == "records":
-        return record_lines(formal) == record_lines(rerun)
-    return sha256_of(formal) == sha256_of(rerun)
+def check_manifest(config: dict, manifest: dict) -> list[str]:
+    """The frozen files and the formal outputs compared with the manifest; empty when everything matches."""
+    problems = []
+    if manifest.get("config_sha256") != sha256_of(CONFIG):
+        problems.append("pipeline.json")
+    now = {p: sha256_of(PROJECT / p) for p in fixed_paths(config)}
+    problems += sorted(p for p in set(now) | set(manifest["fixed"]) if now.get(p) != manifest["fixed"].get(p))
+    problems += sorted(p for p, digest in manifest["outputs"].items()
+                       if not (PROJECT / p).is_file() or sha256_of(PROJECT / p) != digest)
+    return problems
 
 
 def rerun(config: dict, out: Path) -> tuple[bool, list[str]]:
     lines = []
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-    if manifest.get("config_sha256") != sha256_of(CONFIG):
-        return False, ["inputs: pipeline.json differs from the manifest"]
-    now = {p: sha256_of(PROJECT / p) for p in fixed_paths(config)}
-    changed = sorted(p for p in set(now) | set(manifest["fixed"]) if now.get(p) != manifest["fixed"].get(p))
-    drifted = sorted(p for p, digest in manifest["outputs"].items()
-                     if not (PROJECT / p).is_file() or sha256_of(PROJECT / p) != digest)
-    if changed or drifted:
-        return False, [f"inputs: differs from the manifest: {p}" for p in (changed + drifted)[:20]]
-    lines.append(f"inputs: {len(now)} fixed files and {len(manifest['outputs'])} formal outputs match the manifest")
+    problems = check_manifest(config, manifest)
+    if problems:
+        return False, [f"inputs: differs from the manifest: {p}" for p in problems[:20]]
+    lines.append(f"inputs: {len(manifest['fixed'])} fixed files and {len(manifest['outputs'])} formal outputs match the manifest")
+    # What every rerun file has to equal is fixed now, before any stage runs: the manifest's hash, or the record
+    # lines of a formal file that matches the manifest.
+    expected = {}
+    for stage in config["stages"]:
+        for formal, target in stage["outputs"].items():
+            mode = output_spec(target).get("compare", "bytes")
+            expected[formal] = record_lines(PROJECT / formal) if mode == "records" else manifest["outputs"][formal]
     for stage in config["stages"]:
         command = [part.replace("{out}", out.as_posix()) for part in stage["command"]]
-        if command and command[0] == "python":
+        if command[0] == "python":
             command[0] = sys.executable
         done = subprocess.run(command, cwd=PROJECT, capture_output=True, text=True)
         if done.returncode != 0:
             return False, lines + [f"{stage['name']}: the command failed", done.stderr.strip()[-1500:]]
         for formal, target in stage["outputs"].items():
-            spec = target if isinstance(target, dict) else {"rerun": target}
+            spec = output_spec(target)
             produced = Path(spec["rerun"].replace("{out}", out.as_posix()))
-            if not produced.is_file():
-                return False, lines + [f"{stage['name']}: the rerun did not write {produced}"]
-            if not same(PROJECT / formal, produced, spec.get("compare", "bytes")):
+            if not produced.is_file() or not produced.resolve().is_relative_to(out):
+                return False, lines + [f"{stage['name']}: the rerun did not write {produced} inside the rerun folder"]
+            if spec.get("compare", "bytes") == "records":
+                same = record_lines(produced) == expected[formal]
+            else:
+                same = sha256_of(produced) == expected[formal]
+            if not same:
                 return False, lines + [f"{stage['name']}: {formal} differs from the rerun"]
-        lines.append(f"{stage['name']}: {len(stage['outputs'])} outputs identical")
+        lines.append(f"{stage['name']}: {len(stage['outputs'])} outputs identical" if stage["outputs"]
+                     else f"{stage['name']}: the command succeeded; no outputs listed")
+    touched = check_manifest(config, manifest)
+    if touched:
+        return False, lines + [f"a stage changed a frozen input or a formal output, which a rerun must not do: {p}"
+                               for p in touched[:20]]
+    lines.append("inputs: unchanged after the stages")
     return True, lines
 
 
-def rerun_in_copy(out: Path) -> int:
-    """Copy what the manifest names to a fresh place, check every copy by hash, and rerun there."""
+def rerun_in_copy(config: dict, out: Path) -> tuple[bool, list[str]]:
+    """Check the project against the manifest, copy what the manifest names to a fresh place, check every copy by hash, and rerun there."""
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-    names = sorted(set(manifest["fixed"]) | set(manifest["outputs"]) | {CONFIG.name, MANIFEST.name, Path(__file__).name})
+    problems = check_manifest(config, manifest)
+    if problems:
+        return False, [f"inputs: differs from the manifest, so nothing was copied: {p}" for p in problems[:20]]
+    names = sorted(set(manifest["fixed"]) | set(manifest["outputs"]) | {CONFIG.name, MANIFEST.name})
     copy = out / "project"
     for name in names:
         target = copy / name
@@ -138,11 +194,14 @@ def rerun_in_copy(out: Path) -> int:
         shutil.copy2(PROJECT / name, target)
         if sha256_of(target) != sha256_of(PROJECT / name):
             raise ValueError(f"the copy of {name} differs from its source")
-    print(f"copied {len(names)} files to {copy}", flush=True)
-    done = subprocess.run([sys.executable, Path(__file__).name, "--output", str(out / "rerun")], cwd=copy)
-    if (copy / REPORT.name).is_file():
-        shutil.copy2(copy / REPORT.name, REPORT)
-    return done.returncode
+    done = subprocess.run([sys.executable, Path(__file__).name, "--output", str(out / "rerun")], cwd=copy,
+                          capture_output=True, text=True)
+    lines = [f"copied {len(names)} files to {copy}"]
+    lines += [line for line in done.stdout.splitlines()
+              if line.strip() and line not in ("every stage reproduced", "STOPPED at the first difference")]
+    if done.returncode == 2:
+        lines.append(done.stderr.strip()[-1500:])
+    return done.returncode == 0, lines
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -166,9 +225,7 @@ def main(argv: list[str] | None = None) -> int:
         if out == PROJECT or PROJECT in out.parents:
             raise ValueError("the rerun folder must be outside the project")
         out.mkdir(parents=True)
-        if args.copy:
-            return rerun_in_copy(out)
-        ok, lines = rerun(config, out)
+        ok, lines = rerun_in_copy(config, out) if args.copy else rerun(config, out)
     except (OSError, ValueError, KeyError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2

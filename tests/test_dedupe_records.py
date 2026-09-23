@@ -1,8 +1,10 @@
 """Tests for the deduplication script (stage S2) and its rules template."""
 from __future__ import annotations
 
+import contextlib
 import csv
 import importlib.util
+import io
 import json
 import tempfile
 import unittest
@@ -73,6 +75,18 @@ def project_rules() -> dict:
     return rules
 
 
+def read_csv(path: Path) -> list[dict]:
+    with path.open(encoding="utf-8", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def run_main(module, argv: list[str]) -> tuple[int, str]:
+    err = io.StringIO()
+    with contextlib.redirect_stderr(err):
+        code = module.main(argv)
+    return code, err.getvalue()
+
+
 class DedupeTests(unittest.TestCase):
     def test_rules_of_the_trial_data(self):
         module = load_module()
@@ -120,6 +134,66 @@ class DedupeTests(unittest.TestCase):
         # A trial label behind a neutral label now protects the record from removal.
         self.assertFalse(module.removable(first[0], project_rules()["doc_type_removal"]))
 
+    def test_preprint_and_journal_version_are_a_review_pair(self):
+        module = load_module()
+        shared = ["AU  - Bowe, A", "TI  - Gum chewing after caesarean section a randomized trial", "PY  - 2022", "AB  - An abstract."]
+        journal = "\n".join(["TY  - JOUR", *shared, "DO  - 10.1/journal", "ER  - ", "", ""])
+        preprint = "\n".join(["TY  - UNPB", *shared, "ER  - ", "", ""])
+        records = module.parse_ris(journal + preprint, "europepmc")
+        result = module.run([dict(r) for r in records], project_rules(), [])
+        self.assertEqual(result["counts"]["duplicates_removed"], 0, "a preprint and its journal version are not merged")
+        self.assertEqual([r["rule"] for r in result["review"]], ["R4"])
+        # Two exports of the same preprint are still merged.
+        twice = module.parse_ris(preprint, "europepmc") + module.parse_ris(preprint, "other")
+        self.assertEqual(module.run([dict(r) for r in twice], project_rules(), [])["counts"]["duplicates_by_rule"]["M3"], 1)
+
+    def test_not_duplicate_decision_is_kept_through_a_chain(self):
+        module = load_module()
+        title = "Walking for depression in older adults a randomized trial"
+        records = (module.parse_pubmed(pm("111", title, 2010, ["Journal Article"], "10.1/x"))
+                   + module.parse_wos(wos("0001", title.upper(), 2010, "Article", doi="10.1/x") + wos("0002", title, 2010, "Article")))
+        merged = module.run([dict(r) for r in records], project_rules(), [])["counts"]
+        self.assertEqual(merged["records_passed_to_screening"], 1, "without a decision the three records are one group")
+        decisions = [{"record_id_a": "WOS0001", "record_id_b": "WOS0002", "decision": "not_duplicate", "note": "different samples"}]
+        result = module.run([dict(r) for r in records], project_rules(), decisions)
+        counts = result["counts"]
+        self.assertEqual(counts["records_passed_to_screening"], 2,
+                         "WOS0002 stays apart although its title matches PM111, which is grouped with WOS0001")
+        self.assertEqual(counts["decision_conflicts"], 1)
+        conflict = next(r for r in result["review"] if r["pair_id"].startswith("X"))
+        self.assertEqual((conflict["rule"], conflict["decision"]), ("M3 vs not_duplicate", "not_duplicate"))
+        self.assertIn("WOS0001 and WOS0002", conflict["note"])
+
+    def test_overlapping_exports_keep_every_occurrence(self):
+        module = load_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / "batch_A").mkdir()
+            (folder / "batch_B").mkdir()
+            (folder / "batch_A/pubmed.txt").write_text(
+                "\n".join([pm("111", T_WALK, 2010, ["Journal Article"]), pm("222", T_TAI, 2012, ["Journal Article"])]), encoding="utf-8")
+            (folder / "batch_B/pubmed.txt").write_text(
+                "\n".join([pm("222", T_TAI, 2012, ["Journal Article"]), pm("333", T_QI, 2015, ["Journal Article"])]), encoding="utf-8")
+            rules = folder / "dedup_rules.json"
+            rules.write_text(json.dumps(project_rules()), encoding="utf-8")
+            out = folder / "dedup"
+            self.assertEqual(module.main(["--inputs", str(folder / "batch_A/pubmed.txt"), str(folder / "batch_B/pubmed.txt"),
+                                          "--rules", str(rules), "--output", str(out)]), 0)
+            summary = json.loads((out / "summary.json").read_text(encoding="utf-8"))
+            self.assertEqual([entry["records"] for entry in summary["inputs"]], [2, 2])
+            self.assertEqual(len({entry["file"] for entry in summary["inputs"]}), 2, "two files with one name are two entries")
+            counts = summary["counts"]
+            self.assertEqual((counts["records_identified"], counts["duplicates_by_rule"]["M1"], counts["records_passed_to_screening"]),
+                             (4, 1, 3))
+            ledger = {row["record_id"]: row for row in read_csv(out / "ledger.csv")}
+            self.assertEqual(ledger["PM222-2"]["status"], "duplicate")
+            self.assertTrue(ledger["PM222-2"]["input_file"].endswith("batch_B/pubmed.txt"))
+            # The same file twice is a mistake, not an overlap.
+            code, err = run_main(module, ["--inputs", str(folder / "batch_A/pubmed.txt"), str(folder / "batch_A/pubmed.txt"),
+                                          "--rules", str(rules), "--output", str(folder / "twice")])
+            self.assertEqual(code, 2)
+            self.assertIn("given twice", err)
+
     def test_command_with_three_formats(self):
         module = load_module()
         with tempfile.TemporaryDirectory() as tmp:
@@ -133,21 +207,21 @@ class DedupeTests(unittest.TestCase):
             argv = ["--inputs", str(folder / "pubmed.txt"), str(folder / "wos_1.txt"), str(folder / "scopus.ris"),
                     "--rules", str(rules), "--output", str(out)]
             self.assertEqual(module.main(argv), 0)
-            with (out / "records.csv").open(encoding="utf-8", newline="") as handle:
-                rows = list(csv.DictReader(handle))
+            rows = read_csv(out / "records.csv")
             self.assertEqual(list(rows[0])[:3], ["record_id", "title", "abstract"], "the columns the screening program reads")
             summary = json.loads((out / "summary.json").read_text(encoding="utf-8"))
             self.assertEqual(summary["counts"]["by_source"], {"pubmed": 6, "wos": 7, "scopus": 2})
+            self.assertEqual([entry["source"] for entry in summary["inputs"]], ["pubmed", "scopus", "wos"], "one entry per file, in path order")
             # The RIS copy of the walking trial joins the PubMed group through its DOI; the other RIS record is new.
             walking = next(r for r in rows if r["record_id"] == "PM111")
             self.assertEqual(len(walking["also_found_as"].split("; ")), 2)
             self.assertEqual(sum(r["source"] == "scopus" for r in rows), 1)
             self.assertEqual(summary["status"], "provisional: review pairs pending")
             # Earlier output is never overwritten, and an unknown format is an error.
-            self.assertEqual(module.main(argv), 2)
+            self.assertEqual(run_main(module, argv)[0], 2)
             (folder / "notes.txt").write_text("not an export\n", encoding="utf-8")
-            self.assertEqual(module.main(["--inputs", str(folder / "notes.txt"), "--rules", str(rules),
-                                          "--output", str(folder / "other")]), 2)
+            self.assertEqual(run_main(module, ["--inputs", str(folder / "notes.txt"), "--rules", str(rules),
+                                               "--output", str(folder / "other")])[0], 2)
 
 
 if __name__ == "__main__":

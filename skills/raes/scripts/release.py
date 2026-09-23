@@ -11,14 +11,21 @@ and nothing is copied, so a release adds one small file to the project.
     python release.py --project <folder> verify [<name>]   # compares the working copy with a release (default: CURRENT)
 
 Left out of the inventory: the release folders and releases/CURRENT, __pycache__
-folders, and every path listed in releases/LEFT_OUT.txt (one path per line, relative
-to the project, # starts a comment), which is the place for reports that every run
-rewrites. The decision log and the status file are in the inventory, so an entry
-made after a release makes verify fail until a new release is created. So write the
-log entry about a release before creating it; activate records what is known only
-afterwards (the time, the manifest's hash, the release it supersedes) in
-releases/<name>/ACTIVATION.md, which no inventory covers. Exit code 0 when the
-command succeeds and, for verify, when the working copy matches.
+folders, the .git folder of a project under version control (so that an ordinary
+git operation does not change the inventory), and every path listed in
+releases/LEFT_OUT.txt (one path per line, relative to the project, # starts a
+comment), which is the place for reports that every run rewrites. The decision log
+and the status file are in the inventory, so an entry made after a release makes
+verify fail until a new release is created. So write the log entry about a release
+before creating it; activate records what is known only afterwards (the time, the
+manifest's hash, the release it supersedes) in releases/<name>/ACTIVATION.md, which
+no inventory covers. Exit code 0 when the command succeeds and, for verify, when
+the working copy matches.
+
+A release records hashes, not contents. It proves whether a file still is what it
+was; it cannot bring an earlier version of a file back, and activate only moves the
+pointer. To be able to return to an earlier release, keep the project's history in a
+version-control system or keep an archived copy of the files.
 """
 from __future__ import annotations
 
@@ -54,11 +61,13 @@ def inventory(project: Path) -> list[str]:
     releases = project / "releases"
     out = []
     for path in project.rglob("*"):
-        if path.is_symlink():
-            raise ValueError(f"a release cannot contain a symbolic link: {path.relative_to(project).as_posix()}")
-        if not path.is_file() or "__pycache__" in path.parts:
-            continue
         rel = path.relative_to(project).as_posix()
+        if rel == ".git" or rel.startswith(".git/") or "__pycache__" in path.parts:
+            continue
+        if path.is_symlink():
+            raise ValueError(f"a release cannot contain a symbolic link: {rel}")
+        if not path.is_file():
+            continue
         if rel in skip:
             continue
         parts = rel.split("/")

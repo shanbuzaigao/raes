@@ -20,6 +20,19 @@ from raes_core.registry import Registry
 
 DEMO = Path("examples/synthetic")
 
+# The full-text rules of the example, by version. Version 1 is the frozen rule that the screening
+# audit examines. Version 2 is the smallest general revision after the confirmed miss (S5): one term
+# added to the intervention vocabulary. No record enters the included set by hand; the included set
+# is what the current version of the rules produces.
+FT_RULES = {
+    "1": {"population": "adults", "design": "independent controlled comparison",
+          "intervention_terms": ["structured feedback"]},
+    "2": {"population": "adults", "design": "independent controlled comparison",
+          "intervention_terms": ["structured feedback", "step cards"],
+          "revised_after": "a confirmed miss under version 1: the report names its intervention 'step cards', "
+                           "a structured list of feedback on the task, which the vocabulary of version 1 did not name"},
+}
+
 
 def checker(root: Path):
     path = root / "skills/raes/scripts/check_codebook.py"
@@ -31,6 +44,13 @@ def checker(root: Path):
 
 def request_id(request: dict) -> str:
     return "REQ-" + sha256_bytes(canonical_json(request).encode("utf-8"))[:20]
+
+
+def same_value(a, b) -> bool:
+    """Equal values: numbers as numbers (10 and 10.0 are one value), everything else by canonical JSON."""
+    if type(a) in (int, float) and type(b) in (int, float):
+        return a == b
+    return canonical_json(a) == canonical_json(b)
 
 
 class Replay:
@@ -187,16 +207,26 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
     ta_ex=[];ft_candidates=[]
     for rec in unique:
         (ta_ex if "narrative review" in rec["title"].lower() else ft_candidates).append(rec)
-    ft_in=[];ft_ex=[]
-    for rec in ft_candidates:
-        h=extract_headers(sources[rec["source_id"]])
-        (ft_in if h["Population"]=="adults" and h["Design"]=="independent controlled comparison" and
-         h["Intervention"]=="structured feedback" else ft_ex).append(rec)
+
+    def ft_screen(version: str) -> tuple[list[dict], list[dict]]:
+        """The full-text rule of one version, applied to every candidate; the same record always gets the same decision."""
+        rule=FT_RULES[version]
+        kept=[];excluded=[]
+        for rec in ft_candidates:
+            h=extract_headers(sources[rec["source_id"]])
+            (kept if h["Population"]==rule["population"] and h["Design"]==rule["design"]
+             and h["Intervention"] in rule["intervention_terms"] else excluded).append(rec)
+        return kept,excluded
+
+    ft_version="1"
+    ft_in,ft_ex=ft_screen(ft_version)
+    rule_versions=[{"version":"1",**FT_RULES["1"],"included":[r["record_id"] for r in ft_in],
+                    "excluded":[r["record_id"] for r in ft_ex]}]
     # S5: FT first, then TA; no original decision/rationale is included in requests.
     screening_audit=[]
     human=load_json(folder/"human_adjudications.json")
     consumed_human=set()
-    rescued=[]
+    confirmed=[]
     for rec in ft_ex:
         sid=rec["source_id"]
         votes=[];rids=[]
@@ -216,8 +246,8 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
                 raise ValueError("Invalid human decision")
             evidence_check(adjud["evidence"],{sid:sources[sid]})
             consumed_human.add(sid);final=adjud["decision"]
-            if final=="include":rescued.append(rec)
-        screening_audit.append({"source_id":sid,"votes":votes,"majority":majority,"final":final,"requests":rids})
+            if final=="include":confirmed.append(rec)
+        screening_audit.append({"source_id":sid,"rules_version":ft_version,"votes":votes,"majority":majority,"final":final,"requests":rids})
     if consumed_human!=set(human):raise ValueError("Unused human adjudication")
     for rec in ta_ex:
         request=req("screening_audit",rec["source_id"],reviewer="auditor",stage="TA")
@@ -225,7 +255,23 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
         # No retain candidate occurs in this fixture. A real candidate must go through FT.
         if obj["decision"]!="exclude":raise ValueError("TA retain requires the FT candidate branch, absent from this tiny example")
         screening_audit.append({"source_id":rec["source_id"],"stage":"TA","final":"exclude","requests":[request_id(request)]})
-    included=ft_in+rescued
+    # A confirmed miss changes the rule, never the included set by hand: the smallest general revision, a new
+    # version, a rerun of the full-text screen on every candidate. The paper is included when the revised rule
+    # includes it.
+    if confirmed:
+        ft_version="2"
+        ft_in,ft_ex=ft_screen(ft_version)
+        rule_versions.append({"version":"2",**FT_RULES["2"],"included":[r["record_id"] for r in ft_in],
+                              "excluded":[r["record_id"] for r in ft_ex]})
+        missed=[r["record_id"] for r in confirmed if r not in ft_in]
+        if missed:raise ValueError("The revised rule does not include a confirmed miss; revise the rule, do not add the record")
+        # The audit frame under the new version is every exclusion it produces. An audit judges the paper against
+        # the criteria, not against a rule version, so a record audited under version 1 keeps its result; only an
+        # exclusion without an audit result would need a fresh request, and this example has none.
+        audited={a["source_id"] for a in screening_audit}
+        fresh=[r["record_id"] for r in ft_ex if r["source_id"] not in audited]
+        if fresh:raise ValueError("Unaudited exclusions under the revised rule; this example has no saved answers for a fresh sample")
+    included=ft_in
     # S6: study IDs are explicitly printed in synthetic reports, not inferred by fuzzy match.
     groups=defaultdict(list)
     for rec in included:
@@ -335,12 +381,12 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
                 evidence_check(obj["evidence"],{representatives[study]["source_id"]:sources[representatives[study]["source_id"]]})
             adjud=rp.get(adjud_request,check_adjud)
             old=by_uid[uid][field]
-            if canonical_json(adjud["value"]) == canonical_json(old):
+            if same_value(adjud["value"], old):
                 # The adjudicator supports the current coding: the challenge is rejected, and no human is needed.
                 rejected.append({"Row_UID":uid,"field":field,"kept":old,"auditor_request":request_id(request),
                                  "adjudicator_request":request_id(adjud_request),"rule":adjud["rule"],"evidence":adjud["evidence"]})
                 continue
-            if canonical_json(challenge["proposed"]) != canonical_json(adjud["value"]):
+            if not same_value(challenge["proposed"], adjud["value"]):
                 raise ValueError("Auditors disagree: bounded human adjudication required, not majority-by-retry")
             by_uid[uid][field]=adjud["value"]
             corrections.append({"Row_UID":uid,"field":field,"old":old,"new":adjud["value"],
@@ -359,18 +405,22 @@ def run(root: Path, replay: Replay | None = None) -> dict[str,object]:
         effects.append({"Study_ID":item["Study_ID"],"treatment_row":t["Row_UID"],"comparator_row":c["Row_UID"],**effect.to_dict()})
     rp.finish()
     counts={"search_records":len(search),"duplicates":len(duplicates),"screened_records":len(unique),
-            "TA_excluded":len(ta_ex),"full_texts_assessed":len(ft_candidates),"FT_initial_included":len(ft_in),
-            "FT_initial_excluded":len(ft_ex),"FT_rescued":len(rescued),"included_reports":len(included),
+            "TA_excluded":len(ta_ex),"full_texts_assessed":len(ft_candidates),
+            "FT_rule_versions":len(rule_versions),"FT_excluded_under_first_version":len(rule_versions[0]["excluded"]),
+            "FT_confirmed_misses":len(confirmed),"FT_excluded_under_current_version":len(ft_ex),
+            "included_reports":len(included),
             "included_studies":len(representatives),"coded_arm_rows":len(original),"audited_pre_g_arm_rows":len(targets),
             "uncomputed_comparisons":sum(not c["computable"] for c in computability),"computed_effects":len(effects),
             "confirmed_coding_corrections":len(corrections),"logical_requests":len(rp.used),
             "saved_attempts":len(rp.trace),"technical_failures":sum(t["status"]!="VALID" for t in rp.trace)}
     if counts["search_records"]!=counts["duplicates"]+counts["screened_records"]:raise ValueError("Search counts do not reconcile")
     if counts["screened_records"]!=counts["TA_excluded"]+counts["full_texts_assessed"]:raise ValueError("TA counts do not reconcile")
+    if counts["full_texts_assessed"]!=counts["FT_excluded_under_current_version"]+counts["included_reports"]:raise ValueError("FT counts do not reconcile")
     # S11: construction/accounting checks, not inferential meta-analysis of incompatible tiny outcomes.
     return {"flow_counts.json":counts,"effect_sizes.json":effects,"coded_original.json":original,
             "coded_reconciled.json":reconciled,"computability.json":computability,"unresolved_items.json":unresolved,
-            "screening_audit.json":screening_audit,"coding_audit.json":coding_audit,"corrections.json":corrections,
+            "screening_audit.json":screening_audit,"ft_rule_versions.json":rule_versions,
+            "coding_audit.json":coding_audit,"corrections.json":corrections,
             "rejected_challenges.json":rejected,
             "study_map.json":study_map,"attempt_log.json":rp.trace}
 

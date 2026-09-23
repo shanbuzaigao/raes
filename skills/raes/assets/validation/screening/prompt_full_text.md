@@ -15,6 +15,11 @@ Audit rules:
 {{AUDIT_CODEBOOK_JSON}}
 
 Return one JSON object with: record_id; criterion_results, one entry per criterion
-with supported (true or false) and page-level evidence; decision (INCLUDE or EXCLUDE);
-reason_code; unresolved_items. A criterion you cannot decide from the paper is an
-unresolved item, not a failure. Do not use any source other than the supplied paper.
+with supported (true or false) and page-level evidence; decision (INCLUDE when every
+criterion is supported, otherwise EXCLUDE); reason_code, the code of the first
+criterion that is not supported; unresolved_items. A criterion that the paper does
+not establish is not supported: the paper has to show that the criterion is met.
+Under unresolved_items, say what you looked for and did not find; it explains the
+decision and does not change it. If the supplied file is incomplete or unreadable,
+return record_id and file_problem only, with no decision. Do not use any source
+other than the supplied paper.

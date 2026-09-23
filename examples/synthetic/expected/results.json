@@ -454,9 +454,10 @@
     }
   ],
   "flow_counts.json": {
-    "FT_initial_excluded": 2,
-    "FT_initial_included": 4,
-    "FT_rescued": 1,
+    "FT_confirmed_misses": 1,
+    "FT_excluded_under_current_version": 1,
+    "FT_excluded_under_first_version": 2,
+    "FT_rule_versions": 2,
     "TA_excluded": 1,
     "audited_pre_g_arm_rows": 6,
     "coded_arm_rows": 8,
@@ -473,6 +474,46 @@
     "technical_failures": 1,
     "uncomputed_comparisons": 1
   },
+  "ft_rule_versions.json": [
+    {
+      "design": "independent controlled comparison",
+      "excluded": [
+        "REC006",
+        "REC008"
+      ],
+      "included": [
+        "REC001",
+        "REC002",
+        "REC004",
+        "REC005"
+      ],
+      "intervention_terms": [
+        "structured feedback"
+      ],
+      "population": "adults",
+      "version": "1"
+    },
+    {
+      "design": "independent controlled comparison",
+      "excluded": [
+        "REC006"
+      ],
+      "included": [
+        "REC001",
+        "REC002",
+        "REC004",
+        "REC005",
+        "REC008"
+      ],
+      "intervention_terms": [
+        "structured feedback",
+        "step cards"
+      ],
+      "population": "adults",
+      "revised_after": "a confirmed miss under version 1: the report names its intervention 'step cards', a structured list of feedback on the task, which the vocabulary of version 1 did not name",
+      "version": "2"
+    }
+  ],
   "rejected_challenges.json": [],
   "screening_audit.json": [
     {
@@ -482,6 +523,7 @@
         "REQ-84932153dee148f7a6b1",
         "REQ-472861263be781514c1e"
       ],
+      "rules_version": "1",
       "source_id": "SYN004.md",
       "votes": [
         "exclude",
@@ -496,6 +538,7 @@
         "REQ-608ff1c49c937102bf3a",
         "REQ-efd45274f05278673985"
       ],
+      "rules_version": "1",
       "source_id": "SYN006.md",
       "votes": [
         "include",
