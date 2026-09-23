@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-一个 skill，[raes](raes/SKILL.md)，覆盖整个流程。装进支持 Agent Skills 的宿主之后，它带着研究者按操作手册的阶段走：问出这一阶段需要的决定，用模板写文件，跑本地检查，并把每个调用 AI 的环节按"计划、codebook、prompt、运行"的顺序准备好。它不调用模型 API，也不做真实的筛选或编码。
+一个 skill，[raes](raes/SKILL.md)，覆盖整个流程。装进支持 Agent Skills 的宿主之后，它带着研究者按操作手册的阶段走：问出这一阶段需要的决定，用模板写文件，跑本地检查，并把每个调用 AI 的环节按“计划、codebook、prompt、运行”的顺序准备好。它不调用模型 API，也不做真实的筛选或编码。
 
 文件夹遵循 [Agent Skills 规范](https://agentskills.io/specification)：
 
