@@ -4,7 +4,7 @@
 
 本文件是英文版 `README.md` 的翻译。两者不一致时以英文为准。
 
-**状态：** 0.4.1 版。这套方法我在自己的 meta-analysis 里从头到尾用过一遍；skill 试用过三次，其中一次在另一个学科的题目上走完了全部阶段。仓库还在改进，改了什么见[更新记录](CHANGELOG.md)。
+**状态：** 0.5.0 版。这套方法我在自己的 meta-analysis 里从头到尾用过一遍；skill 已试用三次，其中一次在另一个学科的题目上走完了全部阶段。仓库还在改进，改了什么见[更新记录](CHANGELOG.md)。
 
 ## 这是什么
 
@@ -14,18 +14,18 @@ RAES 是我为自己的 meta-analysis 搭的一套工作流程。当时文献增
 
 它面向 meta-analysis、系统综述和类似的证据整合工作。它不是又一个自动筛文献的工具。给摘要排序、抽取字段的工具自动化的是单个任务；RAES 关心的是整个整合过程怎样运行，让别人能够核查。
 
-所有领域知识都放在带版本号的 codebook 里，所以流程本身不依赖具体领域。我是在一个社会科学项目里把它做出来并完整用过一遍的，也就是我的 working paper *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments* 里的 meta-analysis。这项 meta-analysis 研究大语言模型在经典经济博弈中的行为，覆盖 54 篇论文、757 个效应量。
+所有领域知识都放在带版本号的 codebook 里，所以流程本身不依赖具体领域。我是在一个社会科学项目里把它做出来并完整用过一遍的，也就是我的 working paper *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments* 里的 meta-analysis。这项 meta-analysis 研究大语言模型在经典经济博弈中的行为，纳入 72 项研究，其中 54 项贡献了 757 个效应量。
 
 ## 这个仓库给你什么
 
 - **一份操作手册**，覆盖整个证据整合过程，从研究问题到发布：[PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md)（英文版 [PROTOCOL.md](PROTOCOL.md)）。
-- **一套模板**，方法要求你写的每一个文件都有；还有一个起步项目，里面已经带着它自己的程序：去重脚本、规则筛选程序，以及一条命令重建全部结果的程序。
+- **一套模板**，方法要求你写的每一类文件都有对应的模板；还有一个起步项目，里面已经带着它自己的程序：去重脚本、规则筛选程序，以及一条命令重建全部结果的程序。
 - **一个 skill，`raes`**，用于 Claude Code、Codex 和其他支持 Agent Skills 的宿主。它按阶段带你走完整个流程：问出这一阶段需要的决定，用模板写文件，跑检查。
-- **一个编造的小例子**，离线把整个流程跑一遍：保存好的 AI 回答、一次找回了错排论文的审计，以及一处被审计改正的编码错误。
+- **一个编造的小例子**，离线把整个流程跑一遍：保存好的 AI 回答、一次发现误排论文的审计和随后把它纳入的规则修订，以及一处被审计改正的编码错误。
 
 ## 怎么用这个仓库
 
-只需要 Python 3.10 或更新的版本，不用装任何包。这里的任何东西都不调用模型，也不需要密钥。
+只需要 Python 3.10 或更新的版本，不用装任何包。这里的任何东西都不调用模型，也不需要密钥。真实的综述项目要自己接入模型、自己写发送请求的运行程序，见"不包含什么"。
 
 **0. 拿到仓库。**
 
@@ -42,7 +42,7 @@ cd raes
 python examples/synthetic/reproduce.py
 ```
 
-例子里的一切都是编造的。它用保存的回答重建全部结果，演示了一条重复记录、一篇被误筛后由审计找回的论文、一处缺失的 SD、一次模型回答失败后的重试，以及一处被审计发现的编码错误。看什么、怎么看，见 [examples/synthetic/](examples/synthetic/README.zh-CN.md)。
+例子里的一切都是编造的。它用保存的回答重建全部结果，演示了一条重复记录、一篇被误筛的论文（由审计发现、由修订后的规则纳入）、一处缺失的 SD、一次模型回答失败后的重试，以及一处被审计发现的编码错误。看什么、怎么看，见 [examples/synthetic/](examples/synthetic/README.zh-CN.md)。
 
 **2. 读方法。** [PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md) 按同一个格式把下面流程图里的每个阶段展开：谁来做、输入和产出是什么、我怎么做、进入下一步之前检查什么。
 
@@ -113,7 +113,7 @@ flowchart TD
 
 ## 我为什么觉得需要它
 
-证据整合领域的主要机构已经要求：使用 AI 的作者必须保持人工监督，并且能说明 AI 的使用不损害方法的严谨性。RAISE 建议（Thomas et al., 2025），以及 Cochrane、Campbell Collaboration、JBI 和环境证据协作组织 2025 年的联合立场声明（Flemyng et al., 2025），讲的都是这一点。这些文件说明了要求是什么，但没有说实际怎么做。RAES 是我给出的一种具体的、可执行的做法。
+证据整合领域的主要机构已经要求：使用 AI 的作者必须保持人工监督，并且能说明 AI 的使用不损害方法的严谨性。RAISE 建议（Thomas et al., 2025），以及 Cochrane、Campbell Collaboration、JBI 和环境证据协作组织 2025 年的联合立场声明（Flemyng et al., 2025），讲的都是这一点。这些文件说明了要求是什么。RAES 是我给出的一种具体的、可执行的做法。
 
 ## 它建立在什么之上
 
@@ -134,19 +134,19 @@ flowchart TD
 1. **Codebook 先行。** 每一个实质判断，我都在正式运行前写进带版本号的 codebook。prompt 从 codebook 生成，不是反过来。
 2. **AI 执行规则，不设定范围。** 模型不得改写、放宽或替换标准。证据不足时填 `null` 并记录为未解决项，绝不补造。
 3. **判断单位是条件，不是论文。** 纳入与编码逐个实验条件、角色和结果指标判断。
-4. **能确定性的就确定性。** 筛选规则尽量写成程序。效应量、标准误和区间由确定性代码计算，模型只选择计算路径。
+4. **能由确定性程序完成的，就交给确定性程序。** 筛选规则尽量写成程序。效应量、标准误和区间由确定性代码计算，模型只选择计算路径。
 5. **独立审计。** 审计者来自不同厂商。筛选审计看不到先前的判断；编码审计能看到它要核对的编码值，但看不到编码理由。只有出现分歧或质疑时才引入下一位审计者。人工裁决范围受限，且必须有页码证据。
 6. **技术失败不是判断。** 拒答、格式错误和超时在不变的请求身份下重试，永远不转成"排除"或"通过"。
 7. **抽样和停止规则事先写定。** 分层、随机种子和干净轮次的停止条件在验证开始前确定。
 8. **进入正式运行的一切都冻结并留哈希。** 可能影响判断的改动就是新版本；受影响的部分重新验证，未受影响的结果经逐项核对后才能沿用。
 9. **发布不可变，指针可移动。** 带日期的发布包保持原样，`CURRENT` 指针指向当前版本，历史不被悄悄改写。
 10. **离线可复现。** 一条命令用保存的回答重建全部结果，不调用任何 API。
-11. **用缓存保证同一实体跨研究一致。** 同一实体无论出现在哪篇研究里，编码属性都相同。
+11. **用缓存保证同一实体跨研究一致。** 同一实体无论出现在哪篇研究里，编码属性都相同；缓存和规则文件一样有版本。
 12. **如实说明每项验证证明了什么、没证明什么。**
 
 ## 不包含什么
 
-- 向模型厂商发送请求的运行程序，也就是 S5、S8、S9 这几个调用 AI 的环节真正"发出去"的那一步。模板和 skill 把这些环节准备到"一切已冻结、可以运行"为止；发送请求由各项目自己的运行程序完成。通用的运行程序以后可能会加。
+- 向模型厂商发送请求的运行程序，也就是 S5、S8、S9 这几个调用 AI 的环节实际发送请求的那一步。模板和 skill 把这些环节准备到"一切已冻结、可以运行"为止；发送请求由各项目自己的运行程序完成。通用的运行程序以后可能会加。
 - 有版权的论文 PDF、作者提供的数据、我自己研究的数据、大段引用原文的模型原始回答，以及任何凭据。
 
 ## 关于 AI 工具的使用
@@ -157,14 +157,14 @@ flowchart TD
 
 如果你用了 RAES、它的模板或它的 skill，请引用这个仓库。如果你在这套方法的基础上继续做，请同时引用它所出自的 working paper。GitHub 页面上的 "Cite this repository" 按钮给出同一条引用的其他格式，它读的是 [CITATION.cff](CITATION.cff)。
 
-> Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.4.1) [Computer software]. https://github.com/shanbuzaigao/raes
+> Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.5.0) [Computer software]. https://github.com/shanbuzaigao/raes
 
 ```bibtex
 @software{zhu_raes_2026,
   author  = {Zhu, Qijun},
   title   = {{RAES}: Reproducible {AI}-assisted Evidence Synthesis},
   year    = {2026},
-  version = {0.4.1},
+  version = {0.5.0},
   url     = {https://github.com/shanbuzaigao/raes}
 }
 ```
@@ -173,7 +173,7 @@ flowchart TD
 
 ## 许可证
 
-代码采用 [MIT 许可证](LICENSE)。文档和模板采用 [CC BY 4.0](LICENSE-docs.md)：可以使用和改编，但要注明出处。
+源代码采用 [MIT 许可证](LICENSE)，包括 `templates/` 下和 skill 里的 Python 程序。文档、操作手册以及文字和 JSON 模板采用 [CC BY 4.0](LICENSE-docs.md)：可以使用和改编，但要注明出处。
 
 ## 参考文献
 

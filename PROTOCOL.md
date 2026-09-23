@@ -1,6 +1,6 @@
 # RAES Protocol
 
-Version 0.3, draft. 2026-09-18.
+Version 0.4, draft. 2026-09-23. Distributed with RAES 0.5.0. The protocol and the software are numbered separately: this number changes when the text of the method changes, the software's when the templates, scripts or skill change.
 
 [English](PROTOCOL.md) | [简体中文](PROTOCOL.zh-CN.md)
 
@@ -103,7 +103,7 @@ What comes after screening is my own addition and came out of my project: the sa
 
 **10. Offline reproducibility.** Every model response is saved. One command rebuilds all results from those saved responses, with the internet switched off. It does not search the databases again and it does not ask the models again. Collecting new responses is a separate step that needs explicit approval.
 
-**11. Cached attributes keep entities consistent across studies.** When the same entity appears in many studies, its coded attributes are looked up in a cache before anything is scored again. In my project the entities are AI models, and the attributes are measures such as model strength and openness.
+**11. Cached attributes keep entities consistent across studies.** When the same entity appears in many studies, its coded attributes are looked up in a cache before anything is scored again. The cache is a versioned rule file like any other: an attribute that changes gets a new version, and the rows it affects are rerun. In my project the entities are AI models, and the attributes are measures such as model strength and openness.
 
 **12. Say what each validation shows and what it does not.** A clean audit of sampled exclusions supports the screening rule for that snapshot of the search. It is not proof that no eligible study was missed.
 
@@ -122,7 +122,7 @@ In my project three stages call an AI: the cross-validation of screening (S5), t
 
 A short memo for the stage. It fixes the question the step answers, the unit of judgment, what the model will see and what it must not see, the output it must return, which models play which role, the frame or the sample, the rules for retries and for stopping, the expected cost, and what counts as done. For a small step this is one page. For the screening audit in my project it grew into a full pre-specified protocol.
 
-I let a model draft the plan memo and the first codebook from my description of the project. I then read every line, because the codebook is the one document the rest of the project is built on.
+I let a model draft the plan memo and the first codebook from my description of the project. I then read every line, because the coding, its audit and the analysis are all built on it.
 
 ### 5.2 Codebook
 
@@ -134,7 +134,7 @@ The codebook is a JSON file. For every variable it gives the name, a description
 - a list of things not to do;
 - how to document the source of each number.
 
-Beyond the variable table, my coding codebook contains the eligibility criteria with operational clarifications, the hierarchy for choosing comparison data, rules for aggregating across opponents or sampling settings, a statement of which fields the model fills and which fields code computes, the cache-first rule for entity attributes, and a version string.
+Beyond the variable table, my coding codebook contains the eligibility criteria with operational clarifications, the hierarchy for choosing comparison data, rules for aggregating across opponents or sampling settings, a statement of which fields the model fills and which fields code computes, the cache-first rule for entity attributes, and a version string. In the templates of this repository the criteria stay in one file, `codebook/eligibility.json`; the codebook records that file's SHA-256, and the prompt renderer inserts the text from the file, so that the criteria are never copied by hand.
 
 A generic example of one entry:
 
@@ -152,7 +152,7 @@ A generic example of one entry:
 }
 ```
 
-An audit step has its own, smaller codebook. The validation codebook quotes the eligibility criteria or the coding rules verbatim, tells auditors what to decide, and fixes the exact fields they must return.
+An audit step has its own, smaller codebook. The validation codebook quotes the eligibility criteria or the coding rules verbatim, inserted from the eligibility file rather than retyped, tells auditors what to decide, and fixes the exact fields they must return.
 
 ### 5.3 Prompts
 
@@ -229,7 +229,7 @@ The exported text file is the source from here on, and spreadsheets are only for
 **Done by:** deterministic code.
 **In:** the full texts of the records that passed S3. **Out:** criterion-by-criterion evidence and a decision for every retrieved paper.
 
-**What I do.** This is the second phase of the same rule-based design. The program parses each PDF, retrieves the passages relevant to each criterion, and records for every criterion whether it is supported, together with the evidence. The decision follows from the criteria.
+**What I do.** This is the second phase of the same rule-based design. The program reads the text extracted from each PDF, by one extraction tool for the whole project with its version recorded, retrieves the passages relevant to each criterion, and records for every criterion whether it is supported, together with the evidence. The decision follows from the criteria.
 
 **Before moving on.** Keep the criterion-level record, because S5 uses it to find near misses. Full texts that could not be retrieved are counted separately from eligibility exclusions, as the PRISMA flow diagram requires. I also look at every paper the screen kept before it goes on to coding, because terms cannot decide every criterion. A paper that should not have been kept shows that a full-text rule is wrong, and it is handled as S5 describes.
 
@@ -244,7 +244,7 @@ The question here is narrow: did the screens exclude anything they should have k
 
 **Codebook.** The validation codebook quotes the eligibility criteria and their operational clarifications verbatim and fixes the fields an auditor must return.
 
-**Prompts.** Full-text auditors receive only the record identifier, the title and the complete PDF. The abstract auditor receives the identifier, the title and the abstract. Nobody sees the original decision or its reason.
+**Prompts.** Full-text auditors receive only the record identifier, the title and the complete PDF. The abstract auditor receives the identifier, the title and the abstract. Nobody sees the original decision or its reason. A full-text auditor answers INCLUDE or EXCLUDE and nothing else: a criterion that the paper does not establish is not supported, because the paper has to show that it is met. What the auditor looked for and did not find goes into the answer as explanation, not as a third verdict. An incomplete or unreadable file is a technical failure, not an exclusion.
 
 **Operate.**
 
@@ -252,12 +252,12 @@ The question here is narrow: did the screens exclude anything they should have k
 
 *Title-and-abstract audit.* Draw rounds of previously unaudited exclusions, stratified by search batch. One blinded auditor reads each record. A "retain" answer is a candidate, not an error. The candidate's full text is retrieved and run through the frozen full-text screen, and papers that pass are then read by the independent auditors.
 
-*Stopping.* A round in which no candidate passes the full-text screen ends the audit. Rounds in which candidates pass the screen but are all excluded by the independent auditors count toward a cumulative total, and three such rounds end the audit. After a confirmed miss the audit continues, and every third confirmed miss triggers a review for systematic failure.
+*Stopping.* Each audit has its own stopping rule, written in the memo before the first request. For the title-and-abstract audit in my project: a round in which no candidate passes the full-text screen ends the audit. Rounds in which candidates pass the screen but are all excluded by the independent auditors count toward a cumulative total, and three such rounds end the audit. After a confirmed miss the audit continues, and every third confirmed miss triggers a review for systematic failure. A round is complete only when every record in it has a valid answer. A missing PDF, an exhausted retry or a paused budget leaves the round open, and an open round is not a round without a miss.
 
 *What a confirmed miss changes.* No record enters or leaves the included set by hand. The included set is always what the rules produce. Rules stay fixed while an audit round runs, and they are revised after it.
 
 - A miss confirmed in the full-text audit shows that a full-text rule is wrong. I make the smallest general revision of the rule, give it a new version, rerun the full-text screen on every paper, archive the current audit run and freeze a fresh sample under the new rule. The paper is included when the revised rules include it. Records from a run that actually started are withheld from later samples within the same snapshot.
-- The title-and-abstract rules stay frozen, because changing them would change the input of every later stage. A record confirmed in the title-and-abstract audit goes onto a frozen list, which the full-text screen reads as additional input, and the full-text rules decide it.
+- The title-and-abstract rules stay frozen, because changing them would change the input of every later stage. A record confirmed in the title-and-abstract audit goes onto a frozen list, which the full-text screen reads as additional input, and the full-text rules decide it. The screening program in this repository's templates reads that list with `--after-ta-audit`.
 - A wrong inclusion is handled like a wrong exclusion, wherever it surfaces: when I look at the kept papers, during coding, or in the coding audit. The full-text rules are revised and rerun. If the criterion itself was unclear, the clarifications in the eligibility file are revised too.
 - When I test a revised rule, I do not require that earlier exclusions stay excluded. An exclusion that nobody has read is not known to be right.
 
@@ -268,9 +268,9 @@ The question here is narrow: did the screens exclude anything they should have k
 **Done by:** code, with the researcher confirming unclear pairs from the sources.
 **In:** the included records after S5. **Out:** groups of records that report the same study, one representative for each, and the mapping from records to studies.
 
-**What I do.** The unit of a synthesis is the study, not the report (Lefebvre et al., 2025, Section 4.6; PRISMA 2020 draws the same line between records, reports and studies). Preprints, conference versions and journal versions of one study appear as separate records. A program compares every pair of included records on title similarity, author lists, and the similarity and relative length of the full texts, against written thresholds. It groups the matches and chooses a representative with a written rule: the published version first, then the later version. In my project 85 included records correspond to 72 studies.
+**What I do.** The unit of a synthesis is the study, not the report (Lefebvre et al., 2025, Section 4.6; PRISMA 2020 draws the same line between records, reports and studies). Preprints, conference versions and journal versions of one study appear as separate records. A program compares every pair of included records on title similarity, author lists, and the similarity and relative length of the full texts, against written thresholds. It groups the matches and chooses a representative with a written rule: the published version first, then the later version. The representative is the record that stands for the study in the tables. The other reports stay linked to it, and a value that only the preprint or a supplement reports is taken from there under the source precedence written in the codebook. Choosing a representative counts the same participants once; it does not throw the other reports away. In my project, with the search through 2026-09-06, 85 included records correspond to 72 studies.
 
-**Before moving on.** Every record belongs to exactly one group and every group has exactly one representative. If a threshold changes, the earlier result is kept and the new rule is rerun on all pairs. No pair is merged by hand.
+**Before moving on.** Every record belongs to exactly one group and every group has exactly one representative. If a threshold changes, the earlier result is kept and the new rule is rerun on all pairs. No pair is merged by hand: I confirm an unclear pair from the sources, write the evidence down, and the program applies the confirmation.
 
 ### S7 Data preparation (optional)
 
@@ -327,7 +327,7 @@ The runner does not overwrite earlier output, saves the raw response, and report
 
 **Operate.** Each challenge goes to the blinded adjudicator, who returns one of three results. *The current coding is supported:* the challenge is rejected and the coding stays. No human is needed, because two independent readings agree. *A correction is supported:* it is confirmed only when the adjudicator's corrected values match the auditor's hidden proposal exactly. Any difference goes to restricted human adjudication. *The source or the rule is ambiguous:* the item goes to restricted human adjudication.
 
-A confirmed error takes one of two routes. An error that belongs to one paper, under a rule that was already clear, is corrected by code from a reconciliation record that keeps the value before and after. An error that shows an unclear or wrong rule is fixed in the codebook: the smallest general change, a new version, and a new coding run of the papers the rule affects. Isolated rows are not patched. Running the coder again is for technical failures only. It is not a way to fix a content error, because the errors of one model are not independent, and keeping the run that looks right selects by outcome.
+A confirmed error takes one of two routes. An error that belongs to one paper, under a rule that was already clear, is corrected by code from a reconciliation record that keeps the value before and after. An error that shows an unclear or wrong rule is fixed in the codebook: the smallest general change, a new version, and a new coding run of the papers the rule affects. Isolated rows are not patched. Running the coder again under unchanged rules is for technical failures only. It is not a way to fix a content error, because the errors of one model are not independent, and keeping the run that looks right selects by outcome.
 
 The audit runner never touches the production rows. After a codebook clarification, only the affected papers are audited again, and earlier passes keep the codebook version they were obtained under.
 
@@ -338,7 +338,7 @@ The audit runner never touches the production rows. After a codebook clarificati
 **Done by:** code.
 **In:** the per-paper outputs and the confirmed corrections. **Out:** one table with stable row identifiers and computed effects.
 
-**What I do.** Code builds the master table from the per-paper outputs. Each row receives a stable identifier from a registry. Normal builds are read-only and fail if they meet an unregistered row; allocating new identifiers requires an explicit flag; retired identifiers are never reused. A deterministic engine computes the effect sizes. Mine has three paths: means and standard deviations, event counts, and a reported paired test statistic.
+**What I do.** Code builds the master table from the per-paper outputs. Each row receives a stable identifier from a registry. Normal builds are read-only and fail if they meet an unregistered row; allocating new identifiers requires an explicit flag; retired identifiers are never reused. A deterministic engine computes the effect sizes. Mine has three paths: means and standard deviations, event counts, and a reported paired test statistic. In my project all 72 studies were coded; 54 of them report the statistics an effect size needs and contribute 757 effect sizes, and the other 18 are coded but have no computable comparison, some because author data are still outstanding.
 
 **Before moving on.** Every effect is recomputed by a separately written script from the stored inputs. Pooled results are cross-checked in a second statistical package, which is part of S11.
 
@@ -356,7 +356,7 @@ The audit runner never touches the production rows. After a codebook clarificati
 **Done by:** code.
 **In:** every completed stage. **Out:** immutable releases, pointers, and one command that rebuilds the results offline.
 
-**What I do.** Each completed stage is saved as a dated, immutable release with a manifest of hashes. A release can be a copy of the files, or an inventory of their hashes in place, which avoids duplicating a large project inside a synchronized folder. A `CURRENT` file names the active release, and an activation record documents what changed in the working copies. The project status file records completed work as complete and does not attach inferred next steps.
+**What I do.** Each completed stage is saved as a dated, immutable release with a manifest of hashes. A release can be a copy of the files, or an inventory of their hashes in place, which avoids duplicating a large project inside a synchronized folder. An inventory records hashes, not contents: it shows whether a file still is what it was, and the project's history in a version-control system, or an archived copy, is what brings an earlier state back. A `CURRENT` file names the active release, and an activation record documents what changed in the working copies. The project status file records completed work as complete and does not attach inferred next steps.
 
 **Before moving on.** One command copies the formal inputs to a fresh location, switches off network access, and rebuilds the results from the saved responses. Software environments and disposable caches live outside synchronized folders.
 
@@ -366,7 +366,7 @@ The audit runner never touches the production rows. After a codebook clarificati
 
 **Staged execution.** Auditors run in a fixed order with a checkpoint after each. The pauses exist to catch schema failures and provider errors before every reviewer has been paid for. They are not an opportunity to choose which records continue. No record may be added to or removed from the queue for the next reviewer.
 
-**Technical failures.** Each invocation allows a finite batch of new attempts per unresolved item. Attempt numbers increase across invocations, the request stays unchanged, and there is no lifetime cap. If a raw response contains several JSON objects, it is accepted only when exactly one passes every validation check. The raw response is always preserved.
+**Technical failures.** Each invocation allows a finite batch of new attempts per unresolved item. Attempt numbers increase across invocations, the request stays unchanged, and there is no lifetime cap; the budget approved in the stage memo bounds the total, and attempts beyond it need a new approval. If a raw response contains several JSON objects, it is accepted only when exactly one passes every validation check. The raw response is always preserved.
 
 **What a pass means.** For screening: no confirmed false exclusion in the audited sample, under the frozen rules, for that search snapshot. For coding: the audited rows are consistent with the sources and the frozen rules. It does not audit papers or conditions that were never coded, and it is not a second full coding of the literature.
 
@@ -388,18 +388,21 @@ Replace the content: eligibility criteria, outcome map, codebook variables, comp
 
 ## 10. Limits
 
-The validations are targeted checks, not proof of zero error. Auditors from different vendors can still share blind spots. Rule-based screening depends on the terms the rules look for, which is why S3 aims for recall and S5 audits the exclusions. Writing rules takes real effort before any paper is coded, and the approach pays off only when the literature is large or will be updated. Models change, so versions must be pinned and recorded. Copyrighted sources and author-provided data cannot be shared, which limits how much of a run an outsider can repeat from scratch.
+The validations are targeted checks, not proof of zero error. Auditors from different vendors can still share blind spots. Rule-based screening depends on the terms the rules look for, which is why S3 aims for recall and S5 audits the exclusions. Writing rules takes real effort before any paper is coded, and the approach pays off only when the literature is large or will be updated. Models change, so versions must be pinned and recorded. Copyrighted sources, and author-provided data unless the authors agree, cannot be shared, which limits how much of a run an outsider can repeat from scratch.
 
 ## Appendix A. Glossary
 
 - **Codebook:** the versioned file that defines every variable, rule and output requirement.
-- **Condition:** one experimental arm, role and outcome within a paper; the unit of eligibility and coding.
+- **Condition:** the unit of eligibility and coding, as the project's codebook defines it; in my project one experimental arm, role and outcome within a paper.
 - **Executor:** the model that applies the codebook.
 - **Auditor:** an independent model that checks a decision blind.
 - **Cross-validation:** in this document, a blinded audit of a program's or a model's decisions by independent models. It is unrelated to k-fold cross-validation in machine learning.
 - **Near miss:** a full-text exclusion that failed exactly one criterion.
+- **False exclusion:** a record excluded at a stage where it should have been kept.
 - **Snapshot:** one cumulative state of the search, with its own identifier and audit history.
 - **Frozen frame:** the fixed set of rows or records a validation refers to.
+- **Representative report:** the record that stands for a study in the tables; the other reports of the study stay linked to it.
+- **Reconciliation record:** the file that keeps a confirmed correction with the value before and after, its evidence and its source; a correction reaches the table only through it.
 - **Release:** an immutable, dated record of a completed stage: a copy of its files, or an inventory of their hashes.
 - **Pointer:** the `CURRENT` file that names the active release.
 

@@ -8,4 +8,4 @@ You may share and adapt this material for any purpose, including commercially, p
 
 Full license text: https://creativecommons.org/licenses/by/4.0/legalcode
 
-Source code in this repository is licensed separately under the MIT License. See [LICENSE](LICENSE).
+Source code in this repository is licensed separately under the MIT License. See [LICENSE](LICENSE). This covers every Python file, wherever it sits: the Python programs under `templates/` and inside the skill's `assets/` are code, not templates, for the purpose of these licenses.

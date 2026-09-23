@@ -32,4 +32,4 @@ One JSON object per paper: the coded rows, each with exactly the template's colu
 - A standard error coded as a standard deviation.
 - Repeated rounds treated as independent observations.
 - Comparators imported from outside the written hierarchy.
-- Running the coder again to fix a content error. A rerun is for technical failures only: the errors of one model are not independent, a rerun can add new errors elsewhere in the paper, and keeping the run that looks right selects by outcome. A content error goes to the coding audit (S9); if it shows an unclear rule, clarify the codebook, raise the version and code the affected papers again.
+- Running the coder again to fix a content error. Under unchanged rules a rerun is for technical failures only: the errors of one model are not independent, a rerun can add new errors elsewhere in the paper, and keeping the run that looks right selects by outcome. A content error goes to the coding audit (S9); if it shows an unclear rule, clarify the codebook, raise the version and code the affected papers again.

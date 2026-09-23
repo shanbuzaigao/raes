@@ -31,7 +31,7 @@ What error the audit looks for: {{TARGET}} (for example: wrong effect-size input
 
 ## 6. Corrections and versions
 
-{{CORRECTION_POLICY}} (for example: original rows are never edited by the audit; an error that belongs to one paper, under a rule that was already clear, is written in a separate reconciliation record with the value before and after, and applied to a new version of the table by code; an error that shows an unclear or wrong rule changes the codebook, with a new version and a new coding run of the affected papers; running the coder again is for technical failures only; corrected values from authors and published errata enter through the same reconciliation record, with their source; after a codebook clarification only the affected papers are audited again, and earlier passes keep the codebook version they were obtained under).
+{{CORRECTION_POLICY}} (for example: original rows are never edited by the audit; an error that belongs to one paper, under a rule that was already clear, is written in a separate reconciliation record with the value before and after, and applied to a new version of the table by code; an error that shows an unclear or wrong rule changes the codebook, with a new version and a new coding run of the affected papers; running the coder again under unchanged rules is for technical failures only; corrected values from authors and published errata enter through the same reconciliation record, with their source; after a codebook clarification only the affected papers are audited again, and earlier passes keep the codebook version they were obtained under).
 
 ## 7. Technical failures and reporting
 

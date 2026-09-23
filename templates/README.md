@@ -32,7 +32,7 @@ The rows follow the order of the pipeline. The plan memo is written once for eve
 | File | Stage | What it holds |
 |---|---|---|
 | [eligibility.json](eligibility.json) | Goal and criteria (S0); read by every later stage | The eligibility criteria, numbered, each with its clarifications. One file for the whole project |
-| [search/dedup_rules.json](search/dedup_rules.json) | Remove duplicates (S2), only when the skill's deduplication script is used instead of a reference manager | How records are matched, which source supplies the kept record, which pairs go to the researcher, and which document types are removed before screening |
+| [search/dedup_rules.json](search/dedup_rules.json) | Remove duplicates (S2), only when the skill's deduplication script is used instead of a reference manager | How records are matched, which source supplies the kept record, which labels mark a preprint, which pairs go to the researcher, and which document types are removed before screening |
 | [screening/screening_rules.md](screening/screening_rules.md) | Screening (S3, S4) | The screening rules in words: one rule per criterion, the decision logic of each phase, the checks before a run, the version log |
 | [screening/screen_rules_template.py](screening/screen_rules_template.py) | Screening (S3, S4) | The same rules as a runnable program: term lists per criterion, a decision and a reason for every record, criterion-level evidence for the audit |
 | [plan_memo.md](plan_memo.md) | Any stage that calls an AI: the screening audit (S5), the coding (S8), the coding audit (S9), and the screens (S3, S4) if a model does them | The plan for one stage: question, unit of judgment, inputs and outputs, what the model may and may not see, pilot, what counts as done, approval |
@@ -42,7 +42,7 @@ The rows follow the order of the pipeline. The plan memo is written once for eve
 | [validation/coding/](validation/coding/memo.md) | Coding audit (S9) | The coding audit as one set: memo, audit codebook, config and two prompts. For example, one auditor checks every paper and a blinded adjudicator resolves each challenge |
 | [project/](project/README.md) | All | The starting files of a new project folder, including `run_pipeline.py` with `pipeline.json`: one command that reruns every coded stage and compares each output with the formal one |
 
-The screening program is a skeleton in the spirit of Robleto and Shehadeh (2025): edit the term lists at the top so that each entry mirrors one criterion of `eligibility.json`, try it on the papers you already know should be included, then freeze it with a version. `python templates/screening/screen_rules_template.py --help` shows the two phases.
+The screening program is a skeleton in the spirit of Robleto and Shehadeh (2025): edit the term lists at the top so that each entry mirrors one criterion of `eligibility.json`, try it on the papers you already know should be included, then freeze it with a version. `python templates/screening/screen_rules_template.py --help` shows the two phases. A frozen list of records that the title-and-abstract audit confirmed enters the full-text phase with `--after-ta-audit`, and the full-text phase checks that the title-and-abstract run covered exactly the records file it is given.
 
 The variable skeleton uses arm-level effect inputs (mean, SD, N, events, total) as an illustration. Remove what does not apply and say why. Do not add outcomes because the template shows them. `columns` lists every variable in order; the executor list leaves out every field owned by code. `Row_UID`, `g`, `SE_g` and the confidence limits always belong to code.
 
@@ -56,11 +56,11 @@ The eligibility criteria live in one file. The codebook does not copy their text
 python -c "import hashlib,pathlib; print(hashlib.sha256(pathlib.Path('../my-evidence-project/codebook/eligibility.json').read_bytes()).hexdigest())"
 ```
 
-Put the digest in `eligibility.sha256`. Screening, coding, data preparation and every audit then use the same text. When the criteria change, the digest changes. The right response is a new version with a note on what it affects, not a new digest alone.
+Put the digest into the `eligibility.sha256` field of the codebook. Screening, coding, data preparation and every audit then use the same text. When the criteria change, the digest changes. The right response is a new version with a note on what it affects, not a new digest alone.
 
 ## Render a prompt
 
-The renderer reads the codebook, the eligibility file and the executor columns itself, so nobody can alter them by hand inside a prompt. A context file supplies only the fields a template asks for, such as `PAPER_ID` and `SOURCES_JSON`; for the system prompt it is `{}`.
+The renderer reads the codebook, the eligibility file and the executor columns itself, so the prompt carries the exact text of those files and the context file cannot override them. Freeze the rendered prompt with its hash before the run: a later edit of the rendered file is then detected, which the renderer itself cannot prevent. A context file supplies only the fields a template asks for, such as `PAPER_ID` and `SOURCES_JSON`; for the system prompt it is `{}`.
 
 ```sh
 python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codebook.json --template templates/prompts/coding_system.md --context ../my-evidence-project/context.json --output ../my-evidence-project/coding_system_rendered.md

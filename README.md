@@ -2,28 +2,28 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-**Status:** version 0.4.1. I have used the method from start to finish in my own meta-analysis. The skill has been tried three times, once through every stage on a topic from another field. The repository is still changing; the [changelog](CHANGELOG.md) says what changed.
+**Status:** version 0.5.0. I have used the method from start to finish in my own meta-analysis. The skill has been tried three times, once through every stage on a topic from another field. The repository is still changing; the [changelog](CHANGELOG.md) says what changed.
 
 ## What this is
 
-RAES is the workflow I built for my own meta-analysis, where I used large language models to help screen and code a literature that was growing faster than I could read it. I wanted the AI to do the heavy lifting, but I did not want to ask readers to simply trust it. So the whole workflow follows one idea:
+RAES is the workflow I built for my own meta-analysis, where I used large language models to help screen and code the literature, which was growing faster than I could read it. I wanted the AI to do the heavy lifting, but I did not want to ask readers to simply trust it. So the whole workflow follows one idea:
 
 > I write the rules. The AI executes them. Independent AIs audit the execution. Every number is computed by deterministic code or extracted directly from the literature, and the whole run can be reproduced offline.
 
 It is meant for meta-analyses, systematic reviews and similar evidence syntheses. It is not another auto-screening tool. Tools that rank abstracts or extract fields automate one task. RAES is about how the whole synthesis is run, so that someone else can check it.
 
-All domain knowledge sits in a versioned codebook, so the workflow itself does not depend on the field. I developed it and used it end to end in a social-science project, the meta-analysis in my working paper *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments*. That meta-analysis covers 54 papers and 757 effect sizes on how LLMs behave in classic economic games.
+All domain knowledge sits in a versioned codebook, so the workflow itself does not depend on the field. I developed it and used it end to end in a social-science project, the meta-analysis in my working paper *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments*. That meta-analysis includes 72 studies of how LLMs behave in classic economic games; 54 of them contribute the 757 effect sizes.
 
 ## What you get
 
 - **A working manual** for the whole synthesis, from the research question to the release: [PROTOCOL.md](PROTOCOL.md) ([中文](PROTOCOL.zh-CN.md)).
 - **Templates** for every file the method asks you to write, and a starter project that already contains its programs: a deduplication script, a rule-based screening program, and one command that rebuilds every result.
 - **A skill, `raes`,** for Claude Code, Codex and other hosts that support Agent Skills. It walks you through the workflow stage by stage: it asks for the decisions a stage needs, writes the files from the templates and runs the checks.
-- **A small invented example** that runs the whole pipeline offline, with saved AI answers, an audit that finds a wrongly excluded paper, and a coding error that the audit corrects.
+- **A small invented example** that runs the whole pipeline offline, with saved AI answers, an audit that finds a wrongly excluded paper, which the revised rule then includes, and a coding error that the audit corrects.
 
 ## How to use this repository
 
-You need Python 3.10 or newer and nothing else. No package has to be installed, and nothing here calls a model or needs a key.
+You need Python 3.10 or newer and nothing else. No package has to be installed, and nothing here calls a model or needs a key. A real review adds its own model access and its own runner for the AI steps; see "What is not included".
 
 **0. Get it.**
 
@@ -40,7 +40,7 @@ Or use "Download ZIP" on the repository page.
 python examples/synthetic/reproduce.py
 ```
 
-Everything in the example is invented. It rebuilds all results from saved answers and shows a duplicate record, a paper that was wrongly screened out and then brought back by the audit, a missing SD, a failed model answer followed by a retry, and a coding error caught by the audit. [examples/synthetic/](examples/synthetic/README.md) explains what to look for.
+Everything in the example is invented. It rebuilds all results from saved answers and shows a duplicate record, a paper that was wrongly screened out, found by the audit and included by the revised rule, a missing SD, a failed model answer followed by a retry, and a coding error caught by the audit. [examples/synthetic/](examples/synthetic/README.md) explains what to look for.
 
 **2. Read the method.** [PROTOCOL.md](PROTOCOL.md) expands every stage of the figure below in the same format: who does it, what goes in and comes out, what I do, and what I check before moving on.
 
@@ -111,7 +111,7 @@ A note on the name: a Python package called `raes` exists on PyPI. It is a diffe
 
 ## Why I think this is needed
 
-Evidence-synthesis organizations now expect authors who use AI to keep human oversight and to show that AI does not compromise methodological rigor. This is the message of the RAISE recommendations (Thomas et al., 2025) and of the 2025 joint position statement by Cochrane, the Campbell Collaboration, JBI and the Collaboration for Environmental Evidence (Flemyng et al., 2025). These documents say what is expected. They do not say how to do it in practice. RAES is my attempt at one concrete, executable answer.
+Evidence-synthesis organizations now expect authors who use AI to keep human oversight and to show that AI does not compromise methodological rigor. This is the message of the RAISE recommendations (Thomas et al., 2025) and of the 2025 joint position statement by Cochrane, the Campbell Collaboration, JBI and the Collaboration for Environmental Evidence (Flemyng et al., 2025). These documents say what is expected. RAES is my attempt at one concrete, executable way of meeting it.
 
 ## What it builds on
 
@@ -139,7 +139,7 @@ These are the rules I ended up following. Each one came from a problem I actuall
 8. **Everything that enters a formal run is frozen and hashed.** A change that could affect decisions means a new version. Affected items are validated again, and unaffected results are kept only after an exact check.
 9. **Releases are immutable; pointers move.** Dated releases stay as they are, a `CURRENT` pointer names the active one, and history is never silently rewritten.
 10. **Offline reproducibility.** One command rebuilds all results from the saved responses, without calling any API.
-11. **Cached attributes keep entities consistent across studies.** The same entity receives the same coded attributes wherever it appears.
+11. **Cached attributes keep entities consistent across studies.** The same entity receives the same coded attributes wherever it appears, and the cache is versioned like a rule file.
 12. **Say what each validation shows and what it does not.**
 
 ## What is not included
@@ -155,14 +155,14 @@ I used AI coding and writing assistants while preparing the code and documentati
 
 If you use RAES, its templates or its skill, please cite this repository. If you build on the method, please also cite the working paper it comes from. GitHub's "Cite this repository" button gives the same reference in other formats; it reads [CITATION.cff](CITATION.cff).
 
-> Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.4.1) [Computer software]. https://github.com/shanbuzaigao/raes
+> Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.5.0) [Computer software]. https://github.com/shanbuzaigao/raes
 
 ```bibtex
 @software{zhu_raes_2026,
   author  = {Zhu, Qijun},
   title   = {{RAES}: Reproducible {AI}-assisted Evidence Synthesis},
   year    = {2026},
-  version = {0.4.1},
+  version = {0.5.0},
   url     = {https://github.com/shanbuzaigao/raes}
 }
 ```
@@ -171,7 +171,7 @@ Replace the version with the one you used. The working paper: Zhu, Q. (2026). *W
 
 ## License
 
-Code is released under the [MIT License](LICENSE). Documentation and templates are released under [CC BY 4.0](LICENSE-docs.md), which allows reuse and adaptation with attribution.
+Source code, including the Python programs under `templates/` and in the skill, is released under the [MIT License](LICENSE). The documentation, the protocol and the prose and JSON templates are released under [CC BY 4.0](LICENSE-docs.md), which allows reuse and adaptation with attribution.
 
 ## References
 

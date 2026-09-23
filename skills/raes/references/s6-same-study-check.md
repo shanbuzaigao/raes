@@ -1,6 +1,6 @@
 # S6 Same-study check
 
-Goal: group the included records that report the same study (preprint, conference version, journal version), choose one representative per group, and keep the mapping from records to studies. The unit of a synthesis is the study, not the report.
+Goal: group the included records that report the same study (preprint, conference version, journal version), choose one representative per group, and keep the mapping from records to studies. The unit of a synthesis is the study, not the report. The representative stands for the study in the tables; the other reports stay linked to it, and a value that only one of them reports is taken from there under the codebook's source precedence.
 
 ## Ask
 
@@ -15,4 +15,4 @@ Goal: group the included records that report the same study (preprint, conferenc
 ## Check before moving on
 
 - Every record belongs to exactly one group and every group has exactly one representative.
-- If a threshold changes, the earlier result is kept and the new rule is rerun on all pairs. No pair is merged by hand.
+- If a threshold changes, the earlier result is kept and the new rule is rerun on all pairs. No pair is merged by hand: the researcher confirms an unclear pair from the sources, writes the evidence down, and the program applies the confirmation.

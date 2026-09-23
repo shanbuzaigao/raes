@@ -7,7 +7,7 @@ This document states the screening rules in words. The program `screen_rules_tem
 ## 1. Inputs
 
 - Title and abstract phase (S3; "TA" below): {{RECORD_FILE_AND_FORMAT}} (for example: records.csv with the columns record_id, title and abstract, made from the reference manager's export after deduplication). Fields used: {{FIELDS}}.
-- Full-text phase (S4; "FT" below): only the records kept at S3, read from the decisions file of that run. Retrieve every kept full text first; the program stops if a text file is missing. The input text is extracted from each PDF, one file per record. Use one extraction tool for the whole project and record its version, because different tools produce different text from the same PDF. Tool and version: {{EXTRACTION_TOOL_AND_VERSION, e.g. PyMuPDF 1.27}}. A full text that truly cannot be obtained is listed, one record identifier per line, in a file passed to the program with `--not-retrieved`: {{NOT_RETRIEVED_FILE_OR_NONE}}. The program skips those records and lists them in `summary.json`; they are reported as "not retrieved" in the PRISMA counts, separate from the eligibility exclusions. The title-and-abstract phase does not use PDFs.
+- Full-text phase (S4; "FT" below): only the records kept at S3, read from the decisions file of that run. Retrieve every kept full text first; the program stops if a text file is missing. The input text is extracted from each PDF, one file per record. Use one extraction tool for the whole project and record its version, because different tools produce different text from the same PDF. Tool and version: {{EXTRACTION_TOOL_AND_VERSION, e.g. PyMuPDF 1.27}}. A full text that truly cannot be obtained is listed, one record identifier per line, in a file passed to the program with `--not-retrieved`: {{NOT_RETRIEVED_FILE_OR_NONE}}. The program skips those records and lists them in `summary.json`; they are reported as "not retrieved" in the PRISMA counts, separate from the eligibility exclusions. Records that the screening audit (S5) confirmed after a title-and-abstract exclusion are listed in a frozen file passed with `--after-ta-audit`: {{TA_AUDIT_LIST_OR_NONE}}. The program screens them in addition, and the title-and-abstract decisions stay as they are. The program also checks that the title-and-abstract run covered exactly the records file it is given. The title-and-abstract phase does not use PDFs.
 - Removals by document type, if any, happen in stage S2 (in the reference manager, or with the deduplication script), before this program runs: {{TITLE_PHRASES_OR_NONE}}. They are logged there and reported under "records removed before screening". This program does not repeat them.
 
 ## 2. One rule per criterion
@@ -24,7 +24,7 @@ One row per criterion, with the same IDs as the eligibility file. Add rows as ne
 
 A term is a whole word or phrase. Where that is not enough, the program also takes patterns (regular expressions, for a phrase such as "with ... depressive symptoms"), blocking terms that count only in the title (for example "systematic review", which many eligible papers mention in their abstract), and a check on a field of the record, such as the language. The order of the rows matters: the first failed criterion is the reason the PRISMA flow reports, so the criteria about the type of report come first.
 
-The full-text phase can have its own, narrower rules (`CRITERIA_FT` in the program). A full text also talks about other studies, so tie each term to the report's own study: its entry criteria, its allocation, its outcome measures. Rules for the full-text phase: {{SAME_AS_ABOVE_OR_LIST_THE_DIFFERENCES}}.
+The full-text phase can have its own, narrower rules (`CRITERIA_FT` in the program). That table lists every criterion; a criterion the full text does not check keeps an entry whose "Checked at" leaves out FT. A full text also talks about other studies, so tie each term to the report's own study: its entry criteria, its allocation, its outcome measures. Rules for the full-text phase: {{SAME_AS_ABOVE_OR_LIST_THE_DIFFERENCES}}.
 
 Criteria that cannot be decided from terms: {{LIST_OR_NONE}}. Say so here and leave them to the full-text reading, or to a model that screens under a codebook.
 
@@ -41,7 +41,7 @@ In the example, one criterion cannot be decided from terms: whether the prompt s
 ## 3. Decision logic
 
 - Title and abstract phase: the goal is recall. A record is excluded only when a criterion checked at this phase fails. Everything else is kept for full-text screening.
-- Full-text phase: a paper is included only when every criterion is supported. The decision follows from the criterion results; there is no separate overall judgment.
+- Full-text phase: a paper is included only when every criterion is supported. The decision follows from the criterion results; there is no separate overall judgment. A paper the program keeps has passed the implemented rules; the criteria listed above as not decidable from terms are checked by reading before coding, as S4 of the protocol says.
 - Output per record: decision, reason, the list of failed criteria, and for every criterion whether it was supported and which passages support that. The criterion-level record is what the audit (S5) uses to find near misses, defined as {{NEAR_MISS_DEFINITION}}.
 
 ## 4. Checks before a formal run
