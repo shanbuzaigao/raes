@@ -39,7 +39,7 @@ python tools/new_project.py ../my-evidence-project
 ### 0.2 通用规则
 
 - **占位符。** `{{...}}` 表示一个要由你决定的地方。把整段（连同花括号）换成你的内容。检查器把留下的 `{{` 当作还没做的决定；`TODO`、`TBD`、`REPLACE_ME` 也算。
-- **例子不是答案。** 模板里 “e.g.” 和 “for example” 后面的内容，以及本指南的“例”，都是我的项目的一种填法。你的项目按自己的情况填。
+- **例子不是答案。** 模板里 "e.g." 和 "for example" 后面的内容，以及本指南的"例"，都是我的项目的一种填法。你的项目按自己的情况填。
 - **用英文写。** 文件里的内容用英文。英文写不顺，可以先写中文，让 AI 助手翻译，再自己逐句核对意思。
 - **版本号。** 从 `0.1.0-draft` 开始。规则改了就升版本，写明改了什么、影响哪些记录；不回头改旧版本。
 - **日期。** `YYYY-MM-DD`，例如 `2026-09-17`。
@@ -61,13 +61,13 @@ python tools/new_project.py ../my-evidence-project
 |---|---|---|
 | `version` | 这份标准的版本 | 起始 `0.1.0-draft`；标准一改就升版本 |
 | `criteria[].id` | 标准编号 | `C1`、`C2`……筛选规则和审计 codebook 都用这个编号引用它，定了不要改 |
-| `criteria[].text` | 一条标准 | 一句话，能逐条核对。写“什么算符合”，不写“相关研究”这类话 |
+| `criteria[].text` | 一条标准 | 一句话，能逐条核对。写"什么算符合"，不写"相关研究"这类话 |
 | `criteria[].clarifications` | 澄清 | 纳入、排除、拿不准的情形各举一例；什么证据算数；缺统计量不等于不纳入。可以是一段文字，也可以是几条文字组成的列表 |
 | `mixed_condition_rule` | 一篇论文里既有符合的条件也有不符合的条件时怎么办 | 写清在哪一级判断（论文、实验还是实验条件）；不符合的条件跳过并记录，不因它们排除整篇 |
 
 模板给了三条，按需增删。
 
-写的时候留意一点：澄清里关于题目摘要阶段的说法，决定了规则筛选能排除多少。写成“摘要没说就保留”，能降低因摘要信息不足而误排的风险，但大部分记录都要去取全文；写成“摘要必须写明才保留”，则相反。这个取舍在这里就要想好。
+写的时候留意一点：澄清里关于题目摘要阶段的说法，决定了规则筛选能排除多少。写成"摘要没说就保留"，能降低因摘要信息不足而误排的风险，但大部分记录都要去取全文；写成"摘要必须写明才保留"，则相反。这个取舍在这里就要想好。
 
 这个文件可以单独检查，不用等 codebook 写好。下面的命令核对结构，并打印它的 SHA-256；没有占位符之后加 `--ready`。对这个文件，`--ready` 只表示没有占位符了；标准是否批准，记在 `plans/DECISIONS.md` 里，检查通过不等于批准：
 
@@ -97,11 +97,11 @@ python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eli
 |---|---|---|
 | `version`、`status` | 规则版本和状态 | 起始 `0.1.0-draft`、`draft`；你审过之后改成批准的说明 |
 | `source_precedence` | 同一篇在几个库里都找到时，保留哪个来源的那一条 | 来源名的先后。PubMed 格式的文件叫 `pubmed`，Web of Science 纯文本叫 `wos`，RIS 文件按文件名叫（`scopus.ris` 就是 `scopus`）。例：`["pubmed", "wos", "scopus"]` |
-| `min_title_words` | 标题至少几个词才按“标题加年份”自动合并 | 默认 6。标题太短容易撞车，短标题只列为待定配对 |
+| `min_title_words` | 标题至少几个词才按"标题加年份"自动合并 | 默认 6。标题太短容易撞车，短标题只列为待定配对 |
 | `similarity_threshold` | 标题相似到什么程度列为待定配对 | 默认 0.9 |
 | `report_version_labels` | 哪些文献类型标签表示预印本这类非期刊版本 | 默认 `["Preprint", "UNPB"]`：PubMed 把预印本标为 Preprint，RIS 导出的预印本类型是 UNPB。同标题同年的两条记录里恰好一条带这种标签，脚本只把它们列为待定配对（规则 R4），不自动合并 |
 | `doc_type_removal.listed` | 筛选前按文献类型去掉哪些 | 按来源分别列出类型标签，可用 `*` 通配。空着就什么都不去掉 |
-| `doc_type_removal.neutral` | 中性标签：带着它不影响判断 | PubMed 几乎每条记录都带 “Journal Article”，不把它列为中性，规则就几乎去不掉任何记录 |
+| `doc_type_removal.neutral` | 中性标签：带着它不影响判断 | PubMed 几乎每条记录都带 "Journal Article"，不把它列为中性，规则就几乎去不掉任何记录 |
 | `example_doc_type_lists` | 一个项目用过的类型清单 | 只是例子，脚本不读它；要用就抄到上面两项里 |
 
 其余几项（`match_rules`、`review_rules`、`kept_record`、`normalization`）是用文字写下的脚本做法，供你写进论文方法部分，一般不改。
@@ -114,9 +114,9 @@ python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eli
 python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/dedup_rules.json --output search/dedup/<新文件夹>
 ```
 
-它读 PubMed（MEDLINE）格式、Web of Science 纯文本和 RIS 三种导出文件，按 PubMed 编号、DOI、“标题加年份”依次配对；编号互相矛盾的从不合并。几个导出文件可以有重叠，比如同一个库的两条检索式：同一条记录再次出现时编号加后缀（`PM123`、`PM123-2`），由规则去合并，台账记下每一次出现和它来自哪个文件；同一个文件给两次会被拒绝。输出四个文件：`records.csv`（筛选程序读的就是它）、`ledger.csv`（每条输入记录的去向、依据和来源文件）、`review_pairs.csv`（拿不准的配对）、`summary.json`（各项数量，每个输入文件的路径、哈希和条数，以及“检索到的 = 去掉的 + 进入筛选的”这项核对）。
+它读 PubMed（MEDLINE）格式、Web of Science 纯文本和 RIS 三种导出文件，按 PubMed 编号、DOI、"标题加年份"依次配对；编号互相矛盾的从不合并。几个导出文件可以有重叠，比如同一个库的两条检索式：同一条记录再次出现时编号加后缀（`PM123`、`PM123-2`），由规则去合并，台账记下每一次出现和它来自哪个文件；同一个文件给两次会被拒绝。输出四个文件：`records.csv`（筛选程序读的就是它）、`ledger.csv`（每条输入记录的去向、依据和来源文件）、`review_pairs.csv`（拿不准的配对）、`summary.json`（各项数量，每个输入文件的路径、哈希和条数，以及"检索到的 = 去掉的 + 进入筛选的"这项核对）。
 
-拿不准的配对由你决定：建一个 CSV，四列 `record_id_a`、`record_id_b`、`decision`（`duplicate` 或 `not_duplicate`）、`note`，再用 `--decisions <文件>` 重跑到一个新文件夹。同一项研究的预印本和期刊版不算重复：答 `not_duplicate`，留到同研究判重（S6）去归并。`not_duplicate` 的决定有约束力：某条规则或一串重复关系要把这两条并到一组时，脚本不合并，把冲突列在 `review_pairs.csv` 里（编号以 X 开头），状态记为 provisional，退出码为 1，等你处理。按文献类型去掉记录之前，先在导出的标签上试一遍规则，并抽读一些被去掉的记录：Web of Science 会按参考文献数量把一些原始研究标成 “Review”。
+拿不准的配对由你决定：建一个 CSV，四列 `record_id_a`、`record_id_b`、`decision`（`duplicate` 或 `not_duplicate`）、`note`，再用 `--decisions <文件>` 重跑到一个新文件夹。同一项研究的预印本和期刊版不算重复：答 `not_duplicate`，留到同研究判重（S6）去归并。`not_duplicate` 的决定有约束力：某条规则或一串重复关系要把这两条并到一组时，脚本不合并，把冲突列在 `review_pairs.csv` 里（编号以 X 开头），状态记为 provisional，退出码为 1，等你处理。按文献类型去掉记录之前，先在导出的标签上试一遍规则，并抽读一些被去掉的记录：Web of Science 会按参考文献数量把一些原始研究标成 "Review"。
 
 ## 2. 筛选规则 `screening/screening_rules.md`（筛选，S3、S4）
 
@@ -163,7 +163,7 @@ python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/de
 
 **第 3 节 判定逻辑**
 
-`{{NEAR_MISS_DEFINITION}}`：“险些纳入”的定义，筛选审计（S5）按它分层。例：`failed exactly one criterion`（只有一条标准不符合）。
+`{{NEAR_MISS_DEFINITION}}`："险些纳入"的定义，筛选审计（S5）按它分层。例：`failed exactly one criterion`（只有一条标准不符合）。
 
 **第 4 节 正式运行前的检查**
 
@@ -186,7 +186,7 @@ python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/de
 
 | 键 | 填什么 |
 |---|---|
-| `label` | 简短标签。模板里的三项标着 “(example)”，换成你自己的时去掉 |
+| `label` | 简短标签。模板里的三项标着 "(example)"，换成你自己的时去掉 |
 | `any_of` | 支持词表：出现任意一个就算支持。程序不分大小写，但按整词匹配，所以单复数要分别列出（`"offer", "offers"`）；弯引号会被程序统一成直引号 |
 | `none_of` | 阻断词表：出现任意一个就算不符合。没有写 `[]` |
 | `check_at` | 哪个阶段检查：`["ta", "ft"]`、`["ta"]` 或 `["ft"]` |
@@ -339,7 +339,7 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | 节 | 占位符 | 填什么 |
 |---|---|---|
 | 1 | `{{TARGET}}` | 审计找哪种错误。例：被筛选程序排除但本应保留的记录 |
-| 2 | `{{ORDER_AND_REASON}}` | 两个审计的先后和理由。例：先审全文筛选，再审题目摘要筛选，因为题目摘要审计给出的“保留”要用冻结的全文筛选来处理 |
+| 2 | `{{ORDER_AND_REASON}}` | 两个审计的先后和理由。例：先审全文筛选，再审题目摘要筛选，因为题目摘要审计给出的"保留"要用冻结的全文筛选来处理 |
 | 3 | `{{WHICH_RECORDS}}` | 全文审计审哪些记录。例：这个快照里全文阶段排除的全部记录 |
 | 3 | `{{FRAME_FILE_AND_SHA256}}`、`{{N}}` | 这份清单的文件、哈希、条数 |
 | 3 | `{{STRATA}}` | 分层。例：险些纳入（只有一条标准不符合）和其余 |
@@ -350,9 +350,9 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | 4 | `{{WHICH_RECORDS}}`、`{{FRAME_FILE_AND_SHA256}}`、`{{N}}` | 题目摘要审计的总体，同上 |
 | 4 | `{{STRATA_ROUND_SIZE_SEED}}` | 例：按检索批次分层，按比例分配，种子顺序 |
 | 4 | `{{REVIEWERS}}`、`{{INPUTS}}`、`{{HIDDEN}}` | 例：每条记录一位审计者；给记录编号、题目、完整摘要或 null、标准原文；不给程序的决定、检索批次、任何 PDF、其他答案 |
-| 4 | `{{CANDIDATE_ROUTE}}` | “保留”意味着什么、去哪里。例：保留是候选，不是错误；取全文，跑冻结的全文筛选，筛选纳入的交给第 3 节的全文审计者读 |
+| 4 | `{{CANDIDATE_ROUTE}}` | "保留"意味着什么、去哪里。例：保留是候选，不是错误；取全文，跑冻结的全文筛选，筛选纳入的交给第 3 节的全文审计者读 |
 | 5 | `{{FT_STOPPING_RULE}}` | 全文审计的停止规则。例：一轮没有确认的漏排，审计结束；确认漏排后修订全文规则、按新版本冻结新样本、审计继续；每累计若干个确认漏排就检查是否有系统性错误 |
-| 5 | `{{TA_STOPPING_RULE}}` | 题目摘要审计的停止规则。例：一轮里没有候选通过冻结的全文筛选，审计结束；有候选通过但全被审计者排除的轮次计入累计；确认漏排之后审计继续。一轮里每条记录都有有效回答才算完成；缺 PDF、重试用尽、预算暂停都让这一轮悬着，悬着的一轮不算“没有漏排的一轮” |
+| 5 | `{{TA_STOPPING_RULE}}` | 题目摘要审计的停止规则。例：一轮里没有候选通过冻结的全文筛选，审计结束；有候选通过但全被审计者排除的轮次计入累计；确认漏排之后审计继续。一轮里每条记录都有有效回答才算完成；缺 PDF、重试用尽、预算暂停都让这一轮悬着，悬着的一轮不算"没有漏排的一轮" |
 | 6 | `{{RULE_CHANGE_POLICY}}` | 规则怎么改、确认的漏排改变什么。例：一轮审计期间规则不变，轮次结束后才改；任何记录都不靠手工加入纳入集；全文审计确认的漏排改全文规则（最小的一般性修订、升版本、全部重跑、归档当前审计、重新冻结样本）；题目摘要规则保持冻结，该审计确认的记录进入一份冻结清单，用 `--after-ta-audit` 传给筛选程序，作为追加输入读取 |
 | 7 | `{{RETRY_POLICY}}` | 例：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算排除、投票或干净的一轮；文件不完整或不可读也是技术故障，换材料重发 |
 | 7 | `{{WHAT_IS_REPORTED}}` | 例：每个阶段的总体大小、分层、轮数、种子、审了多少、候选数、确认漏排数、触发的停止条件、审计查不出什么 |

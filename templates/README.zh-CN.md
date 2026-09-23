@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-这些文件是 RAES 里“怎么写”的那一层。它们给操作手册里的每一类文件一个固定的形状：计划 memo、纳入标准、codebook、审计设计和 prompt。每个 `{{...}}` 都是一个要由研究者做的决定；占位符旁边的例子是一种填法，取自我的项目，不是必须照做的。带占位符的骨架能通过草稿检查，但故意通不过 `--ready` 检查。
+这些文件是 RAES 里"怎么写"的那一层。它们给操作手册里的每一类文件一个固定的形状：计划 memo、纳入标准、codebook、审计设计和 prompt。每个 `{{...}}` 都是一个要由研究者做的决定；占位符旁边的例子是一种填法，取自我的项目，不是必须照做的。带占位符的骨架能通过草稿检查，但故意通不过 `--ready` 检查。
 
 逐个文件、逐个字段的填写说明见[模板填写指南](GUIDE.zh-CN.md)。
 
@@ -36,7 +36,7 @@ python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json --r
 | [screening/screening_rules.md](screening/screening_rules.md) | 筛选（S3、S4） | 用文字写的筛选规则：每条标准一条规则、两个阶段各自的判定逻辑、运行前的检查、版本记录 |
 | [screening/screen_rules_template.py](screening/screen_rules_template.py) | 筛选（S3、S4） | 同一套规则的可运行程序：每条标准一组词表，每条记录一个判断和理由，逐条标准的证据供审计使用 |
 | [plan_memo.md](plan_memo.md) | 任何调用 AI 的阶段：筛选审计（S5）、编码（S8）、编码审计（S9）；如果由模型做筛选，也包括筛选（S3、S4） | 一个阶段的计划：问题、判断单位、输入和输出、模型能看什么和不能看什么、试跑、完成标准、批准 |
-| [validation/screening/](validation/screening/memo.md) | 筛选审计（S5） | 筛选审计一整套：memo、审计 codebook、配置和两个 prompt。全文模式，例如两位主审加一位第三位；题摘模式，例如一位审计者，它的“保留”是候选，要经过冻结的全文筛选 |
+| [validation/screening/](validation/screening/memo.md) | 筛选审计（S5） | 筛选审计一整套：memo、审计 codebook、配置和两个 prompt。全文模式，例如两位主审加一位第三位；题摘模式，例如一位审计者，它的"保留"是候选，要经过冻结的全文筛选 |
 | [codebook.json](codebook.json) | 编码（S8） | 变量：类型、能否为空、由谁填（执行模型还是程序）、规则、允许的证据、缺失时怎么办、例子和反例。之后是结果指标对应表、配对规则、合并规则、方向规则、来源优先级和 worked cases |
 | [prompts/](prompts/coding_system.md) | 编码（S8） | 编码的 system prompt 和 paper prompt |
 | [validation/coding/](validation/coding/memo.md) | 编码审计（S9） | 编码审计一整套：memo、审计 codebook、配置和两个 prompt。例如一位审计者检查每篇论文，每处质疑由盲审的裁决者处理 |
