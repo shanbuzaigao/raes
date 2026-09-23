@@ -2,7 +2,7 @@
 
 [模板说明（English）](README.md) | [模板说明（简体中文）](README.zh-CN.md)
 
-这份指南按文件、按字段说明每个模板该填什么，给读中文的人用。模板本身保持英文：prompt 和 codebook 是给模型读的，整个项目只保留一个版本；JSON 的字段名要和检查程序对得上。所以文件是英文的，解释在这里。
+这份指南面向中文读者，按文件和字段逐一说明每个模板该如何填写。模板本身依然保留英文：因为 prompt 和 codebook 是写给模型看的，整个项目只保留这一个英文版本；同时，JSON 里的字段名也需要与检查程序保持一致。因此，项目文件统一使用英文，中文解释都在本指南中说明。
 
 每个字段按同一格式写：**是什么、填什么、例**。例子按我的项目改写（一篇关于大语言模型在经典经济学博弈中如何行为的综述），做了简化，只示意填法，不是必须照做的。
 
@@ -18,9 +18,9 @@
 python tools/new_project.py ../my-evidence-project
 ```
 
-（装了 `raes` skill 的人，也可以让 skill 代跑它自带的 `scripts/new_project.py`，效果一样。）
+（如果你的环境里安装了 `raes` skill，也可以直接让它调用自带的 `scripts/new_project.py` 来创建，两者的效果完全一样。）
 
-建好之后，模板落在这些位置：
+项目创建完成后，生成的模板文件会放在这些位置：
 
 | 项目里的文件 | 来自哪个模板 | 用在哪一步 | 本指南的节 |
 |---|---|---|---|
@@ -42,8 +42,8 @@ python tools/new_project.py ../my-evidence-project
 - **例子不是答案。** 模板里 "e.g." 和 "for example" 后面的内容，以及本指南的"例"，都是我的项目的一种填法。你的项目按自己的情况填。
 - **用英文写。** 文件里的内容用英文。英文写不顺，可以先写中文，让 AI 助手翻译，再自己逐句核对意思。
 - **版本号。** 从 `0.1.0-draft` 开始。规则改了就升版本，写明改了什么、影响哪些记录；不回头改旧版本。
-- **日期。** `YYYY-MM-DD`，例如 `2026-09-17`。
-- **哈希（SHA-256）。** 很多文件要记录 `eligibility.json` 的 SHA-256。它是按文件的实际字节算出的摘要，写成 64 个十六进制字符，对应 256 位；文件改一个字符，它就变。这样每个阶段用的是不是同一份标准，一比就知道。算法：
+- **日期。** 日期请统一采用 `YYYY-MM-DD` 格式，例如 `2026-09-17`。
+- **哈希（SHA-256）。** 项目里的很多文件都需要记录 `eligibility.json` 的 SHA-256 哈希值。它是根据文件实际字节计算出的摘要，由 64 个十六进制字符组成，对应 256 位；只要文件内容改动了一个字符，这个哈希值就会随之改变。只要比对哈希值，就能一眼看出每个阶段使用的标准文件到底是不是同一个版本。你可以使用下面的命令来计算哈希：
 
   ```sh
   python -c "import hashlib,pathlib; print(hashlib.sha256(pathlib.Path('../my-evidence-project/codebook/eligibility.json').read_bytes()).hexdigest())"
@@ -51,11 +51,11 @@ python tools/new_project.py ../my-evidence-project
 
 - **两类占位符。** 大多数占位符由你填。但 prompt 文件里的 `{{RECORD_ID}}`、`{{ELIGIBILITY_JSON}}` 这一类是运行时由程序代入的，不要手填。指南里会分别标出。
 - **数字字段。** JSON 里写着 `null` 的数字项，决定后填数字，不加引号，例如 `"seed": 20260917`。
-- **几个英文用语。** TA = title and abstract，题目摘要阶段；FT = full text，全文阶段；executor = 执行模型，做编码的那个模型；auditor = 审计模型；adjudicator = 裁决模型；frame = 审计的总体，即要抽查的全部记录；stratum、strata = 分层；seed = 随机种子；snapshot = 一次检索的快照；near miss = 险些纳入的记录；false exclusion = 误排除，在某个阶段本应保留却被排除的记录；reconciliation record = 核对与更正记录，保存已确认更正的改前改后值、证据和来源；representative report = 代表性报告，在各张表里代表一项研究的那条记录，其他报告仍和它连在一起。
+- **几个英文用语。** TA = title and abstract，题目摘要阶段；FT = full text，全文阶段；executor = 执行模型，做编码的那个模型；auditor = 审计模型；adjudicator = 裁决模型；frame = 冻结框，即要抽查的全部记录；stratum、strata = 分层；seed = 随机种子；snapshot = 一次检索的快照；near miss = 差一点纳入的记录；false exclusion = 误排除，在某个阶段本应保留却被排除的记录；reconciliation record = 核对与更正记录，保存已确认更正的改前改后值、证据和来源；representative report = 代表性报告，在各张表里代表一项研究的那条记录，其他报告仍和它连在一起。
 
 ## 1. 纳入标准 `eligibility.json`（目标与纳入标准，S0）
 
-整个项目只有这一个纳入标准文件。其他文件不抄它的文字，只记录它的哈希。
+整个项目从头到尾只有这一个纳入标准文件。其他文件都不要抄录它的具体文本，只需要记录它的哈希值。
 
 | 字段 | 是什么 | 填什么 |
 |---|---|---|
@@ -65,7 +65,7 @@ python tools/new_project.py ../my-evidence-project
 | `criteria[].clarifications` | 澄清 | 纳入、排除、拿不准的情形各举一例；什么证据算数；缺统计量不等于不纳入。可以是一段文字，也可以是几条文字组成的列表 |
 | `mixed_condition_rule` | 一篇论文里既有符合的条件也有不符合的条件时怎么办 | 写清在哪一级判断（论文、实验还是实验条件）；不符合的条件跳过并记录，不因它们排除整篇 |
 
-模板给了三条，按需增删。
+模板中默认预设了三条标准，你可以根据实际研究需要自行增减。
 
 写的时候留意一点：澄清里关于题目摘要阶段的说法，决定了规则筛选能排除多少。写成"摘要没说就保留"，能降低因摘要信息不足而误排的风险，但大部分记录都要去取全文；写成"摘要必须写明才保留"，则相反。这个取舍在这里就要想好。
 
@@ -108,7 +108,7 @@ python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eli
 
 **运行**
 
-在项目文件夹下运行。脚本是建项目时复制进 `search/` 的，属于项目自己，以后重跑不受 skill 更新的影响。
+请直接在项目根目录下运行该脚本。建项目时，脚本就已经复制到了 `search/` 目录下，属于项目自有的独立代码，因此后续重跑都不会受到 skill 版本更新的影响。
 
 ```sh
 python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/dedup_rules.json --output search/dedup/<新文件夹>
@@ -144,7 +144,7 @@ python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/de
 
 **第 2 节 每条标准一条规则**
 
-表格每列的填法：
+下表各列的具体填写要求如下：
 
 | 列 | 填什么 |
 |---|---|
@@ -155,7 +155,7 @@ python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/de
 | Supported when | 判定规则。例：`at least one supporting term and no blocking term` |
 | Evidence recorded | 保留模板的写法 `matched term and surrounding text`（命中的词和上下文） |
 
-`{{SAME_AS_ABOVE_OR_LIST_THE_DIFFERENCES}}`：全文阶段的规则。和上表一样就写 `same as above`；不一样就列出差别。全文规则通常更窄，见第 3 节的 `CRITERIA_FT`。
+`{{SAME_AS_ABOVE_OR_LIST_THE_DIFFERENCES}}`：用于填写全文阶段的筛选规则。如果与上面题目摘要阶段的表格完全相同，直接填入 `same as above`；如果存在不同，请逐项列出差异。全文阶段的规则通常会定得比题目摘要阶段更窄，具体设计请参考第 3 节中的 `CRITERIA_FT` 说明。
 
 `{{LIST_OR_NONE}}`：词表判断不了的标准，留给全文阅读，或留给按 codebook 筛选的模型。例：`whether the prompt steered the behaviour`（prompt 是否引导了行为）。
 
@@ -163,7 +163,7 @@ python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/de
 
 **第 3 节 判定逻辑**
 
-`{{NEAR_MISS_DEFINITION}}`："险些纳入"的定义，筛选审计（S5）按它分层。例：`failed exactly one criterion`（只有一条标准不符合）。
+`{{NEAR_MISS_DEFINITION}}`：在这里填入“差一点纳入”的具体判定定义，后续的筛选审计（S5）会依据这个定义来做抽样分层。例如可以定义为：`failed exactly one criterion`（仅有一条标准未能符合）。
 
 **第 4 节 正式运行前的检查**
 
@@ -219,7 +219,7 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 
 全文阶段筛题目摘要阶段保留的记录，名单从 `--after-ta` 指定的结果文件里读；程序会核对那次运行是否恰好覆盖了这份记录文件的全部编号，并核对它 `summary.json` 里记的输入哈希，少一行也不会被当成排除；`summary.json` 必须和 `decisions.csv` 在同一个文件夹里，缺了就停，所以不要把决定文件单独复制到别处再传给程序。`--after-ta-audit <清单文件>` 追加审计确认的记录；`--not-retrieved <清单文件>` 跳过取不到全文的记录。两者都只用于全文阶段，见上面的输入。加 `--expect-sha256 <哈希>` 时，记录文件和冻结时不一致就拒绝运行。`--help` 显示全部选项。
 
-**输出**（写到一个新目录，从不覆盖）
+**输出**（所有结果都会输出到一个全新的目录中，绝不会覆盖已有内容）
 
 - `decisions.csv`：每条记录一行：决定（`keep` 或 `exclude`）、理由、不符合的标准、规则版本。
 - `evidence.json`：每条标准命中的词和上下文，审计用。
@@ -342,17 +342,17 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | 2 | `{{ORDER_AND_REASON}}` | 两个审计的先后和理由。例：先审全文筛选，再审题目摘要筛选，因为题目摘要审计给出的"保留"要用冻结的全文筛选来处理 |
 | 3 | `{{WHICH_RECORDS}}` | 全文审计审哪些记录。例：这个快照里全文阶段排除的全部记录 |
 | 3 | `{{FRAME_FILE_AND_SHA256}}`、`{{N}}` | 这份清单的文件、哈希、条数 |
-| 3 | `{{STRATA}}` | 分层。例：险些纳入（只有一条标准不符合）和其余 |
+| 3 | `{{STRATA}}` | 分层。例：差一点纳入（只有一条标准不符合）和其余 |
 | 3 | `{{ROUND_SIZE_ALLOCATION_SEED}}` | 每轮抽多少、按层怎么分配、种子。例：每轮固定数量，按层分配，按种子生成的顺序抽，后续轮次接着抽 |
-| 3 | `{{REVIEWERS_AND_ROUTING}}` | 审计者和流转。例：两位主审来自不同厂商；两者答案都有效但不一致时才请第三位；多数意见由程序计算 |
-| 3 | `{{INPUTS}}`、`{{HIDDEN}}` | 每位审计者能看到什么、看不到什么。例：给记录编号、题目、完整 PDF、标准原文；不给程序的决定和理由、逐条标准的结果、层和序号、其他审计者的答案、下游结果 |
+| 3 | `{{REVIEWERS_AND_ROUTING}}` | 审计模型和流转。例：两位主审来自不同厂商；两者答案都有效但不一致时才请第三位；多数意见由程序计算 |
+| 3 | `{{INPUTS}}`、`{{HIDDEN}}` | 每位审计模型能看到什么、看不到什么。例：给记录编号、题目、完整 PDF、标准原文；不给程序的决定和理由、逐条标准的结果、层和序号、其他审计模型的答案、下游结果 |
 | 3 | `{{WHEN_AND_WITH_WHAT_EVIDENCE}}` | 什么时候由人裁决，要什么证据。例：只有审计多数认为应纳入时；人同意并给出页码才算确认漏排 |
-| 4 | `{{WHICH_RECORDS}}`、`{{FRAME_FILE_AND_SHA256}}`、`{{N}}` | 题目摘要审计的总体，同上 |
+| 4 | `{{WHICH_RECORDS}}`、`{{FRAME_FILE_AND_SHA256}}`、`{{N}}` | 题目摘要冻结框，同上 |
 | 4 | `{{STRATA_ROUND_SIZE_SEED}}` | 例：按检索批次分层，按比例分配，种子顺序 |
-| 4 | `{{REVIEWERS}}`、`{{INPUTS}}`、`{{HIDDEN}}` | 例：每条记录一位审计者；给记录编号、题目、完整摘要或 null、标准原文；不给程序的决定、检索批次、任何 PDF、其他答案 |
-| 4 | `{{CANDIDATE_ROUTE}}` | "保留"意味着什么、去哪里。例：保留是候选，不是错误；取全文，跑冻结的全文筛选，筛选纳入的交给第 3 节的全文审计者读 |
+| 4 | `{{REVIEWERS}}`、`{{INPUTS}}`、`{{HIDDEN}}` | 例：每条记录一位审计模型；给记录编号、题目、完整摘要或 null、标准原文；不给程序的决定、检索批次、任何 PDF、其他答案 |
+| 4 | `{{CANDIDATE_ROUTE}}` | "保留"意味着什么、去哪里。例：保留是候选，不是错误；取全文，跑冻结的全文筛选，筛选纳入的交给第 3 节的全文审计模型读 |
 | 5 | `{{FT_STOPPING_RULE}}` | 全文审计的停止规则。例：一轮没有确认的漏排，审计结束；确认漏排后修订全文规则、按新版本冻结新样本、审计继续；每累计若干个确认漏排就检查是否有系统性错误 |
-| 5 | `{{TA_STOPPING_RULE}}` | 题目摘要审计的停止规则。例：一轮里没有候选通过冻结的全文筛选，审计结束；有候选通过但全被审计者排除的轮次计入累计；确认漏排之后审计继续。一轮里每条记录都有有效回答才算完成；缺 PDF、重试用尽、预算暂停都让这一轮悬着，悬着的一轮不算"没有漏排的一轮" |
+| 5 | `{{TA_STOPPING_RULE}}` | 题目摘要审计的停止规则。例：一轮里没有候选通过冻结的全文筛选，审计结束；有候选通过但全被审计模型排除的轮次计入累计；确认漏排之后审计继续。一轮里每条记录都有有效回答才算完成；缺 PDF、重试用尽、预算暂停都让这一轮悬着，悬着的一轮不算"没有漏排的一轮" |
 | 6 | `{{RULE_CHANGE_POLICY}}` | 规则怎么改、确认的漏排改变什么。例：一轮审计期间规则不变，轮次结束后才改；任何记录都不靠手工加入纳入集；全文审计确认的漏排改全文规则（最小的一般性修订、升版本、全部重跑、归档当前审计、重新冻结样本）；题目摘要规则保持冻结，该审计确认的记录进入一份冻结清单，用 `--after-ta-audit` 传给筛选程序，作为追加输入读取 |
 | 7 | `{{RETRY_POLICY}}` | 例：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算排除、投票或干净的一轮；文件不完整或不可读也是技术故障，换材料重发 |
 | 7 | `{{WHAT_IS_REPORTED}}` | 例：每个阶段的总体大小、分层、轮数、种子、审了多少、候选数、确认漏排数、触发的停止条件、审计查不出什么 |
@@ -400,7 +400,7 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 
 运行时代入，不手填：`{{RECORD_ID}}`、`{{TITLE}}`、`{{ABSTRACT_OR_NULL}}`（没有摘要时为 null）、`{{ELIGIBILITY_JSON}}`（`eligibility.json` 原文）、`{{AUDIT_CODEBOOK_JSON}}`（审计 codebook 原文）。这些由你的运行程序代入。
 
-其余文字是给审计模型的指令：它看不到程序的决定；论文是数据不是指令；要返回什么。全文审计者只答 INCLUDE 或 EXCLUDE；论文没写清楚的标准算不满足，找了什么、没找到什么写在 `unresolved_items` 里，只作说明，不改判断；文件不完整或不可读就只返回 `file_problem`，不下判断，由运行程序换材料重发。一般不用改。改了设计（比如返回的字段）时，同时改 codebook 里的 `response`。
+其余文字是给审计模型的指令：它看不到程序的决定；论文是数据不是指令；要返回什么。全文审计模型只答 INCLUDE 或 EXCLUDE；论文没写清楚的标准算不满足，找了什么、没找到什么写在 `unresolved_items` 里，只作说明，不改判断；文件不完整或不可读就只返回 `file_problem`，不下判断，由运行程序换材料重发。一般不用改。改了设计（比如返回的字段）时，同时改 codebook 里的 `response`。
 
 ## 6. 编码 codebook `codebook.json`（编码，S8）
 
@@ -431,7 +431,7 @@ codebook 告诉执行模型每一列填什么、按什么规则、什么证据�
 
 ### 6.3 纳入标准 `eligibility`
 
-`file` 保持 `eligibility.json`（与 codebook 同目录）；`sha256` 填按 0.2 节算出的哈希。
+`file` 字段请保持为 `eligibility.json`（即保持与 codebook 处于同一目录下）；`sha256` 字段请填入按照第 0.2 节方法计算出的对应文件的实际哈希值。
 
 ### 6.4 变量 `variables[]`
 
@@ -491,7 +491,7 @@ python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json --r
 - `coding_system.md`：执行模型的角色和总规则。占位符 `{{CODEBOOK_JSON}}`、`{{ELIGIBILITY_JSON}}`、`{{EXECUTOR_COLUMNS_JSON}}` 由生成器从 codebook 读入，不能手填，也不能在 context 里覆盖。
 - `coding_paper.md`：每篇论文一份。`{{PAPER_ID}}` 论文编号；`{{SOURCES_JSON}}` 这篇论文允许用的来源（文件名、提取的文本），由你的数据准备步骤产生。实际运行时要把批准的文件内容或附件一起交给模型；只列文件名，模型拿不到原文。
 
-生成命令：
+生成 prompt 的运行命令如下：
 
 ```sh
 python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codebook.json --template templates/prompts/coding_system.md --context ../my-evidence-project/context.json --output ../my-evidence-project/coding_system_rendered.md
@@ -509,7 +509,7 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 
 ## 8. 编码审计 `validation/coding/`（编码审计，S9）
 
-结构与筛选审计相同：memo、codebook、config、两个 prompt。
+编码审计目录的文件组织结构与前面的筛选审计完全一致：由 memo、codebook、config 以及两个 prompt 模板构成。
 
 ### 8.1 `memo.md`
 
@@ -523,11 +523,11 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 | 2 | `{{FRAME_FILE_AND_SHA256}}`、`{{N_ROWS}}`、`{{N_PAPERS}}` | 这份行清单的文件、哈希、行数、论文数 |
 | 2 | `{{UNIT}}` | 每次请求的单位。例：一篇论文；这篇的每一行都查 |
 | 2 | `{{DESIGN_AND_JUSTIFICATION}}`、`{{FIXED_BEFORE_REVIEW}}` | 全查还是抽样，及理由；抽样时的分层、种子、顺序，审前定死 |
-| 3 | 审计者 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给来源、编码 codebook、这份审计 codebook、这篇论文的编码行；不给执行模型的推理、之前的审计答案、抽样信息、任何算出的效应 |
-| 3 | 裁决者 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给同样的来源和规则、原始行、被质疑的字段及其当前值；不给审计者提出的值、证据、理由、置信度。当前值必须给，它就是要核对的对象；建议值绝不能给 |
+| 3 | 审计模型 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给来源、编码 codebook、这份审计 codebook、这篇论文的编码行；不给执行模型的推理、之前的审计答案、抽样信息、任何算出的效应 |
+| 3 | 裁决者 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给同样的来源和规则、原始行、被质疑的字段及其当前值；不给审计模型提出的值、证据、理由、置信度。当前值必须给，它就是要核对的对象；建议值绝不能给 |
 | 4 | `{{DOMAINS}}` | 查什么。例：1. 效应量输入及出处；2. 每行与对照行的配对和计算路径；3. 需要判断的调节变量 |
-| 5 | `{{ROUTING}}` | 流转。例：审计者返回通过，或一条质疑（行、字段、建议值、规则、证据），或待定项；每条质疑交裁决者，裁决者返回三种结果之一：现有编码成立（驳回质疑，不需要人）；改正成立（与审计者的隐藏建议完全一致才确认，有差异交人裁决）；来源或规则有歧义（交人裁决） |
-| 5 | `{{PROHIBITED}}` | 审计者不能做什么。例：增行、删行、拆行、合并行；重审纳入资格 |
+| 5 | `{{ROUTING}}` | 流转。例：审计模型返回通过，或一条质疑（行、字段、建议值、规则、证据），或待定项；每条质疑交裁决者，裁决者返回三种结果之一：现有编码成立（驳回质疑，不需要人）；改正成立（与审计模型的隐藏建议完全一致才确认，有差异交人裁决）；来源或规则有歧义（交人裁决） |
+| 5 | `{{PROHIBITED}}` | 审计模型不能做什么。例：增行、删行、拆行、合并行；重审纳入资格 |
 | 6 | `{{CORRECTION_POLICY}}` | 例：审计从不改原始行；属于单篇、规则本来清楚的错误，写进单独的核对与更正记录（保留改前改后的值），由程序生成新版本的表；暴露出规则不清或有错的错误，改 codebook、升版本、受影响的论文重新编码；规则不变时，重跑编码模型只用于技术故障；作者更正的数值和已发表的勘误也通过这份核对与更正记录进入，注明来源；codebook 澄清后只重审受影响的论文，之前的通过结果保留当时的 codebook 版本 |
 | 7 | `{{RETRY_POLICY}}` | 例：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算通过 |
 | 7 | `{{WHAT_IS_REPORTED}}` | 例：总体的行数和论文数、查了多少、质疑数、确认改正数、待定项、人裁决数、审计不覆盖什么 |
@@ -557,7 +557,7 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 | `frame.path`、`sha256`、`unit` | 冻结的行文件、哈希、单位 |
 | `rules.production_codebook` | 编码 codebook 的路径。例：`codebook/codebook.json` |
 | `rules.eligibility_sha256` | 纳入标准的哈希 |
-| `reviewers.executor`、`auditor`、`adjudicator` | 三个角色的厂商、精确模型版本、设置。审计者尽量用与执行模型不同的厂商 |
+| `reviewers.executor`、`auditor`、`adjudicator` | 三个角色的厂商、精确模型版本、设置。审计模型尽量用与执行模型不同的厂商 |
 | `sampling.mode` | `census`（全查）或说明抽样设计；抽样时填 `strata`、`seed`、`round_size` |
 | `routing` | 同 memo 第 5 节 |
 | `payload_policy` | 已填好，一般不改 |
@@ -567,7 +567,7 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 
 运行时代入，不手填：`{{ELIGIBILITY_JSON}}`、`{{CODEBOOK_JSON}}`、`{{AUDIT_CODEBOOK_JSON}}`、`{{SOURCES_JSON}}`、`{{TARGET_ROWS_JSON}}`（原始的目标行，效应量字段留空）、`{{COORDINATE_JSON}}`（裁决者要判断的行、字段和当前值）。
 
-裁决者的 prompt 里有当前值，没有审计者的建议值和证据，这是设计的一部分，不要加进去。它返回三种结果之一：现有编码成立、改正成立（附改正值）、来源或规则有歧义。
+裁决者的 prompt 里有当前值，没有审计模型的建议值和证据，这是设计的一部分，不要加进去。它返回三种结果之一：现有编码成立、改正成立（附改正值）、来源或规则有歧义。
 
 ## 9. 项目起始文件 `project/`
 
@@ -583,7 +583,7 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 
 ## 10. 检查器提示对照
 
-`check_codebook.py` 的 `findings` 里常见的信息：
+以下是在运行 `check_codebook.py` 时，`findings` 列表中比较常见的一些反馈信息及其含义：
 
 | 信息 | 意思 | 怎么办 |
 |---|---|---|
