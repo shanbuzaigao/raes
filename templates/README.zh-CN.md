@@ -72,4 +72,4 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 
 检查器认识 `raes-codebook/1` 这种结构。它会验证必需的小节是否存在、变量和列名是否一致、示例是否符合其类型与取值范围、缺失值规则与字段归属规则是否已声明、标准编号能否对应上，以及纳入标准的哈希是否匹配。它不判断规则在科学上对不对、样本够不够大、证据是不是真的。这些仍然是研究者的事。
 
-[编造示例中填好的 codebook](../examples/synthetic/inputs/codebook.json) 展示了一个完整的小型范例。其中的批准记录属于虚构内容，不要把它照抄成真实的批准。
+[虚构示例中填好的 codebook](../examples/synthetic/inputs/codebook.json) 展示了一个完整的小型范例。其中的批准记录属于虚构内容，不要把它照抄成真实的批准。

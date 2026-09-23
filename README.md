@@ -35,7 +35,7 @@ The assistant fetches the repository and puts `skills/raes` into its skills fold
 
 The skill asks, drafts, checks and records. It does not decide for you, and it never sends a request to a model provider. To install by hand: clone the repository and run `python tools/install_skill.py --destination ~/.claude/skills`; for Codex use `~/.agents/skills`. After the repository has changed, run the same command with `--replace`. Other hosts are listed in [skills/](skills/README.md).
 
-**2. Look inside.** For that you need the repository:
+**2. To look at the method itself, get the repository.**
 
 ```sh
 git clone https://github.com/shanbuzaigao/raes.git
@@ -44,7 +44,7 @@ cd raes
 
 Or use "Download ZIP" on the repository page.
 
-*See it run.*
+**See it run.**
 
 ```sh
 python examples/synthetic/reproduce.py
@@ -52,9 +52,9 @@ python examples/synthetic/reproduce.py
 
 Everything in the example is invented. It rebuilds all results from saved answers and shows a duplicate record, a paper that was wrongly screened out, found by the audit and included by the revised rule, a missing SD, a failed model answer followed by a retry, and a coding error caught by the audit. [examples/synthetic/](examples/synthetic/README.md) explains what to look for.
 
-*Read the method.* [PROTOCOL.md](PROTOCOL.md) expands every stage of the figure below in the same format: who does it, what goes in and comes out, what I do, and what I check before moving on.
+**Read the method.** [PROTOCOL.md](PROTOCOL.md) expands every stage of the figure below in the same format: who does it, what goes in and comes out, what I do, and what I check before moving on.
 
-*Start your own project by hand.*
+**Start your own project by hand.**
 
 ```sh
 python tools/new_project.py ../my-evidence-project
@@ -131,7 +131,7 @@ These are the rules I ended up following. Each one came from a problem I actuall
 
 1. **Codebook first.** I write every substantive judgment into a versioned codebook before any formal run. Prompts are generated from the codebook, not the other way round.
 2. **The AI executes rules; it does not set scope.** The model may not rewrite, relax or replace criteria. Missing evidence becomes `null` plus an unresolved item, never an invented value.
-3. **The unit of judgment is the condition, not the paper.** Eligibility and coding are decided per experimental condition, role and outcome.
+3. **The unit of judgment is the condition, not the paper.** What counts as a condition is defined by the project's codebook; in mine it is the combination of an arm, a role and an outcome. Eligibility and coding are decided for each condition, so a paper can be included while most of its conditions are not.
 4. **Deterministic wherever possible.** Screening rules are code when feasible. Effect sizes, standard errors and intervals are computed by deterministic code; the model only selects the computation path.
 5. **Independent audit.** Auditors come from different vendors. A screening auditor never sees the earlier decision. A coding auditor sees the coded values it has to check, but not the reasoning behind them. A further auditor is called only on disagreement or challenge. Human adjudication is limited and requires page-linked evidence.
 6. **A technical failure is not a decision.** Refusals, malformed output and timeouts are retried under an unchanged request identity and never become an exclusion or a pass.
@@ -182,6 +182,6 @@ Source code, including the Python programs under `templates/` and in the skill, 
 
 ## Contact
 
-Questions and suggestions: zqj0966522453@gmail.com. I maintain the method myself and do not take pull requests.
+Questions and suggestions: zqj0966522453@gmail.com. For now I maintain the method myself and do not take pull requests.
 
 Qijun Zhu, Ph.D. candidate in Economics, George Mason University
