@@ -4,47 +4,47 @@
 
 本文件是英文版 `README.md` 的翻译。两者不一致时以英文为准。
 
-**状态：** 0.5.0 版。这套方法我在自己的 meta-analysis 里从头到尾用过一遍；skill 已试用三次，其中一次在另一个学科的题目上走完了全部阶段。仓库还在改进，改了什么见[更新记录](CHANGELOG.md)。
+**状态：** 0.5.0 版。我已经将这套方法完整用于自己的元分析。这个 skill 已经试用了三次，其中一次针对另一个领域的题目完整跑通了所有阶段。本仓库仍在修改；改了什么见[更新日志](CHANGELOG.md)。
 
 ## 这是什么
 
-RAES 是我为自己的 meta-analysis 搭的一套工作流程。当时文献增长的速度超过了我能读的速度，我用大语言模型来帮忙筛选和编码。我希望 AI 承担繁重的部分，但不想让读者只能"相信它"。所以整套流程围绕一个想法：
+RAES 是我为自己的元分析搭建的工作流。当时文献增长的速度超过了我的阅读速度，我就借助大语言模型来辅助文献的筛选和编码。我希望由 AI 来承担繁重的工作，但不想让读者只能选择相信它。于是，整个工作流都围绕一个想法：
 
-> 我来写规则，AI 执行规则，独立的 AI 审计执行结果；每个数值要么由确定性程序计算，要么直接取自文献，整个流程可以离线复现。
+> 我制定规则，AI 执行规则。独立的 AI 审计执行过程。每一个数字都由确定性程序计算，或者直接取自文献；整个运行过程支持离线复现。
 
-它面向 meta-analysis、系统综述和类似的证据整合工作。它不是又一个自动筛文献的工具。给摘要排序、抽取字段的工具自动化的是单个任务；RAES 关心的是整个整合过程怎样运行，让别人能够核查。
+这套方法面向元分析、系统综述和类似的证据整合工作。它不是又一个自动筛选工具。给摘要排序或提取字段的工具，自动化的是单个任务；RAES 关注的是整个证据整合流程如何运行，让其他人能够核查。
 
-所有领域知识都放在带版本号的 codebook 里，所以流程本身不依赖具体领域。我是在一个社会科学项目里把它做出来并完整用过一遍的，也就是我的 working paper *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments* 里的 meta-analysis。这项 meta-analysis 研究大语言模型在经典经济博弈中的行为，纳入 72 项研究，其中 54 项贡献了 757 个效应量。
+所有领域知识都存放在带版本号的 codebook 中，因此工作流本身并不依赖具体的研究领域。我在一个社会科学项目中开发并完整使用了这套方法，那就是我的工作论文 *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments* 中的元分析。这项元分析研究大语言模型在经典经济博弈中的行为，共纳入 72 项研究，其中 54 项贡献了 757 个效应量。
 
-## 这个仓库给你什么
+## 你能得到什么
 
 - **一份操作手册**，覆盖整个证据整合过程，从研究问题到发布：[PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md)（英文版 [PROTOCOL.md](PROTOCOL.md)）。
-- **一套模板**，方法要求你写的每一类文件都有对应的模板；还有一个起步项目，里面已经带着它自己的程序：去重脚本、规则筛选程序，以及一条命令重建全部结果的程序。
-- **一个 skill，`raes`**，用于 Claude Code、Codex 和其他支持 Agent Skills 的宿主。它按阶段带你走完整个流程：问出这一阶段需要的决定，用模板写文件，跑检查。
-- **一个编造的小例子**，离线把整个流程跑一遍：保存好的 AI 回答、一次发现误排论文的审计和随后把它纳入的规则修订，以及一处被审计改正的编码错误。
+- **一套模板**，方法要求你写的每一份文件都有对应的模板；还有一个起步项目，已经自带三个程序：去重脚本、规则化筛选程序，以及一条重新生成全部结果的命令。
+- **一个 skill，`raes`**，用于 Claude Code、Codex 和其他支持 Agent Skills 的宿主。它带你逐个阶段跑通工作流：询问当前阶段需要的决定、根据模板生成文件，并运行各项检查。
+- **一个编造的小型示例**，在离线状态下运行整条流程。它包含保存好的 AI 回答；一次审计发现了一篇被误排除的论文，随后修订的规则把它纳入；还有一处编码错误，由审计更正。
 
-## 怎么用这个仓库
+## 如何使用本仓库
 
-只需要 Python 3.10 或更新的版本，不用装任何包。这里的任何东西都不调用模型，也不需要密钥。真实的综述项目要自己接入模型、自己写发送请求的运行程序，见"不包含什么"。
+你只需要 Python 3.10 或更高版本，不需要其他任何东西。无需安装任何包，这里的代码也不调用任何模型、不需要任何密钥。真正的综述项目需要自己接入模型，并准备用于 AI 步骤的运行程序；详见“未包含的内容”。
 
-**0. 拿到仓库。**
+**0. 获取仓库。**
 
 ```sh
 git clone https://github.com/shanbuzaigao/raes.git
 cd raes
 ```
 
-或者在仓库页面点 "Download ZIP"。
+也可以在仓库页面点击“Download ZIP”。
 
-**1. 先看它跑起来。**
+**1. 查看运行效果。**
 
 ```sh
 python examples/synthetic/reproduce.py
 ```
 
-例子里的一切都是编造的。它用保存的回答重建全部结果，演示了一条重复记录、一篇被误筛的论文（由审计发现、由修订后的规则纳入）、一处缺失的 SD、一次模型回答失败后的重试，以及一处被审计发现的编码错误。看什么、怎么看，见 [examples/synthetic/](examples/synthetic/README.zh-CN.md)。
+示例中的所有内容都是编造的。它会根据保存的回答重新生成全部结果，并演示以下情况：一条重复的记录、一篇被误排除的论文（审计发现后，由修订的规则纳入）、一处缺失的 SD、一次模型回答失败后的重试，以及一处由审计发现的编码错误。[examples/synthetic/](examples/synthetic/README.zh-CN.md) 说明了重点看什么。
 
-**2. 读方法。** [PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md) 按同一个格式把下面流程图里的每个阶段展开：谁来做、输入和产出是什么、我怎么做、进入下一步之前检查什么。
+**2. 阅读方法。** [PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md) 以相同的格式展开下图中的每一个阶段：由谁来做、输入和输出是什么、我怎么做，以及进入下一阶段前检查什么。
 
 **3. 开始你自己的项目。**
 
@@ -53,9 +53,9 @@ python tools/new_project.py ../my-evidence-project
 python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eligibility.json
 ```
 
-第一条命令在仓库之外建一个项目文件夹，里面按流程顺序放好了模板，还有项目自己的三个程序：`search/dedupe_records.py`、`screening/screen_rules_template.py` 和 `run_pipeline.py`。第二条命令检查你要填的第一个文件，也就是纳入标准。每个文件是干什么的、在哪个阶段填，见 [templates/](templates/README.zh-CN.md)；每一项具体怎么填，见[逐字段的中文填写指南](templates/GUIDE.zh-CN.md)。
+第一条命令会在本仓库目录之外创建一个项目文件夹，其中按流程顺序放置了各模板，并自带三个程序：`search/dedupe_records.py`、`screening/screen_rules_template.py` 和 `run_pipeline.py`。第二条命令检查你填写的第一份文件，即纳入标准文件。[templates/](templates/README.zh-CN.md) 说明了每份文件的作用以及应该在哪一个阶段填写；[逐字段中文指南](templates/GUIDE.zh-CN.md) 逐条说明每一项怎么填。
 
-**4. 或者让 AI 助手带着你走。** 把 skill 装进 Claude Code，重启 Claude Code，输入 `/raes`，再用一句话说明你在哪一步：
+**4. 或者让 AI 助手带你完成。** 将 skill 安装到 Claude Code 中，重启 Claude Code，然后输入 `/raes`，再用一句话说明你现在到了哪一步：
 
 ```sh
 python tools/install_skill.py --destination ~/.claude/skills
@@ -63,7 +63,7 @@ python tools/install_skill.py --destination ~/.claude/skills
 
 > /raes 我有一个关于结构化反馈和普通反馈的研究问题，还没有任何文件。从 S0 开始。
 
-Codex 用 `--destination ~/.agents/skills`，调用时写 `$raes`。仓库更新之后，用同一条命令加 `--replace` 更新已装的那份。skill 负责提问、起草、检查和记录；它不替你做决定，也从不向模型厂商发送请求。其他宿主见 [skills/](skills/README.zh-CN.md)。
+如果使用 Codex，请使用 `--destination ~/.agents/skills` 并通过 `$raes` 调用。仓库更新之后，用同一条命令加上 `--replace` 更新已安装的那份。这个 skill 负责提问、起草、检查和记录。它不会替你做决定，也绝不会向模型厂商发送请求。其他宿主见 [skills/](skills/README.zh-CN.md)。
 
 ## 流程总览
 
@@ -93,69 +93,69 @@ flowchart TD
     class S5,S9 audit
 ```
 
-灰色的格子由我本人或确定性程序完成。紫色的格子由 AI 在 codebook 约束下执行。绿色的格子是独立 AI 的审计。S1 到 S6 沿用 PRISMA 2020 的流程，从检索识别到最终纳入；后面的阶段把同样的要求延伸到编码、分析和发布。
+灰色方框由我或确定性程序完成。紫色方框由 AI 在 codebook 的约束下执行。绿色方框是独立 AI 做的审计。阶段 S1 到 S6 沿用 PRISMA 2020 的流程，从识别到最终纳入研究；后面的阶段把同样的要求延伸到编码、分析和发布。
 
-研究目标和纳入标准最先确定，因为后面每一步都要引用它们。每个调用 AI 的环节都按同一个顺序准备：先写计划，再写 codebook，再写 prompt，最后才运行。
+研究目标和纳入标准最先确定，因为后面每一步都要引用它们。此后，每一个调用 AI 的步骤都按照相同的顺序做好准备：先制定计划，再撰写 codebook，然后设计 prompt，最后才正式运行。
 
 ## 仓库里有什么
 
-| 位置 | 内容 |
+| 位置 | 内容说明 |
 |---|---|
-| [PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md) | 操作手册，逐阶段展开 |
-| [templates/](templates/README.zh-CN.md) | 要填写的文件：纳入标准、去重规则、筛选规则和筛选程序、计划 memo、codebook、prompt、两套审计文件，以及带流水线程序的起步项目；另有[逐字段的中文填写指南](templates/GUIDE.zh-CN.md) |
-| [skills/](skills/README.zh-CN.md) | `raes` 这个 skill：说明书、每个阶段一份参考、模板的副本，以及它的脚本（建项目、检查 codebook、检查模板、检查离散度、发布、断网运行） |
-| [examples/synthetic/](examples/synthetic/README.zh-CN.md) | 一个编造的小例子，离线把整个流程跑一遍；它用的效应量代码和[公式说明](examples/synthetic/NUMERICAL_METHODS.md)也在这里 |
-| [raes_core/](raes_core) | 通用的小工具：稳定行编号、哈希冻结、JSON 读写 |
-| [tools/](tools) | 上面用到的命令，以及 `python tools/check_repository.py`：跑本仓库的全部检查和测试 |
-| [tests/](tests) | 测试；每次推送之后也会在 GitHub 上自动跑一遍，Linux 和 Windows、Python 3.10 和 3.13 |
+| [PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md) | 逐阶段的操作手册 |
+| [templates/](templates/README.zh-CN.md) | 需要填写的文件：纳入标准、去重规则、筛选规则与程序、计划 memo、codebook、prompt、两套审计文件，以及带有流程运行程序的起步项目；附[逐字段中文指南](templates/GUIDE.zh-CN.md) |
+| [skills/](skills/README.zh-CN.md) | `raes` skill：使用说明、每个阶段一份参考文档、模板副本，以及配套脚本（新建项目、codebook 检查、模板检查、离散度检查、发布、离线运行） |
+| [examples/synthetic/](examples/synthetic/README.zh-CN.md) | 一个编造的小型示例，离线运行整条流程，包含所用的效应量计算代码及[公式说明](examples/synthetic/NUMERICAL_METHODS.md) |
+| [raes_core/](raes_core) | 小型通用工具：稳定的行编号、哈希冻结、JSON 读写 |
+| [tools/](tools) | 上文用到的命令，以及 `python tools/check_repository.py`，它运行本仓库的全部检查和测试 |
+| [tests/](tests) | 测试用例；每次推送后也会在 GitHub 上运行，覆盖 Linux 和 Windows 平台以及 Python 3.10 和 3.13 |
 
-关于名字：PyPI 上有一个叫 `raes` 的 Python 包，那是另一个项目，与本仓库无关。
+关于名称的一点说明：PyPI 上存在一个名为 `raes` 的 Python 包。那是另一个项目，与本仓库无关。
 
-## 我为什么觉得需要它
+## 为什么我认为需要这套方法
 
-证据整合领域的主要机构已经要求：使用 AI 的作者必须保持人工监督，并且能说明 AI 的使用不损害方法的严谨性。RAISE 建议（Thomas et al., 2025），以及 Cochrane、Campbell Collaboration、JBI 和环境证据协作组织 2025 年的联合立场声明（Flemyng et al., 2025），讲的都是这一点。这些文件说明了要求是什么。RAES 是我给出的一种具体的、可执行的做法。
+证据整合领域的主要机构如今要求使用 AI 的作者保持人工监督，并能说明 AI 的使用不会损害方法的严谨性。这也是 RAISE 建议（Thomas et al., 2025）以及 Cochrane、Campbell Collaboration、JBI 和环境证据协作组织（Collaboration for Environmental Evidence）在 2025 年联合发表的立场声明（Flemyng et al., 2025）讲的重点。这些文件说明了要求是什么。RAES 是我的一次尝试：给出一种具体、可执行的做法来满足这些要求。
 
-## 它建立在什么之上
+## 本方法的基础
 
-流程的前半段沿用 PRISMA 2020（Page et al., 2021）。两个筛选阶段用的是规则化筛选，和 Robleto 与 Shehadeh（2025）一样：他们用透明的 Python 规则筛选，先筛题目摘要，再筛全文。他们靠人工抽读被排除的记录来验证规则，并且把更严格的定量验证列为下一步。RAES 做的就是这一步：规则冻结，样本事先定好，由不同厂商的 AI 盲审，停止规则事先写定。之后 RAES 把同样的要求延伸到筛选之后：同研究判重、codebook 约束下的 AI 编码、对编码结果的交叉验证、只由程序计算的效应量，以及可以离线重建的发布。
+本流程的前半部分遵循 PRISMA 2020（Page et al., 2021）。两个筛选阶段都是规则化的，和 Robleto 和 Shehadeh（2025）的做法一样：他们用透明的 Python 规则先筛题目和摘要，再筛全文。他们靠人工抽读被排除的记录来验证规则，并把更严格的量化验证列为下一步。RAES 迈出了这一步：冻结规则、事先定好的样本、来自不同厂商且看不到先前判断的 AI 审计模型，以及固定的停止规则。接着，RAES 把同样的要求延伸到筛选之后的环节：同研究判重、codebook 约束下的 AI 编码、编码行的交叉验证、只由程序计算的效应量，以及可以离线重新生成的发布包。
 
-## 三层结构
+## 三个层次
 
-| 层 | 回答的问题 | 在仓库里的形式 |
+| 层次 | 回答的问题 | 在本仓库中的呈现形式 |
 |---|---|---|
-| 流程 | 每个阶段做什么、按什么顺序、产出哪些文件 | 操作手册、项目模板、合成例子 |
-| 写作 | 计划、codebook、prompt 和验证方案怎么写 | 模板、skill |
-| 验证与可追溯 | 别人凭什么相信结果 | 例子里的审计步骤、冻结与哈希工具、发布约定 |
+| 流程层 | 每个阶段做什么、按什么顺序做、产出哪些文件 | 操作手册、项目模板、编造的示例 |
+| 编写层 | 如何撰写计划、codebook、prompt 以及验证方案 | 模板、skill |
+| 验证与可追溯层 | 为什么其他人可以信任该结果 | 示例中的审计步骤、冻结与哈希工具、发布约定 |
 
 ## 原则
 
-这些是我最后一直遵守的规则，每一条都来自我实际碰到过的问题。
+以下是我最终遵循的规则。每一条都源自我实际遇到的具体问题。
 
-1. **Codebook 先行。** 每一个实质判断，我都在正式运行前写进带版本号的 codebook。prompt 从 codebook 生成，不是反过来。
-2. **AI 执行规则，不设定范围。** 模型不得改写、放宽或替换标准。证据不足时填 `null` 并记录为未解决项，绝不补造。
-3. **判断单位是条件，不是论文。** 纳入与编码逐个实验条件、角色和结果指标判断。
-4. **能由确定性程序完成的，就交给确定性程序。** 筛选规则尽量写成程序。效应量、标准误和区间由确定性代码计算，模型只选择计算路径。
-5. **独立审计。** 审计者来自不同厂商。筛选审计看不到先前的判断；编码审计能看到它要核对的编码值，但看不到编码理由。只有出现分歧或质疑时才引入下一位审计者。人工裁决范围受限，且必须有页码证据。
-6. **技术失败不是判断。** 拒答、格式错误和超时在不变的请求身份下重试，永远不转成"排除"或"通过"。
-7. **抽样和停止规则事先写定。** 分层、随机种子和干净轮次的停止条件在验证开始前确定。
-8. **进入正式运行的一切都冻结并留哈希。** 可能影响判断的改动就是新版本；受影响的部分重新验证，未受影响的结果经逐项核对后才能沿用。
-9. **发布不可变，指针可移动。** 带日期的发布包保持原样，`CURRENT` 指针指向当前版本，历史不被悄悄改写。
-10. **离线可复现。** 一条命令用保存的回答重建全部结果，不调用任何 API。
-11. **用缓存保证同一实体跨研究一致。** 同一实体无论出现在哪篇研究里，编码属性都相同；缓存和规则文件一样有版本。
-12. **如实说明每项验证证明了什么、没证明什么。**
+1. **先写 codebook。** 在任何正式运行之前，我都会把每一项实质性判断写进带版本号的 codebook。prompt 从 codebook 生成，而不是反过来。
+2. **AI 执行规则，不划定范围。** 模型不得改写、放宽或替换标准。缺失的证据记为 `null` 并附一个未解决项，绝不填入编造的值。
+3. **判断的基本单位是条件，不是论文。** 纳入与编码按实验条件、角色和结果指标逐一判断。
+4. **能用确定性程序的，就用确定性程序。** 筛选规则只要可行就写成代码。效应量、标准误和区间都由确定性程序计算；模型只负责选择计算路径。
+5. **独立审计。** 审计模型来自不同的模型厂商。筛选阶段的审计模型永远看不到此前的判断。编码阶段的审计模型看得到需要核对的编码值，但看不到背后的推理过程。只有在出现分歧或质疑时，才会引入进一步的审计模型。人工裁决的范围有限，而且必须附带能对应到页码的证据。
+6. **技术失败不是判断。** 拒绝回答、格式错误的输出和超时，都在请求身份不变的情况下重试，绝不会变成排除或通过。
+7. **抽样规则和停止规则事先定好。** 分层、随机种子和干净轮次的停止条件，都在验证开始前写定。
+8. **进入正式运行的所有内容都要冻结并计算哈希。** 任何可能影响判断的修改都意味着新版本。受影响的项要重新验证；未受影响的结果，只有核对确认完全一致后才保留。
+9. **发布包不可变，指针可以移动。** 带日期的发布包保持原样，`CURRENT` 这个指针文件指向当前使用的发布包，绝不悄悄改写历史。
+10. **离线复现。** 一条命令就能根据保存的回答重新生成所有结果，不调用任何 API。
+11. **用缓存属性保证实体在各研究间的一致性。** 同一实体无论出现在哪项研究里，编码属性都相同；缓存和规则文件一样带版本号。
+12. **说清每项验证说明了什么、没有说明什么。**
 
-## 不包含什么
+## 未包含的内容
 
-- 向模型厂商发送请求的运行程序，也就是 S5、S8、S9 这几个调用 AI 的环节实际发送请求的那一步。模板和 skill 把这些环节准备到"一切已冻结、可以运行"为止；发送请求由各项目自己的运行程序完成。通用的运行程序以后可能会加。
-- 有版权的论文 PDF、作者提供的数据、我自己研究的数据、大段引用原文的模型原始回答，以及任何凭据。
+- 向模型厂商发送请求的程序，也就是 AI 步骤（S5、S8、S9）里实际发出请求的那一部分。模板和 skill 负责把这些步骤准备妥当，直到所有内容冻结并就绪；每个项目用自己的运行程序发送请求。未来可能会提供通用的运行程序。
+- 受版权保护的论文 PDF、作者提供的数据、我自己研究的数据、大段引用原文的原始模型回答，以及任何凭据。
 
-## 关于 AI 工具的使用
+## AI 工具的使用
 
-本仓库的代码和文档在准备过程中使用了 AI 编程与写作助手。流程设计、规则以及所有方法上的决定都出自我本人，每个版本发布前我都会审核全部内容。如有错误，责任在我。
+在编写本仓库的代码和文档时，我使用了 AI 编码和写作助手。工作流的设计、规则和所有方法上的决定都出自我本人，发布前我会审核全部内容。如有错误，责任在我。
 
-## 怎么引用
+## 如何引用
 
-如果你用了 RAES、它的模板或它的 skill，请引用这个仓库。如果你在这套方法的基础上继续做，请同时引用它所出自的 working paper。GitHub 页面上的 "Cite this repository" 按钮给出同一条引用的其他格式，它读的是 [CITATION.cff](CITATION.cff)。
+如果你使用了 RAES、本仓库的模板或 skill，请引用本仓库。如果你基于这套方法开展进一步工作，也请一并引用它所源自的工作论文。GitHub 页面上的“Cite this repository”按钮给出同一条引用的其他格式；它读取的是 [CITATION.cff](CITATION.cff)。
 
 > Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.5.0) [Computer software]. https://github.com/shanbuzaigao/raes
 
@@ -169,11 +169,11 @@ flowchart TD
 }
 ```
 
-版本号请换成你实际用的那一版。Working paper：Zhu, Q. (2026). *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments*. Working paper, George Mason University.
+请将版本号替换为你实际使用的版本。这篇工作论文是：Zhu, Q. (2026). *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments*. Working paper, George Mason University.
 
 ## 许可证
 
-源代码采用 [MIT 许可证](LICENSE)，包括 `templates/` 下和 skill 里的 Python 程序。文档、操作手册以及文字和 JSON 模板采用 [CC BY 4.0](LICENSE-docs.md)：可以使用和改编，但要注明出处。
+源代码（包括 `templates/` 下及 skill 中的 Python 程序）采用 [MIT 许可证](LICENSE) 发布。文档、操作手册以及文本和 JSON 模板采用 [CC BY 4.0](LICENSE-docs.md) 发布，允许在注明出处的前提下重用和改编。
 
 ## 参考文献
 
@@ -184,6 +184,6 @@ flowchart TD
 
 ## 联系方式
 
-有问题或建议，请写信到 zqj0966522453@gmail.com。方法本身由我自己维护，不接受 pull request。
+如有疑问和建议，请联系：zqj0966522453@gmail.com。本方法由我独立维护，不接受 pull request。
 
 Qijun Zhu，乔治梅森大学经济学博士候选人

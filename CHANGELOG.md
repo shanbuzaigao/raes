@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Chinese README and protocol retranslated from the English and checked paragraph by paragraph against the source. Terms settled for the Chinese files: 元分析 for meta-analysis, 工作论文 for working paper, 审计模型 for auditor; the flowcharts and the folder list carry Chinese labels; prose uses Chinese quotation marks. The Chinese README links to the Chinese subpages.
+
 ## 0.5.0 (2026-09-23)
 
 This version takes in a read-only review of the whole repository at 0.4.1. The method is unchanged. The programs now refuse a few configurations that could have reported a success that was not one, the templates say the same thing as the protocol, and the synthetic example follows the protocol's own repair route.
