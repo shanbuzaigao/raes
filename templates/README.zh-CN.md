@@ -2,20 +2,20 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-这些文件是 RAES 里“怎么写”的那一层。它们给操作手册里的每一类文件一个固定的形状：计划 memo、纳入标准、codebook、审计设计以及 prompt。每个 `{{...}}` 占位符都代表研究者要做的一个决定；占位符旁边的例子是一种填法，取自我的项目，不是必须照做的。带占位符的骨架文件可以通过草稿检查，但故意无法通过 `--ready` 检查。
+这些文件是 RAES 里“怎么写”的那一层。它们为操作手册里的每一类文件提供固定结构：计划 memo、纳入标准、codebook、审计设计以及 prompt。每个 `{{...}}` 占位符都代表研究者要做的一个决定；占位符旁边的例子是一种填法，取自我的项目，不是必须照做的。带占位符的骨架文件可以通过草稿检查，但故意无法通过 `--ready` 检查。
 
 一份中文指南逐个文件、逐个字段地说明怎么填：[模板填写指南](GUIDE.zh-CN.md)。
 
 ## 新建一个项目
 
-在 RAES 文件夹下运行，目标选它外面的一个新文件夹：
+在 RAES 文件夹下运行，并将目标目录设为仓库外的一个新文件夹：
 
 ```sh
 python tools/new_project.py ../my-evidence-project
 python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json
 ```
 
-第一条命令会创建各项目文件夹（每个文件夹下都附有一份简短的 README），并把模板复制进去，同时复制属于该项目的三个程序：去重脚本、筛选程序以及流程运行程序。该命令还会根据 codebook 输出两份列名清单（全部列，以及由执行模型填写的列），并把复制进去的每个模板记进 `raes_templates.json`；后续运行 `python tools/check_templates.py --project <project>` 时，就能据此识别出哪些文件还是旧版模板的副本、而且还没有填写过。第二条命令检查 codebook，并列出尚未填写的占位符。纳入标准文件从第一天起就可以单独检查：`python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eligibility.json`。
+第一条命令会创建项目所需的各个文件夹（每个文件夹下都附有一份简短的 README），并把模板复制进去，同时复制属于该项目的三个程序：去重脚本、筛选程序以及流程运行程序。该命令还会根据 codebook 输出两份列名清单（全部列，以及由执行模型填写的列），并把复制进去的每个模板记进 `raes_templates.json`；后续运行 `python tools/check_templates.py --project <project>` 时，就能据此识别出哪些文件还是旧版模板的副本、而且还没有填写过。第二条命令检查 codebook，并列出尚未填写的占位符。纳入标准文件从第一天起就可以单独检查：`python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eligibility.json`。
 
 当 codebook 编写完毕并获得批准后，将 `status` 设为 `ready`，记录批准信息，把 `eligibility.json` 的 SHA-256 哈希填入 codebook，然后运行：
 
@@ -42,11 +42,11 @@ python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json --r
 | [validation/coding/](validation/coding/memo.md) | 编码审计（S9） | 编码审计的一整套文件：memo、审计 codebook、配置文件以及两个 prompt。例如由一个审计模型检查每篇论文，每一处质疑由盲审的裁决者处理 |
 | [project/](project/README.md) | 全部阶段 | 新建项目文件夹的初始文件，包含附带 `pipeline.json` 的 `run_pipeline.py`：一条命令重跑所有由程序完成的阶段，并把每个输出和正式输出比对 |
 
-筛选程序是一个骨架，思路和 Robleto and Shehadeh (2025) 一样：先改文件开头的词表，使每个条目与 `eligibility.json` 中的相应标准一一对应；接着拿已知应当纳入的论文测试；最后确定版本并冻结。运行 `python templates/screening/screen_rules_template.py --help` 可以查看两个阶段的用法。题目摘要审计确认的记录写进一份冻结清单，用 `--after-ta-audit` 进入全文阶段；全文阶段还会核对题目摘要那次运行覆盖的，是否恰好就是它拿到的这份记录文件。
+筛选程序是一个骨架，思路和 Robleto and Shehadeh (2025) 一样：先改文件开头的词表，使每个条目与 `eligibility.json` 中的相应标准一一对应；接着拿已知应当纳入的论文测试；最后确定版本并冻结。运行 `python templates/screening/screen_rules_template.py --help` 可以查看两个阶段的用法。题目摘要审计确认的记录写进一份冻结清单，用 `--after-ta-audit` 进入全文阶段；全文阶段还会核对：此前的题目摘要运行是否恰好覆盖当前记录文件中的全部记录。
 
 变量骨架用各组（arm）层面的效应量输入（均值、SD、N、事件数、总数）作为示例。请删去不适用的部分并注明原因。不要因为模板展示了这些结果指标就照搬添加。`columns` 按顺序列出所有变量；执行模型的列名清单则去掉所有由程序负责的字段。`Row_UID`、`g`、`SE_g` 以及置信区间始终由程序生成。
 
-`worked_cases` 是三个写出来的例子：一个正例、一个缺失数据的例子和一个边界例子。检查器要求它们存在，但不评判内容。评判内容是试跑的事。
+`worked_cases` 包含三个具体示例：一个正例、一个缺失数据的例子和一个边界例子。检查器要求它们存在，但不评判内容。评判内容是试跑的事。
 
 ## 确保各处的标准完全一致
 
@@ -60,7 +60,7 @@ python -c "import hashlib,pathlib; print(hashlib.sha256(pathlib.Path('../my-evid
 
 ## 生成 prompt
 
-生成器会自行读取 codebook、纳入标准文件以及执行模型的列名清单，因此生成的 prompt 带有这些文件的原文，context 文件无法覆盖它们。运行前把生成好的 prompt 连同哈希一起冻结：之后有人改了生成的文件就能查出来，这一点生成器本身防不住。context 文件只提供模板所要求的字段（例如 `PAPER_ID` 和 `SOURCES_JSON`）；system prompt 的 context 文件就是 `{}`。
+生成器会自行读取 codebook、纳入标准文件以及执行模型的列名清单，因此生成的 prompt 带有这些文件的原文，context 文件无法覆盖它们。运行前把生成好的 prompt 连同哈希一起冻结：这样可以检测之后对生成文件的修改；生成器本身无法阻止这类修改。context 文件只提供模板所要求的字段（例如 `PAPER_ID` 和 `SOURCES_JSON`）；system prompt 的 context 文件就是 `{}`。
 
 ```sh
 python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codebook.json --template templates/prompts/coding_system.md --context ../my-evidence-project/context.json --output ../my-evidence-project/coding_system_rendered.md
@@ -70,6 +70,6 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 
 ## 检查器能做什么、不能做什么
 
-检查器认识 `raes-codebook/1` 这种结构。它会验证必需的小节是否存在、变量和列名是否一致、示例是否符合其类型与取值范围、缺失值规则与字段归属规则是否已声明、标准编号能否对应上，以及纳入标准的哈希是否匹配。它不判断规则在科学上对不对、样本够不够大、证据是不是真的。这些仍然是研究者的事。
+检查器识别 `raes-codebook/1` 这种结构。它会验证必需的小节是否存在、变量和列名是否一致、示例是否符合其类型与取值范围、缺失值规则与字段归属规则是否已声明、标准编号能否对应上，以及纳入标准的哈希是否匹配。它不判断规则在科学上对不对、样本够不够大、证据是不是真的。这些仍需由研究者判断。
 
 [虚构示例中填好的 codebook](../examples/synthetic/inputs/codebook.json) 展示了一个完整的小型范例。其中的批准记录属于虚构内容，不要把它照抄成真实的批准。

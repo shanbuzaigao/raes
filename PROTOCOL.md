@@ -174,7 +174,7 @@ For an audit, the prompt gives the auditor the source material and the rules and
 
 ### 5.5 Order across the whole project
 
-Goal and eligibility criteria, plan memo, coding codebook, column template, prompts, a small pilot, a log of ambiguities, minimal clarifications with a new version, freeze, then the validation codebooks and workflow configurations, and finally an implementation-ready memo that a collaborator could execute without asking me questions.
+The whole project runs in this order: first the goal and the eligibility criteria; then the plan memo, the coding codebook, the column template and the prompts; a small pilot, a log of ambiguities, minimal clarifications with a new version, then the freeze; next the validation codebooks and workflow configurations; and finally an implementation-ready memo that a collaborator could execute without asking me questions.
 
 ## 6. The stages, one by one
 

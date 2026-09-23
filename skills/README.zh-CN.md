@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-一个 skill，[raes](raes/SKILL.md)，覆盖整个工作流。装进支持 Agent Skills 的宿主之后，它带着研究者按操作手册的阶段走：问出这一阶段需要的决定，用模板写文件，运行本地检查，并把每个调用 AI 的步骤按“计划、codebook、prompt、运行”的顺序准备好。它不调用模型 API，也不真正运行筛选或编码。
+本文件夹包含一个覆盖整个工作流的 skill：[raes](raes/SKILL.md)。装进支持 Agent Skills 的宿主之后，它会引导研究者按照操作手册逐阶段推进：询问当前阶段所需的决定，用模板写文件，运行本地检查，并把每个调用 AI 的步骤按“计划、codebook、prompt、运行”的顺序准备好。它不调用模型 API，也不真正运行筛选或编码。
 
 这个文件夹遵循 [Agent Skills 规范](https://agentskills.io/specification)：
 
@@ -27,7 +27,7 @@ Claude Code 的个人 skill 放在 `~/.claude/skills/<name>/`，项目 skill 放
 python tools/install_skill.py --destination ~/.claude/skills
 ```
 
-安装程序复制整个文件夹，发现已经有 `raes` 就拒绝覆盖。skill 改过之后要更新已装的那份，加 `--replace`：安装程序先确认已有的文件夹确实是一份 raes skill，再删掉它，复制当前版本。
+安装程序复制整个文件夹；如果目标位置已经存在 `raes`，安装程序会拒绝覆盖。skill 更新后，如需更新已安装的版本，加 `--replace`：安装程序先确认已有的文件夹确实是一份 raes skill，再删掉它，复制当前版本。
 
 ```sh
 python tools/install_skill.py --destination ~/.claude/skills --replace
@@ -47,4 +47,4 @@ Gemini CLI、Cursor、GitHub Copilot 等各自的路径见 [Agent Skills 的客�
 
 ## 状态
 
-skill 已在本地检查过：复制出去的文件夹独立可用，脚本能运行。它在 Claude Code 里试用过三次。第一次只走了 S0 的开头。第二次在另一个学科的题目（老年人的运动与抑郁症状）上走完了 S0 到 S12 的全部阶段，包括真实检索、筛选审计、编码、编码审计、分析和发布；这次发现的问题成了 0.4.0 版。第三次在一个小题目上试了 0.4.0 的新工具，发现的问题成了 0.4.1 版。三次试用里，skill 都是问出需要的决定，把建议明确标为建议，把决定留给研究者。[一份脚本化的演练](../examples/raes_rehearsal.md)用一个虚构的小题目走了一遍 codebook 阶段，可以看到提问和产出是什么样子。
+skill 已在本地检查过：复制出去的文件夹独立可用，脚本能运行。它在 Claude Code 里试用过三次。第一次仅测试了 S0 的起始部分。第二次在另一个学科的项目（老年人的运动与抑郁症状）中完整走完了 S0 到 S12 的全部阶段，包括真实检索、筛选审计、编码、编码审计、分析和发布；此次试用中发现的问题促成了 0.4.0 版的修改。第三次在一个小题目上试了 0.4.0 的新工具，发现的问题促成了 0.4.1 版的修改。三次试用里，skill 都是询问需要的决定，明确区分建议与决定，并将最终决定留给研究者。[一份脚本化的演练](../examples/raes_rehearsal.md)用一个虚构的小题目走了一遍 codebook 阶段，可以看到提问和产出是什么样子。

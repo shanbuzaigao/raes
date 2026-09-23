@@ -4,7 +4,7 @@
 
 这份指南面向中文读者，按文件和字段逐一说明每个模板该如何填写。模板本身依然保留英文：因为 prompt 和 codebook 是写给模型看的，整个项目只保留这一个英文版本；同时，JSON 里的字段名也需要与检查程序保持一致。因此，项目文件统一使用英文，中文解释都在本指南中说明。
 
-每个字段按同一格式写：**是什么、填什么、例**。例子按我的项目改写（一篇关于大语言模型在经典经济学博弈中如何行为的综述），做了简化，只示意填法，不是必须照做的。
+每个字段按同一格式写：**是什么、填什么、例**。例子按我的项目改写（一篇关于大语言模型在经典经济学博弈中行为表现的综述），做了简化，只示意填法，不是必须照做的。
 
 各节按[操作手册](../PROTOCOL.zh-CN.md)的阶段排列。不必从头读到尾，做到哪一步查哪一节。
 
@@ -39,9 +39,9 @@ python tools/new_project.py ../my-evidence-project
 ### 0.2 通用规则
 
 - **占位符。** `{{...}}` 表示一个要由你决定的地方。把整段（连同花括号）换成你的内容。检查器把留下的 `{{` 当作还没做的决定；`TODO`、`TBD`、`REPLACE_ME` 也算。
-- **例子不是答案。** 模板里 "e.g." 和 "for example" 后面的内容，以及本指南的"例"，都是我的项目的一种填法。你的项目按自己的情况填。
+- **例子不是答案。** 模板里 “e.g.” 和 “for example” 后面的内容，以及本指南的“例”，都是我的项目的一种填法。你的项目按自己的情况填。
 - **用英文写。** 文件里的内容用英文。英文写不顺，可以先写中文，让 AI 助手翻译，再自己逐句核对意思。
-- **版本号。** 从 `0.1.0-draft` 开始。规则改了就升版本，写明改了什么、影响哪些记录；不回头改旧版本。
+- **版本号。** 从 `0.1.0-draft` 开始。规则改了就更新版本，写明改了什么、影响哪些记录；不回头改旧版本。
 - **日期。** 日期请统一采用 `YYYY-MM-DD` 格式，例如 `2026-09-17`。
 - **哈希（SHA-256）。** 项目里的很多文件都需要记录 `eligibility.json` 的 SHA-256 哈希值。它是根据文件实际字节计算出的摘要，由 64 个十六进制字符组成，对应 256 位；只要文件内容改动了一个字符，这个哈希值就会随之改变。只要比对哈希值，就能一眼看出每个阶段使用的标准文件到底是不是同一个版本。你可以使用下面的命令来计算哈希：
 
@@ -59,15 +59,15 @@ python tools/new_project.py ../my-evidence-project
 
 | 字段 | 是什么 | 填什么 |
 |---|---|---|
-| `version` | 这份标准的版本 | 起始 `0.1.0-draft`；标准一改就升版本 |
+| `version` | 这份标准的版本 | 起始 `0.1.0-draft`；标准一改就更新版本 |
 | `criteria[].id` | 标准编号 | `C1`、`C2`……筛选规则和审计 codebook 都用这个编号引用它，定了不要改 |
-| `criteria[].text` | 一条标准 | 一句话，能逐条核对。写"什么算符合"，不写"相关研究"这类话 |
+| `criteria[].text` | 一条标准 | 一句话，能逐条核对。写“什么算符合”，不写“相关研究”这类话 |
 | `criteria[].clarifications` | 澄清 | 纳入、排除、拿不准的情形各举一例；什么证据算数；缺统计量不等于不纳入。可以是一段文字，也可以是几条文字组成的列表 |
 | `mixed_condition_rule` | 一篇论文里既有符合的条件也有不符合的条件时怎么办 | 写清在哪一级判断（论文、实验还是实验条件）；不符合的条件跳过并记录，不因它们排除整篇 |
 
 模板中默认预设了三条标准，你可以根据实际研究需要自行增减。
 
-写的时候留意一点：澄清里关于题目摘要阶段的说法，决定了规则筛选能排除多少。写成"摘要没说就保留"，能降低因摘要信息不足而误排的风险，但大部分记录都要去取全文；写成"摘要必须写明才保留"，则相反。这个取舍在这里就要想好。
+写的时候留意一点：澄清里关于题目摘要阶段的说法，决定了规则筛选能排除多少。写成“摘要没说就保留”，能降低因摘要信息不足而误排的风险，但大部分记录都要去取全文；写成“摘要必须写明才保留”，则相反。这个取舍在这里就要想好。
 
 这个文件可以单独检查，不用等 codebook 写好。下面的命令核对结构，并打印它的 SHA-256；没有占位符之后加 `--ready`。对这个文件，`--ready` 只表示没有占位符了；标准是否批准，记在 `plans/DECISIONS.md` 里，检查通过不等于批准：
 
@@ -91,20 +91,20 @@ python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eli
 
 ## 1b. 去重规则 `search/dedup_rules.json`（去重，S2）
 
-只有不用文献管理软件、改用 skill 自带的去重脚本时才需要这个文件。用 EndNote 之类去重的项目可以不管它。文件里的值可以直接用；要改就想清楚再改，升版本并记录。
+只有不用文献管理软件、改用 skill 自带的去重脚本时才需要这个文件。用 EndNote 之类去重的项目可以不管它。文件里的值可以直接用；要改就想清楚再改，更新版本并记录。
 
 | 字段 | 是什么 | 填什么 |
 |---|---|---|
 | `version`、`status` | 规则版本和状态 | 起始 `0.1.0-draft`、`draft`；你审过之后改成批准的说明 |
 | `source_precedence` | 同一篇在几个库里都找到时，保留哪个来源的那一条 | 来源名的先后。PubMed 格式的文件叫 `pubmed`，Web of Science 纯文本叫 `wos`，RIS 文件按文件名叫（`scopus.ris` 就是 `scopus`）。例：`["pubmed", "wos", "scopus"]` |
-| `min_title_words` | 标题至少几个词才按"标题加年份"自动合并 | 默认 6。标题太短容易撞车，短标题只列为待定配对 |
+| `min_title_words` | 标题至少几个词才按“标题加年份”自动合并 | 默认 6。标题太短容易撞车，短标题只列为待定配对 |
 | `similarity_threshold` | 标题相似到什么程度列为待定配对 | 默认 0.9 |
 | `report_version_labels` | 哪些文献类型标签表示预印本这类非期刊版本 | 默认 `["Preprint", "UNPB"]`：PubMed 把预印本标为 Preprint，RIS 导出的预印本类型是 UNPB。同标题同年的两条记录里恰好一条带这种标签，脚本只把它们列为待定配对（规则 R4），不自动合并 |
 | `doc_type_removal.listed` | 筛选前按文献类型去掉哪些 | 按来源分别列出类型标签，可用 `*` 通配。空着就什么都不去掉 |
-| `doc_type_removal.neutral` | 中性标签：带着它不影响判断 | PubMed 几乎每条记录都带 "Journal Article"，不把它列为中性，规则就几乎去不掉任何记录 |
+| `doc_type_removal.neutral` | 中性标签：带着它不影响判断 | PubMed 几乎每条记录都带 “Journal Article”，不把它列为中性，规则就几乎去不掉任何记录 |
 | `example_doc_type_lists` | 一个项目用过的类型清单 | 只是例子，脚本不读它；要用就抄到上面两项里 |
 
-其余几项（`match_rules`、`review_rules`、`kept_record`、`normalization`）是用文字写下的脚本做法，供你写进论文方法部分，一般不改。
+其余几项（`match_rules`、`review_rules`、`kept_record`、`normalization`）是对脚本逻辑的文字说明，供你写进论文方法部分，一般不改。
 
 **运行**
 
@@ -114,13 +114,13 @@ python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eli
 python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/dedup_rules.json --output search/dedup/<新文件夹>
 ```
 
-它读 PubMed（MEDLINE）格式、Web of Science 纯文本和 RIS 三种导出文件，按 PubMed 编号、DOI、"标题加年份"依次配对；编号互相矛盾的从不合并。几个导出文件可以有重叠，比如同一个库的两条检索式：同一条记录再次出现时编号加后缀（`PM123`、`PM123-2`），由规则去合并，台账记下每一次出现和它来自哪个文件；同一个文件给两次会被拒绝。输出四个文件：`records.csv`（筛选程序读的就是它）、`ledger.csv`（每条输入记录的去向、依据和来源文件）、`review_pairs.csv`（拿不准的配对）、`summary.json`（各项数量，每个输入文件的路径、哈希和条数，以及"检索到的 = 去掉的 + 进入筛选的"这项核对）。
+它读 PubMed（MEDLINE）格式、Web of Science 纯文本和 RIS 三种导出文件，按 PubMed 编号、DOI、“标题加年份”依次配对；编号互相矛盾的从不合并。几个导出文件可以有重叠，比如同一个库的两条检索式：同一条记录再次出现时编号加后缀（`PM123`、`PM123-2`），由规则去合并，台账记下每一次出现和它来自哪个文件；重复提供同一文件会被拒绝。输出四个文件：`records.csv`（筛选程序读的就是它）、`ledger.csv`（每条输入记录的去向、依据和来源文件）、`review_pairs.csv`（拿不准的配对）、`summary.json`（各项数量，每个输入文件的路径、哈希和条数，以及“检索到的 = 去掉的 + 进入筛选的”这项核对）。
 
-拿不准的配对由你决定：建一个 CSV，四列 `record_id_a`、`record_id_b`、`decision`（`duplicate` 或 `not_duplicate`）、`note`，再用 `--decisions <文件>` 重跑到一个新文件夹。同一项研究的预印本和期刊版不算重复：答 `not_duplicate`，留到同研究判重（S6）去归并。`not_duplicate` 的决定有约束力：某条规则或一串重复关系要把这两条并到一组时，脚本不合并，把冲突列在 `review_pairs.csv` 里（编号以 X 开头），状态记为 provisional，退出码为 1，等你处理。按文献类型去掉记录之前，先在导出的标签上试一遍规则，并抽读一些被去掉的记录：Web of Science 会按参考文献数量把一些原始研究标成 "Review"。
+拿不准的配对由你决定：建一个 CSV，四列 `record_id_a`、`record_id_b`、`decision`（`duplicate` 或 `not_duplicate`）、`note`，再用 `--decisions <文件>` 重跑到一个新文件夹。同一项研究的预印本和期刊版不算重复：答 `not_duplicate`，留到同研究判重（S6）去归并。`not_duplicate` 的决定有约束力：如果某条规则或传递性的重复关系会将这两条记录合并到同一组，脚本不合并，把冲突列在 `review_pairs.csv` 里（编号以 X 开头），状态记为 provisional，退出码为 1，等你处理。按文献类型去掉记录之前，先在导出的标签上试一遍规则，并抽读一些被去掉的记录：Web of Science 会按参考文献数量把一些原始研究标成 “Review”。
 
 ## 2. 筛选规则 `screening/screening_rules.md`（筛选，S3、S4）
 
-用文字写筛选规则。程序 `screen_rules_template.py`（第 3 节）是同一套规则的代码版。两边要一致：改一边就改另一边，并升版本。
+用文字写筛选规则。程序 `screen_rules_template.py`（第 3 节）是同一套规则的代码版。两边要一致：改一边就改另一边，并更新版本。
 
 **标题行**
 
@@ -179,14 +179,14 @@ python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/de
 
 ## 3. 筛选程序 `screening/screen_rules_template.py`（筛选，S3、S4）
 
-不用会写 Python。先改文件开头的规则版本和标准表；全文规则不同、或者要改缺摘要记录的处理时，再改后面说的两处设置。
+不需要会写 Python。先改文件开头的规则版本和标准表；全文规则不同、或者要改缺摘要记录的处理时，再改后面说的两处设置。
 
 - `RULES_VERSION`：与规则文档一致。
 - `CRITERIA`：每条标准一项。键是标准编号（`"C1"`），与 `eligibility.json` 一致。
 
 | 键 | 填什么 |
 |---|---|
-| `label` | 简短标签。模板里的三项标着 "(example)"，换成你自己的时去掉 |
+| `label` | 简短标签。模板里的三项标着 “(example)”，换成你自己的时去掉 |
 | `any_of` | 支持词表：出现任意一个就算支持。程序不分大小写，但按整词匹配，所以单复数要分别列出（`"offer", "offers"`）；弯引号会被程序统一成直引号 |
 | `none_of` | 阻断词表：出现任意一个就算不符合。没有写 `[]` |
 | `check_at` | 哪个阶段检查：`["ta", "ft"]`、`["ta"]` 或 `["ft"]` |
@@ -217,7 +217,7 @@ python screen_rules_template.py ta records.csv --output out/ta_v0.1
 python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.csv --texts fulltext/ --output out/ft_v0.1
 ```
 
-全文阶段筛题目摘要阶段保留的记录，名单从 `--after-ta` 指定的结果文件里读；程序会核对那次运行是否恰好覆盖了这份记录文件的全部编号，并核对它 `summary.json` 里记的输入哈希，少一行也不会被当成排除；`summary.json` 必须和 `decisions.csv` 在同一个文件夹里，缺了就停，所以不要把决定文件单独复制到别处再传给程序。`--after-ta-audit <清单文件>` 追加审计确认的记录；`--not-retrieved <清单文件>` 跳过取不到全文的记录。两者都只用于全文阶段，见上面的输入。加 `--expect-sha256 <哈希>` 时，记录文件和冻结时不一致就拒绝运行。`--help` 显示全部选项。
+全文阶段只筛选题目摘要阶段保留的记录，名单从 `--after-ta` 指定的结果文件里读；程序会核对那次运行是否恰好覆盖了这份记录文件的全部编号，并核对它 `summary.json` 里记的输入哈希，即使少一行，程序也不会将缺失记录默认为排除；`summary.json` 必须和 `decisions.csv` 在同一个文件夹里，缺了就停，所以不要把决定文件单独复制到别处再传给程序。`--after-ta-audit <清单文件>` 追加审计确认的记录；`--not-retrieved <清单文件>` 跳过取不到全文的记录。两者都只用于全文阶段，见上面的输入。加 `--expect-sha256 <哈希>` 时，记录文件和冻结时不一致就拒绝运行。`--help` 显示全部选项。
 
 **输出**（所有结果都会输出到一个全新的目录中，绝不会覆盖已有内容）
 
@@ -238,14 +238,14 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | `the not-retrieved list names records that were not kept at the ta phase: …` | 清单里有不在题目摘要保留名单里的编号 | 核对编号；只有保留的记录才谈得上取全文 |
 | `listed as not retrieved but the text file exists: …` | 清单和全文文件夹矛盾 | 核实这篇是不是真的取到了：取到了就从清单里去掉；文件其实不是这篇的，就把它移出全文文件夹并记录原因 |
 | `the ta run does not cover this records file exactly; …` | 题目摘要那次运行覆盖的记录和这份记录文件对不上 | 两个阶段用同一份记录文件；记录文件变了就先重跑题目摘要阶段 |
-| `the ta run's summary.json is missing next to its decisions.csv` | 决定文件旁边没有那次运行的汇总文件 | 用题目摘要运行自己文件夹里的 `decisions.csv`，不要单独复制出去 |
+| `the ta run's summary.json is missing next to its decisions.csv` | 决定文件旁边没有那次运行的汇总文件 | 使用题目摘要运行输出目录中的原始 `decisions.csv`，不要单独复制出去 |
 | `the ta run screened a different records file; …` | 记录文件编号一样但内容变了 | 先重跑题目摘要阶段，再跑全文阶段 |
 | `the ta-audit list names records that the ta phase kept already: …` | 追加清单里有题目摘要阶段本来就保留的记录 | 清单只放题目摘要阶段排除、审计确认的记录 |
 | `CRITERIA_FT must have the same criterion IDs as CRITERIA …` | 全文规则表少了或多了标准 | 让两张表的编号一致；全文不查的标准保留条目，`check_at` 不写 `"ft"` |
 | `Output directory already exists; choose a new one` | 输出目录已存在 | 换一个新目录名，结果从不覆盖 |
 | `records file does not match the expected hash` | 记录文件变了 | 确认是不是用错了文件；冻结的输入不能改 |
 
-正式运行前，先在你已知应该纳入的论文上跑，它们必须全部保留。有漏的，改词表（改规则，不改单篇），升版本再跑。
+正式运行前，先在你已知应该纳入的论文上跑，它们必须全部保留。有漏的，改词表（改规则，不改单篇），更新版本再跑。
 
 ## 4. 阶段计划 `plans/STAGE_PLAN.md`（模板 `plan_memo.md`）
 
@@ -309,7 +309,7 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | `{{STOPPING}}` | 停止规则和理由；什么情况升级处理 |
 | `{{LIMITS}}` | 这次验证查不出什么。例：`errors shared by executor and auditor; eligibility errors` |
 
-**第 6 节 运行与技术故障**
+**第 6 节 运行与技术失败**
 
 | 占位符 | 填什么 |
 |---|---|
@@ -339,23 +339,23 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | 节 | 占位符 | 填什么 |
 |---|---|---|
 | 1 | `{{TARGET}}` | 审计找哪种错误。例：被筛选程序排除但本应保留的记录 |
-| 2 | `{{ORDER_AND_REASON}}` | 两个审计的先后和理由。例：先审全文筛选，再审题目摘要筛选，因为题目摘要审计给出的"保留"要用冻结的全文筛选来处理 |
+| 2 | `{{ORDER_AND_REASON}}` | 两个审计的先后和理由。例：先审全文筛选，再审题目摘要筛选，因为题目摘要审计给出的“保留”要用冻结的全文筛选来处理 |
 | 3 | `{{WHICH_RECORDS}}` | 全文审计审哪些记录。例：这个快照里全文阶段排除的全部记录 |
 | 3 | `{{FRAME_FILE_AND_SHA256}}`、`{{N}}` | 这份清单的文件、哈希、条数 |
 | 3 | `{{STRATA}}` | 分层。例：差一点纳入（只有一条标准不符合）和其余 |
 | 3 | `{{ROUND_SIZE_ALLOCATION_SEED}}` | 每轮抽多少、按层怎么分配、种子。例：每轮固定数量，按层分配，按种子生成的顺序抽，后续轮次接着抽 |
 | 3 | `{{REVIEWERS_AND_ROUTING}}` | 审计模型和流转。例：两位主审来自不同厂商；两者答案都有效但不一致时才请第三位；多数意见由程序计算 |
 | 3 | `{{INPUTS}}`、`{{HIDDEN}}` | 每位审计模型能看到什么、看不到什么。例：给记录编号、题目、完整 PDF、标准原文；不给程序的决定和理由、逐条标准的结果、层和序号、其他审计模型的答案、下游结果 |
-| 3 | `{{WHEN_AND_WITH_WHAT_EVIDENCE}}` | 什么时候由人裁决，要什么证据。例：只有审计多数认为应纳入时；人同意并给出页码才算确认漏排 |
+| 3 | `{{WHEN_AND_WITH_WHAT_EVIDENCE}}` | 什么时候由人裁决，要什么证据。例：只有审计多数认为应纳入时；人同意并给出页码才算确认漏筛 |
 | 4 | `{{WHICH_RECORDS}}`、`{{FRAME_FILE_AND_SHA256}}`、`{{N}}` | 题目摘要冻结框，同上 |
 | 4 | `{{STRATA_ROUND_SIZE_SEED}}` | 例：按检索批次分层，按比例分配，种子顺序 |
 | 4 | `{{REVIEWERS}}`、`{{INPUTS}}`、`{{HIDDEN}}` | 例：每条记录一位审计模型；给记录编号、题目、完整摘要或 null、标准原文；不给程序的决定、检索批次、任何 PDF、其他答案 |
-| 4 | `{{CANDIDATE_ROUTE}}` | "保留"意味着什么、去哪里。例：保留是候选，不是错误；取全文，跑冻结的全文筛选，筛选纳入的交给第 3 节的全文审计模型读 |
-| 5 | `{{FT_STOPPING_RULE}}` | 全文审计的停止规则。例：一轮没有确认的漏排，审计结束；确认漏排后修订全文规则、按新版本冻结新样本、审计继续；每累计若干个确认漏排就检查是否有系统性错误 |
-| 5 | `{{TA_STOPPING_RULE}}` | 题目摘要审计的停止规则。例：一轮里没有候选通过冻结的全文筛选，审计结束；有候选通过但全被审计模型排除的轮次计入累计；确认漏排之后审计继续。一轮里每条记录都有有效回答才算完成；缺 PDF、重试用尽、预算暂停都让这一轮悬着，悬着的一轮不算"没有漏排的一轮" |
-| 6 | `{{RULE_CHANGE_POLICY}}` | 规则怎么改、确认的漏排改变什么。例：一轮审计期间规则不变，轮次结束后才改；任何记录都不靠手工加入纳入集；全文审计确认的漏排改全文规则（最小的一般性修订、升版本、全部重跑、归档当前审计、重新冻结样本）；题目摘要规则保持冻结，该审计确认的记录进入一份冻结清单，用 `--after-ta-audit` 传给筛选程序，作为追加输入读取 |
-| 7 | `{{RETRY_POLICY}}` | 例：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算排除、投票或干净的一轮；文件不完整或不可读也是技术故障，换材料重发 |
-| 7 | `{{WHAT_IS_REPORTED}}` | 例：每个阶段的总体大小、分层、轮数、种子、审了多少、候选数、确认漏排数、触发的停止条件、审计查不出什么 |
+| 4 | `{{CANDIDATE_ROUTE}}` | “保留”意味着什么、去哪里。例：保留是候选，不是错误；取全文，跑冻结的全文筛选，筛选纳入的交给第 3 节的全文审计模型读 |
+| 5 | `{{FT_STOPPING_RULE}}` | 全文审计的停止规则。例：一轮没有确认的漏筛，审计结束；确认漏筛后修订全文规则、按新版本冻结新样本、审计继续；每累计若干个确认漏筛就检查是否有系统性错误 |
+| 5 | `{{TA_STOPPING_RULE}}` | 题目摘要审计的停止规则。例：一轮里没有候选通过冻结的全文筛选，审计结束；有候选通过但全被审计模型排除的轮次计入累计；确认漏筛之后审计继续。一轮里每条记录都有有效回答才算完成；缺 PDF、重试用尽、预算暂停都让这一轮停在未完成；未完成的一轮不能算作没有漏筛的一轮 |
+| 6 | `{{RULE_CHANGE_POLICY}}` | 规则怎么改、确认的漏筛改变什么。例：一轮审计期间规则不变，轮次结束后才改；任何记录都不靠手工加入纳入集；全文审计确认的漏筛改全文规则（最小的一般性修订、更新版本、全部重跑、归档当前审计、重新冻结样本）；题目摘要规则保持冻结，该审计确认的记录进入一份冻结清单，用 `--after-ta-audit` 传给筛选程序，作为追加输入读取 |
+| 7 | `{{RETRY_POLICY}}` | 例：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算作排除或投票，也不能使该轮计入停止条件；文件不完整或不可读也是技术失败，换材料重发 |
+| 7 | `{{WHAT_IS_REPORTED}}` | 例：每个阶段的总体大小、分层、轮数、种子、审了多少、候选数、确认漏筛数、触发的停止条件、审计查不出什么 |
 
 ### 5.2 `codebook.json`
 
@@ -522,13 +522,13 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 | 2 | `{{WHICH_ROWS}}` | 审哪些行。例：将进入分析的全部行，审计前冻结，效应量字段留空并隐藏 |
 | 2 | `{{FRAME_FILE_AND_SHA256}}`、`{{N_ROWS}}`、`{{N_PAPERS}}` | 这份行清单的文件、哈希、行数、论文数 |
 | 2 | `{{UNIT}}` | 每次请求的单位。例：一篇论文；这篇的每一行都查 |
-| 2 | `{{DESIGN_AND_JUSTIFICATION}}`、`{{FIXED_BEFORE_REVIEW}}` | 全查还是抽样，及理由；抽样时的分层、种子、顺序，审前定死 |
+| 2 | `{{DESIGN_AND_JUSTIFICATION}}`、`{{FIXED_BEFORE_REVIEW}}` | 全查还是抽样，及理由；抽样时的分层、种子和顺序在审计开始前固定 |
 | 3 | 审计模型 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给来源、编码 codebook、这份审计 codebook、这篇论文的编码行；不给执行模型的推理、之前的审计答案、抽样信息、任何算出的效应 |
-| 3 | 裁决者 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给同样的来源和规则、原始行、被质疑的字段及其当前值；不给审计模型提出的值、证据、理由、置信度。当前值必须给，它就是要核对的对象；建议值绝不能给 |
+| 3 | 裁决者 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给同样的来源和规则、原始行、被质疑的字段及其当前值；不给审计模型提出的值、证据、理由、置信度。当前值必须提供，因为它正是核对对象；建议值则不得提供 |
 | 4 | `{{DOMAINS}}` | 查什么。例：1. 效应量输入及出处；2. 每行与对照行的配对和计算路径；3. 需要判断的调节变量 |
-| 5 | `{{ROUTING}}` | 流转。例：审计模型返回通过，或一条质疑（行、字段、建议值、规则、证据），或待定项；每条质疑交裁决者，裁决者返回三种结果之一：现有编码成立（驳回质疑，不需要人）；改正成立（与审计模型的隐藏建议完全一致才确认，有差异交人裁决）；来源或规则有歧义（交人裁决） |
+| 5 | `{{ROUTING}}` | 流转。例：审计模型返回通过，或一条质疑（行、字段、建议值、规则、证据），或待定项；每条质疑交裁决者，裁决者返回三种结果之一：现有编码成立（驳回质疑，不需要人）；更正成立（与审计模型的隐藏建议完全一致才确认，有差异交人裁决）；来源或规则有歧义（交人裁决） |
 | 5 | `{{PROHIBITED}}` | 审计模型不能做什么。例：增行、删行、拆行、合并行；重审纳入资格 |
-| 6 | `{{CORRECTION_POLICY}}` | 例：审计从不改原始行；属于单篇、规则本来清楚的错误，写进单独的核对与更正记录（保留改前改后的值），由程序生成新版本的表；暴露出规则不清或有错的错误，改 codebook、升版本、受影响的论文重新编码；规则不变时，重跑编码模型只用于技术故障；作者更正的数值和已发表的勘误也通过这份核对与更正记录进入，注明来源；codebook 澄清后只重审受影响的论文，之前的通过结果保留当时的 codebook 版本 |
+| 6 | `{{CORRECTION_POLICY}}` | 例：审计从不改原始行；属于单篇、规则本来清楚的错误，写进单独的核对与更正记录（保留改前改后的值），由程序生成新版本的表；如果错误暴露出规则不清或规则本身有误，改 codebook、更新版本、受影响的论文重新编码；规则不变时，重跑编码模型只用于技术失败；作者更正的数值和已发表的勘误也通过这份核对与更正记录进入，注明来源；codebook 澄清后只重审受影响的论文，之前的通过结果保留当时的 codebook 版本 |
 | 7 | `{{RETRY_POLICY}}` | 例：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算通过 |
 | 7 | `{{WHAT_IS_REPORTED}}` | 例：总体的行数和论文数、查了多少、质疑数、确认改正数、待定项、人裁决数、审计不覆盖什么 |
 
@@ -542,7 +542,7 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 | `scope.frame` | 总体的编号。例：`frame-2026-09-17-v1` |
 | `scope.units` | 审哪些行。例：`all Row_UIDs in the frame` |
 | `scope.allowed_domains`、`prohibited_actions` | 同 memo 第 4、5 节 |
-| `modes.coding_audit.*`、`modes.coding_adjudication.*` | 两个角色各自的输入、隐藏项、返回字段。已按常见设计填好；与 memo 不一致时改这里。裁决者的 `outcomes` 是三种结果：现有编码成立、改正成立、来源或规则有歧义 |
+| `modes.coding_audit.*`、`modes.coding_adjudication.*` | 两个角色各自的输入、隐藏项、返回字段。已按常见设计填好；与 memo 不一致时改这里。裁决者的 `outcomes` 是三种结果：现有编码成立、更正成立、来源或规则有歧义 |
 | `pass_rule` | 什么算通过。例：`Every checked Row_UID is covered in every allowed domain and no unresolved evidence remains.` |
 | `challenge_rule` | 一条质疑要包含什么。例：行和字段、有来源支持的替代值、规则编号、能找到的位置 |
 | `conflict_rule` | 来源冲突怎么办。例：按 `source_precedence`；否则人裁决；从不编造值 |
@@ -567,18 +567,18 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 
 运行时代入，不手填：`{{ELIGIBILITY_JSON}}`、`{{CODEBOOK_JSON}}`、`{{AUDIT_CODEBOOK_JSON}}`、`{{SOURCES_JSON}}`、`{{TARGET_ROWS_JSON}}`（原始的目标行，效应量字段留空）、`{{COORDINATE_JSON}}`（裁决者要判断的行、字段和当前值）。
 
-裁决者的 prompt 里有当前值，没有审计模型的建议值和证据，这是设计的一部分，不要加进去。它返回三种结果之一：现有编码成立、改正成立（附改正值）、来源或规则有歧义。
+裁决者的 prompt 里有当前值，没有审计模型的建议值和证据，这是设计的一部分，不要加进去。它返回三种结果之一：现有编码成立、更正成立（附更正值）、来源或规则有歧义。
 
 ## 9. 项目起始文件 `project/`
 
 - `README.md`：项目文件夹的说明。开头补上项目名和一句话的研究问题；其余说明可以保留。
 - `CURRENT_STATUS.md`：项目状态。`Status` 一行在批准运行前保持 `DRAFT — no collection authorized`（草稿，未批准收集）；`Completed scope` 每完成一个阶段更新，只写已经完成的，不写推测的下一步。
-- `.gitignore`：不进版本库的东西：密钥（`.env`、`*.key`、`secrets/`）、软件环境、缓存、`_internal/`，以及默认不公开的研究材料：`search/raw/`、`papers/`、`validation/raw/`。分享前检查一遍；已经跟踪的文件不会因为加了规则而消失。
+- `.gitignore`：不进入版本控制的内容：密钥（`.env`、`*.key`、`secrets/`）、软件环境、缓存、`_internal/`，以及默认不公开的研究材料：`search/raw/`、`papers/`、`validation/raw/`。分享前检查一遍；已经跟踪的文件不会因为加了规则而消失。
 - `plans/DECISIONS.md`（程序生成）：所有操作选择的记录。每个提议先写在这里，标明是提议还是已批准。文件开头有一张索引表（编号、决定了什么、状态、日期），随时更新，读的人不用往下翻；除了这张索引和提议的状态行，其余内容只追加、不修改。日志里的时间用 UTC，写之前先读系统时钟，不要估。
 - `plans/STAGE_PLAN.md` 是空白的计划表。每个调用 AI 的阶段复制一份，改名为 `<阶段>_PLAN.md` 再填。
 - `raes_templates.json`（程序生成）：记下建项目时复制了哪些模板、各自的哈希，以及当时 skill 的版本。skill 更新之后，`python tools/check_templates.py --project <项目>` 会告诉你哪些文件还是没填过的旧模板（`outdated`）、哪些已经填过（`filled`）；加 `--refresh` 只替换没填过的那些，填过的一律不动。
 - `pipeline.json` 和 `run_pipeline.py`：一条命令重跑所有由程序完成的阶段，并把每个输出和正式输出比对。每做完一个阶段，就在 `pipeline.json` 的 `stages` 里加一项：`name` 阶段名；`command` 命令（写成列表，输出目录用 `{out}` 表示）；`outputs` 正式输出文件对应重跑出来的哪个文件（重跑文件必须写在 `{out}` 下；默认逐字节比对；带时间戳注释的文件写成 `{"rerun": "...", "compare": "records"}`，只比对非空、非 `#` 注释的文本行，不解析 CSV 字段）。`fixed_files`、`fixed_folders` 列出冻结的输入和程序，文件夹必须真实存在；`run_pipeline.py` 自己总在冻结清单里；浏览器取全文、调用模型这类不能重跑的步骤，把它们的产物列在这里。文件里的 `example` 是一个例子，程序不读它。
-- 运行流水线：规则、程序或输入经批准改动之后，运行 `python run_pipeline.py --write-manifest` 记下新的预期状态（旧清单自动存进 `archive/`），把新清单的哈希写进对应的决策。平时运行 `python run_pipeline.py`：它把结果写到项目之外，每个重跑文件和清单里记的哈希比对，不和此刻的正式文件比，所以某个阶段改写了正式文件也过不了；跑完再核一遍冻结文件没被动过；遇到第一处不一致就停下并指出位置。加 `--copy` 时，它先核对项目和清单一致，再把清单里列的文件复制到项目之外、逐个核对哈希，然后在副本里重跑；副本里只有清单列出的文件，所以每个阶段用到的程序都要列在 `fixed_files` 里。
+- 运行流水线：规则、程序或输入经批准改动之后，运行 `python run_pipeline.py --write-manifest` 记下新的预期状态（旧清单自动存进 `archive/`），把新清单的哈希写进对应的决策。平时运行 `python run_pipeline.py`：它把结果写到项目之外，每个重跑文件和清单里记的哈希比对，不和此刻的正式文件比，所以即使某个阶段意外改写了正式文件，检查也不会因此通过；运行结束后再次核对冻结文件是否保持不变；遇到第一处不一致就停下并指出位置。加 `--copy` 时，它先核对项目和清单一致，再把清单里列的文件复制到项目之外、逐个核对哈希，然后在副本里重跑；副本里只有清单列出的文件，所以每个阶段用到的程序都要列在 `fixed_files` 里。
 - `releases/LEFT_OUT.txt`：做发布时不记入清单的路径，每行一个。默认只有 `pipeline_report.md`，因为每次运行都会重写它。
 
 ## 10. 检查器提示对照
@@ -594,7 +594,7 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 | `identity fields must be non-null, executor-owned source IDs` | 身份字段允许为空，或由程序填 | 身份字段设 `nullable: false`、`owner: executor` |
 | `this identifier/statistic is reserved for deterministic code` | `Row_UID`、`g`、`SE_g`、`CI95_L`、`CI95_U` 的 `owner` 不是 `code` | 改为 `code` |
 | `example key required …`、`expected integer, got float`、`violates minimum` | 例子与类型或范围不符 | 改例子或改类型、范围 |
-| `canonical eligibility bytes differ` | 记录的哈希与文件不符 | 重新算哈希。如果标准改了，升版本并记录影响 |
+| `canonical eligibility bytes differ` | 记录的哈希与文件不符 | 重新算哈希。如果标准改了，更新版本并记录影响 |
 | `file not found`（`eligibility.file`） | 纳入标准文件不在 codebook 同目录 | 放到 `codebook/` 下，路径写 `eligibility.json` |
 | `ready check requires explicit ready status` | 用了 `--ready` 但 `status` 不是 `ready` | 审核通过后再改 `ready` |
 | `ISO YYYY-MM-DD required` | 日期格式不对 | 改成 `2026-09-17` 这样的格式 |
@@ -606,7 +606,7 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 2. 规则：写 codebook、审计 codebook 或筛选规则，草稿检查通过。
 3. 审核、批准，算哈希，跑 `--ready` 检查。
 4. prompt：生成或核对。
-5. 试跑三到五篇；有问题改规则（改一般规则，不改单篇），升版本。
+5. 试跑三到五篇；有问题改规则（改一般规则，不改单篇），更新版本。
 6. 冻结（`tools/freeze.py` 写哈希清单），然后运行。运行程序是你自己的；RAES 不向任何服务商发请求。
 7. 更新 `CURRENT_STATUS.md` 和 `plans/DECISIONS.md`。
 8. 阶段完成后做一次发布：`python tools/release.py --project <项目> create <名字>`，再 `activate <名字>`。它原地记录每个文件的哈希，不复制文件；之后 `verify` 能查出任何改动。决策日志也在清单里，所以关于这次发布的那条日志要在 `create` 之前写；`activate` 会在发布文件夹里自动写一份 `ACTIVATION.md`（时间、清单哈希、它取代了哪个发布），事后才知道的内容记在那里。发布记的是哈希，不是内容：它能查出文件变没变，但不能把旧文件找回来，`activate` 也只是移动指针；要能回到旧版本，项目要用 git 之类的版本控制，或者另存归档副本；项目里的 `.git` 文件夹不进清单。重建全部结果时，用 `python tools/run_offline.py -- <命令>` 跑，它对自己启动的 Python 进程切断网络；项目还要启动别的程序时，另外给它们做网络隔离。
