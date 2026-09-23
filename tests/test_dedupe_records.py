@@ -147,6 +147,26 @@ class DedupeTests(unittest.TestCase):
         twice = module.parse_ris(preprint, "europepmc") + module.parse_ris(preprint, "other")
         self.assertEqual(module.run([dict(r) for r in twice], project_rules(), [])["counts"]["duplicates_by_rule"]["M3"], 1)
 
+    def test_version_label_counts_for_the_whole_group(self):
+        module = load_module()
+        title = "Structured feedback improves task performance in independent adults"
+
+        def rec(name, label, doi):
+            lines = ["TY  - JOUR", f"TI  - {title}", "AU  - Example, A", "PY  - 2026", f"AB  - Copy {name}."]
+            lines += ["M3  - Preprint"] if label else []
+            lines += [f"DO  - {doi}"] if doi else []
+            return "\n".join(lines + ["ER  - ", ""]) + "\n"
+
+        # A and B are two copies of one preprint (same DOI); only B carries the label. C is the journal version, no DOI.
+        a, b, c = rec("A", False, "10.0000/preprint"), rec("B", True, "10.0000/preprint"), rec("C", False, "")
+        for order in ((a, b, c), (b, a, c), (c, a, b), (a, c, b)):
+            records = module.parse_ris("".join(order), "x")
+            result = module.run([dict(r) for r in records], project_rules(), [])
+            counts = result["counts"]
+            self.assertEqual((counts["groups"], counts["duplicates_by_rule"]["M2"], counts["review_pairs_pending"]), (2, 1, 1),
+                             "the label of B protects the group A+B in every order")
+            self.assertEqual([r["rule"] for r in result["review"]], ["R4"])
+
     def test_not_duplicate_decision_is_kept_through_a_chain(self):
         module = load_module()
         title = "Walking for depression in older adults a randomized trial"

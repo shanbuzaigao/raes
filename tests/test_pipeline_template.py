@@ -137,6 +137,17 @@ class PipelineTemplateTests(unittest.TestCase):
             self.assertIn("a stage changed a frozen input", result.stdout)
             self.assertIn("inputs/data.txt", result.stdout)
 
+    def test_an_empty_fixed_folder_survives_copy_mode(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = make_project(Path(tmp))
+            (project / "empty_inputs").mkdir()
+            write_config(project, fixed_folders=["empty_inputs"])
+            self.assertEqual(self.run_pipeline(project, "--write-manifest").returncode, 0)
+            self.assertEqual(self.run_pipeline(project, "--output", str(Path(tmp) / "plain")).returncode, 0)
+            copied = self.run_pipeline(project, "--copy", "--output", str(Path(tmp) / "copied"))
+            self.assertEqual(copied.returncode, 0, copied.stdout + copied.stderr)
+            self.assertTrue((Path(tmp) / "copied/project/empty_inputs").is_dir(), "the empty fixed folder exists in the copy")
+
     def test_configuration_errors_and_copy_mode_check_the_source_project(self):
         with tempfile.TemporaryDirectory() as tmp:
             project = make_project(Path(tmp))

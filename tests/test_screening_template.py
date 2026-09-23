@@ -6,6 +6,7 @@ import csv
 import importlib.util
 import io
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -156,13 +157,26 @@ class ScreeningSkeletonTests(unittest.TestCase):
             code, err = run_main(module, ["ft", str(more), "--after-ta", str(decisions), "--texts", str(texts), "--output", str(Path(tmp) / "ft1")])
             self.assertEqual(code, 1)
             self.assertIn("not in the ta decisions: R5", err)
-            # A decisions file with a row missing is refused too.
-            short = Path(tmp) / "short.csv"
-            short.write_text("".join(line for line in decisions.read_text(encoding="utf-8").splitlines(keepends=True)
-                                     if not line.startswith("R3,")), encoding="utf-8")
-            code, err = run_main(module, ["ft", str(records), "--after-ta", str(short), "--texts", str(texts), "--output", str(Path(tmp) / "ft2")])
+            # A decisions file copied away from its run, without the run's summary.json, is refused: its origin cannot be checked.
+            short = Path(tmp) / "short"
+            short.mkdir()
+            (short / "decisions.csv").write_text("".join(line for line in decisions.read_text(encoding="utf-8").splitlines(keepends=True)
+                                                         if not line.startswith("R3,")), encoding="utf-8")
+            code, err = run_main(module, ["ft", str(records), "--after-ta", str(short / "decisions.csv"), "--texts", str(texts),
+                                          "--output", str(Path(tmp) / "ft2")])
+            self.assertEqual(code, 1)
+            self.assertIn("summary.json is missing", err)
+            # With the summary next to it, a decisions file with a row missing is refused too.
+            shutil.copy2(ta_out / "summary.json", short / "summary.json")
+            code, err = run_main(module, ["ft", str(records), "--after-ta", str(short / "decisions.csv"), "--texts", str(texts),
+                                          "--output", str(Path(tmp) / "ft2b")])
             self.assertEqual(code, 1)
             self.assertIn("not in the ta decisions: R3", err)
+            # Same identifiers, changed content: the recorded input hash catches it.
+            changed = write_records(Path(tmp), [dict(RECORDS[0], abstract="A changed abstract.")] + RECORDS[1:], "changed.csv")
+            code, err = run_main(module, ["ft", str(changed), "--after-ta", str(decisions), "--texts", str(texts), "--output", str(Path(tmp) / "ft2c")])
+            self.assertEqual(code, 1)
+            self.assertIn("another input hash", err)
             # A record the audit confirmed after a ta exclusion enters the full-text phase from the frozen list.
             listing = Path(tmp) / "after_ta_audit.txt"
             listing.write_text("# confirmed by the title-and-abstract audit, round 2\nR2\n", encoding="utf-8")

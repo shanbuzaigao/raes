@@ -194,6 +194,9 @@ def rerun_in_copy(config: dict, out: Path) -> tuple[bool, list[str]]:
         shutil.copy2(PROJECT / name, target)
         if sha256_of(target) != sha256_of(PROJECT / name):
             raise ValueError(f"the copy of {name} differs from its source")
+    # A fixed folder that holds no file yet is allowed and has to exist in the copy as well.
+    for folder in config.get("fixed_folders", []):
+        (copy / folder).mkdir(parents=True, exist_ok=True)
     done = subprocess.run([sys.executable, Path(__file__).name, "--output", str(out / "rerun")], cwd=copy,
                           capture_output=True, text=True)
     lines = [f"copied {len(names)} files to {copy}"]

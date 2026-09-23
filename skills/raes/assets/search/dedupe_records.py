@@ -210,12 +210,17 @@ def collect(inputs: list[Path]) -> tuple[list[dict], list[dict]]:
 # ---------------------------------------------------------------- grouping
 
 class Groups:
-    """Union-find over record IDs that tracks the PubMed IDs and DOIs of each group, so no merge joins conflicting identifiers."""
+    """Union-find over record IDs that tracks the PubMed IDs, the DOIs and the report-version labels of each group.
 
-    def __init__(self, records: list[dict]):
+    No merge joins conflicting identifiers, and a group keeps the labels of every record merged into it, so a
+    preprint label found on one copy of a report protects the whole group.
+    """
+
+    def __init__(self, records: list[dict], versioned: set[str]):
         self.parent = {r["record_id"]: r["record_id"] for r in records}
         self.pmids = {r["record_id"]: {r["pmid"]} - {""} for r in records}
         self.dois = {r["record_id"]: {norm_doi(r["doi"])} - {""} for r in records}
+        self.versioned = {r["record_id"]: r["record_id"] in versioned for r in records}
 
     def find(self, x: str) -> str:
         while self.parent[x] != x:
@@ -229,6 +234,10 @@ class Groups:
             return True
         return check_doi and len(self.dois[ra] | self.dois[rb]) > 1
 
+    def is_versioned(self, x: str) -> bool:
+        """Whether any record in the group of x carries a report-version label."""
+        return self.versioned[self.find(x)]
+
     def union(self, a: str, b: str) -> bool:
         ra, rb = self.find(a), self.find(b)
         if ra == rb:
@@ -236,6 +245,7 @@ class Groups:
         self.parent[rb] = ra
         self.pmids[ra] |= self.pmids[rb]
         self.dois[ra] |= self.dois[rb]
+        self.versioned[ra] = self.versioned[ra] or self.versioned[rb]
         return True
 
 
@@ -259,14 +269,12 @@ def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
             raise ValueError("the decisions file names records that are not in the inputs: " + ", ".join(unknown))
     for r in records:
         r["ntitle"], r["nauthor"] = norm_text(r["title"]), norm_text(r["first_author"])
-    groups, edges, review, conflicts = Groups(records), [], {}, []
     min_words, threshold = rules["min_title_words"], rules["similarity_threshold"]
     version_labels = rules.get("report_version_labels", [])
+    # Records that carry a label marking a report version other than the journal article (a preprint).
+    labelled = {r["record_id"] for r in records if any(fnmatchcase(t, p) for t in r["doc_types"] for p in version_labels)}
+    groups, edges, review, conflicts = Groups(records, labelled), [], {}, {}
     cannot = [(d["record_id_a"], d["record_id_b"]) for d in decisions if d["decision"] == "not_duplicate"]
-
-    def versioned(rid: str) -> bool:
-        """Whether the record carries a label that marks a report version other than the journal article."""
-        return any(fnmatchcase(t, p) for t in by_id[rid]["doc_types"] for p in version_labels)
 
     def merge(a: str, b: str, rule: str) -> None:
         ra, rb = groups.find(a), groups.find(b)
@@ -275,7 +283,7 @@ def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
         for x, y in cannot:
             # A not_duplicate decision keeps the two records apart, also when a chain of duplicates would join them.
             if {groups.find(x), groups.find(y)} == {ra, rb}:
-                conflicts.append({"rule": rule, "a": a, "b": b, "decision_a": x, "decision_b": y})
+                conflicts.setdefault(tuple(sorted((ra, rb))), {"rule": rule, "a": a, "b": b, "decision_a": x, "decision_b": y})
                 return
         if groups.union(a, b):
             edges.append((a, b, rule))
@@ -305,25 +313,28 @@ def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
             else:
                 merge(members[0], other, "M2")
     # M3: same title and year, unless PubMed IDs or DOIs conflict; short titles go to review; a preprint and
-    # its journal version (exactly one of the two carries a report-version label) go to review as well.
+    # its journal version go to review as well: exactly one of the two groups carries a report-version label,
+    # the label of any copy already merged into a group counting for the group. Every pair of the block is
+    # looked at, so the outcome does not depend on the order of the records.
     by_title_year = defaultdict(list)
     for r in records:
         if r["ntitle"] and r["year"]:
             by_title_year[(r["ntitle"], r["year"])].append(r["record_id"])
     for (title, _), members in by_title_year.items():
-        for other in members[1:]:
-            a = members[0]
-            if groups.find(a) == groups.find(other):
-                continue
-            if len(title.split()) < min_words:
-                if by_id[a]["nauthor"] == by_id[other]["nauthor"]:
+        short = len(title.split()) < min_words
+        for i, a in enumerate(members):
+            for other in members[i + 1:]:
+                if groups.find(a) == groups.find(other):
+                    continue
+                if short:
+                    if by_id[a]["nauthor"] == by_id[other]["nauthor"]:
+                        flag(a, other, "R2")
+                elif groups.conflict(a, other, check_doi=True):
                     flag(a, other, "R2")
-            elif groups.conflict(a, other, check_doi=True):
-                flag(a, other, "R2")
-            elif versioned(a) != versioned(other):
-                flag(a, other, "R4")
-            else:
-                merge(a, other, "M3")
+                elif groups.is_versioned(a) != groups.is_versioned(other):
+                    flag(a, other, "R4")
+                else:
+                    merge(a, other, "M3")
     # The researcher's decisions on earlier review pairs.
     for d in decisions:
         if d["decision"] == "duplicate":
@@ -351,6 +362,14 @@ def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
                 ratio = difflib.SequenceMatcher(None, by_id[a]["ntitle"], by_id[b]["ntitle"]).ratio()
                 if ratio >= threshold:
                     flag(a, b, "R3", round(ratio, 3))
+    # A review pair names two groups. A pair whose records were joined by a later rule or decision is dropped,
+    # and two pairs that now name the same two groups are one pair.
+    collapsed = {}
+    for pair in review.values():
+        roots = tuple(sorted((groups.find(pair["a"]), groups.find(pair["b"]))))
+        if roots[0] != roots[1] and roots not in collapsed:
+            collapsed[roots] = pair
+    review = collapsed
 
     # Groups, the kept record of each, and the document-type rule.
     members_of = defaultdict(list)
@@ -402,7 +421,7 @@ def run(records: list[dict], rules: dict, decisions: list[dict]) -> dict:
                             "pmid_a": a["pmid"], "pmid_b": b["pmid"], "title_a": a["title"], "title_b": b["title"],
                             "decision": decision.get("decision", ""), "note": decision.get("note", "")})
     # A rule that would join two records a not_duplicate decision keeps apart: reported, not resolved.
-    for n, c in enumerate(conflicts, 1):
+    for n, c in enumerate(conflicts.values(), 1):
         a, b = by_id[c["a"]], by_id[c["b"]]
         review_rows.append({"pair_id": f"X{n:03d}", "rule": f"{c['rule']} vs not_duplicate", "record_id_a": a["record_id"],
                             "record_id_b": b["record_id"], "similarity": "", "year_a": a["year"], "year_b": b["year"],

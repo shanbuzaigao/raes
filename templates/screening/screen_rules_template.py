@@ -8,10 +8,11 @@ eligibility file. Then run:
     python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.csv --texts fulltext/ --output out/ft_v0.1
 
 The full-text phase screens the records that the title-and-abstract phase kept;
-it reads that list from the decisions file of the earlier run, and it checks that
-the earlier run covered exactly the records file it is given: every record_id, and
-the input hash that the run's summary.json recorded. A missing row therefore cannot
-pass as an exclusion. Records that the screening audit (S5) confirmed after a
+it reads that list from the decisions file of the earlier run, with the run's
+summary.json next to it, and it checks that the earlier run covered exactly the
+records file it is given: every record_id, and the input hash that summary.json
+recorded. A missing row therefore cannot pass as an exclusion, and a records file
+with the same identifiers but changed content is refused. Records that the screening audit (S5) confirmed after a
 title-and-abstract exclusion are listed, one record_id per line, in a frozen file
 passed with --after-ta-audit: the full-text phase screens them in addition, and
 the title-and-abstract decisions stay as they are. A record whose full text truly
@@ -216,11 +217,12 @@ def read_records(path: Path) -> list[dict]:
     return rows
 
 
-def read_ta_run(decisions_path: Path) -> tuple[set[str], set[str], str | None]:
-    """Read the decisions file of the title-and-abstract run.
+def read_ta_run(decisions_path: Path) -> tuple[set[str], set[str], str]:
+    """Read the decisions file of the title-and-abstract run and the summary.json next to it.
 
     Returns the kept record IDs, every record ID the run decided, and the hash of the records file
-    that the run's summary.json recorded, when that file is next to the decisions file.
+    that the run recorded. Without the summary file the origin of the decisions cannot be checked,
+    so its absence is an error.
     """
     with decisions_path.open(encoding="utf-8-sig", newline="") as handle:
         rows = list(csv.DictReader(handle))
@@ -235,7 +237,11 @@ def read_ta_run(decisions_path: Path) -> tuple[set[str], set[str], str | None]:
     if unknown:
         raise ValueError("the ta decisions file has a decision other than keep or exclude: " + ", ".join(unknown))
     summary = decisions_path.parent / "summary.json"
-    recorded = json.loads(summary.read_text(encoding="utf-8")).get("input_sha256") if summary.is_file() else None
+    if not summary.is_file():
+        raise ValueError("the ta run's summary.json is missing next to its decisions.csv; pass the decisions file from the run's own folder")
+    recorded = json.loads(summary.read_text(encoding="utf-8")).get("input_sha256")
+    if not isinstance(recorded, str) or not re.fullmatch(r"[0-9a-f]{64}", recorded):
+        raise ValueError("the ta run's summary.json records no input hash; it is not the summary the ta phase wrote")
     return {row["record_id"] for row in rows if row["decision"] == "keep"}, set(ids), recorded
 
 
@@ -335,7 +341,7 @@ def main(argv: list[str] | None = None) -> int:
                 if decided - all_ids:
                     parts.append("not in the records file: " + ", ".join(sorted(decided - all_ids)[:10]))
                 raise ValueError("the ta run does not cover this records file exactly; " + "; ".join(parts))
-            if recorded and recorded != sha256_of(args.records):
+            if recorded != sha256_of(args.records):
                 raise ValueError("the ta run screened a different records file; its summary.json records another input hash")
             if args.after_ta_audit:
                 added = read_id_list(args.after_ta_audit)

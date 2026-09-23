@@ -7,17 +7,17 @@
   "min_title_words": 6,
   "similarity_threshold": 0.9,
   "report_version_labels": ["Preprint", "UNPB"],
-  "report_version_note": "Document-type labels that mark a report version other than the journal article: PubMed labels preprints Preprint, and RIS exports of preprints use the type UNPB. Two records with the same title and year, of which exactly one carries such a label, are a preprint and its journal version until the researcher says otherwise (rule R4); the script never merges them on its own. Patterns may use * and ?.",
+  "report_version_note": "Document-type labels that mark a report version other than the journal article: PubMed labels preprints Preprint, and RIS exports of preprints use the type UNPB. Two records with the same title and year, of which exactly one carries such a label, are a preprint and its journal version until the researcher says otherwise (rule R4); the script never merges them on its own. A label counts for the whole group of duplicates a record has already been merged into, so one labelled copy protects every copy of that report. Patterns may use * and ?.",
   "match_rules": [
     {"id": "M1", "text": "Same PubMed ID."},
     {"id": "M2", "text": "Same normalized DOI, unless the two records, or the groups of duplicates they already belong to, carry different PubMed IDs."},
-    {"id": "M3", "text": "Same normalized title of at least min_title_words words and same year, unless PubMed IDs or DOIs conflict, or exactly one of the two records carries a report-version label."}
+    {"id": "M3", "text": "Same normalized title of at least min_title_words words and same year, unless PubMed IDs or DOIs conflict, or exactly one of the two groups of duplicates carries a report-version label. Every pair of records with the same title and year is looked at, so the result does not depend on the order of the records."}
   ],
   "review_rules": [
     {"id": "R1", "text": "Same normalized title of at least min_title_words words, years one apart, no conflicting identifiers."},
     {"id": "R2", "text": "A pair that meets M2 or M3 except for conflicting identifiers, or that has the same title and year but a title shorter than min_title_words words."},
     {"id": "R3", "text": "Same first-author surname and year, title similarity of at least similarity_threshold, not already in one group."},
-    {"id": "R4", "text": "Same normalized title and year, no conflicting identifiers, but exactly one of the two records carries a report-version label: a preprint and its journal version, two reports of one study, which the same-study check (S6) links."}
+    {"id": "R4", "text": "Same normalized title and year, no conflicting identifiers, but exactly one of the two groups of duplicates carries a report-version label: a preprint and its journal version, two reports of one study, which the same-study check (S6) links."}
   ],
   "review_note": "Pairs found by R1 to R4 are never merged by the script on its own. The researcher decides each pair in a decisions file with the columns record_id_a, record_id_b, decision (duplicate or not_duplicate) and note. A duplicate decision merges the pair. A not_duplicate decision keeps the two records apart even when a rule, or a chain of duplicates, would join their groups; the script reports such a contradiction in review_pairs.csv instead of resolving it.",
   "normalization": "Titles and surnames: Unicode NFKD, accents removed, lower case, every character other than a-z and 0-9 replaced by a space, spaces collapsed. DOIs: lower case, the prefixes doi: and https://doi.org/ removed.",

@@ -217,7 +217,7 @@ python screen_rules_template.py ta records.csv --output out/ta_v0.1
 python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.csv --texts fulltext/ --output out/ft_v0.1
 ```
 
-全文阶段筛题目摘要阶段保留的记录，名单从 `--after-ta` 指定的结果文件里读；程序会核对那次运行是否恰好覆盖了这份记录文件的全部编号，并核对它 `summary.json` 里记的输入哈希，少一行也不会被当成排除。`--after-ta-audit <清单文件>` 追加审计确认的记录；`--not-retrieved <清单文件>` 跳过取不到全文的记录。两者都只用于全文阶段，见上面的输入。加 `--expect-sha256 <哈希>` 时，记录文件和冻结时不一致就拒绝运行。`--help` 显示全部选项。
+全文阶段筛题目摘要阶段保留的记录，名单从 `--after-ta` 指定的结果文件里读；程序会核对那次运行是否恰好覆盖了这份记录文件的全部编号，并核对它 `summary.json` 里记的输入哈希，少一行也不会被当成排除；`summary.json` 必须和 `decisions.csv` 在同一个文件夹里，缺了就停，所以不要把决定文件单独复制到别处再传给程序。`--after-ta-audit <清单文件>` 追加审计确认的记录；`--not-retrieved <清单文件>` 跳过取不到全文的记录。两者都只用于全文阶段，见上面的输入。加 `--expect-sha256 <哈希>` 时，记录文件和冻结时不一致就拒绝运行。`--help` 显示全部选项。
 
 **输出**（写到一个新目录，从不覆盖）
 
@@ -238,6 +238,8 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | `the not-retrieved list names records that were not kept at the ta phase: …` | 清单里有不在题目摘要保留名单里的编号 | 核对编号；只有保留的记录才谈得上取全文 |
 | `listed as not retrieved but the text file exists: …` | 清单和全文文件夹矛盾 | 核实这篇是不是真的取到了：取到了就从清单里去掉；文件其实不是这篇的，就把它移出全文文件夹并记录原因 |
 | `the ta run does not cover this records file exactly; …` | 题目摘要那次运行覆盖的记录和这份记录文件对不上 | 两个阶段用同一份记录文件；记录文件变了就先重跑题目摘要阶段 |
+| `the ta run's summary.json is missing next to its decisions.csv` | 决定文件旁边没有那次运行的汇总文件 | 用题目摘要运行自己文件夹里的 `decisions.csv`，不要单独复制出去 |
+| `the ta run screened a different records file; …` | 记录文件编号一样但内容变了 | 先重跑题目摘要阶段，再跑全文阶段 |
 | `the ta-audit list names records that the ta phase kept already: …` | 追加清单里有题目摘要阶段本来就保留的记录 | 清单只放题目摘要阶段排除、审计确认的记录 |
 | `CRITERIA_FT must have the same criterion IDs as CRITERIA …` | 全文规则表少了或多了标准 | 让两张表的编号一致；全文不查的标准保留条目，`check_at` 不写 `"ft"` |
 | `Output directory already exists; choose a new one` | 输出目录已存在 | 换一个新目录名，结果从不覆盖 |
