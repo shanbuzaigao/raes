@@ -16,16 +16,26 @@ All domain knowledge sits in a versioned codebook, so the workflow itself does n
 
 ## What you get
 
+- **A skill, `raes`,** for Claude Code, Codex and other hosts that support Agent Skills. It walks you through the workflow stage by stage: it asks for the decisions a stage needs, writes the files from the templates and runs the checks.
 - **A working manual** for the whole synthesis, from the research question to the release: [PROTOCOL.md](PROTOCOL.md) ([中文](PROTOCOL.zh-CN.md)).
 - **Templates** for every file the method asks you to write, and a starter project that already contains its programs: a deduplication script, a rule-based screening program, and one command that rebuilds every result.
-- **A skill, `raes`,** for Claude Code, Codex and other hosts that support Agent Skills. It walks you through the workflow stage by stage: it asks for the decisions a stage needs, writes the files from the templates and runs the checks.
 - **A small invented example** that runs the whole pipeline offline, with saved AI answers, an audit that finds a wrongly excluded paper, which the revised rule then includes, and a coding error that the audit corrects.
 
 ## How to use this repository
 
-You need Python 3.10 or newer and nothing else. No package has to be installed, and nothing here calls a model or needs a key. A real review adds its own model access and its own runner for the AI steps; see "What is not included".
+You need Python 3.10 or newer and nothing else. No package has to be installed, and nothing here calls a model or needs a key. For a real review, the AI steps (S5, S8, S9) need your own API access; see "What is not included".
 
-**0. Get it.**
+**1. Install the skill.** In Claude Code or Codex, say:
+
+> Install the skill `raes` from https://github.com/shanbuzaigao/raes.
+
+The assistant fetches the repository and puts `skills/raes` into its skills folder. Restart the host, then type `/raes` (Claude Code) or `$raes` (Codex) with a sentence about where you are:
+
+> /raes I have a research question about structured versus plain feedback and no files yet. Start at S0.
+
+The skill asks, drafts, checks and records. It does not decide for you, and it never sends a request to a model provider. To install by hand: clone the repository and run `python tools/install_skill.py --destination ~/.claude/skills`; for Codex use `~/.agents/skills`. After the repository has changed, run the same command with `--replace`. Other hosts are listed in [skills/](skills/README.md).
+
+**2. Look inside.** For that you need the repository:
 
 ```sh
 git clone https://github.com/shanbuzaigao/raes.git
@@ -34,7 +44,7 @@ cd raes
 
 Or use "Download ZIP" on the repository page.
 
-**1. See it run.**
+*See it run.*
 
 ```sh
 python examples/synthetic/reproduce.py
@@ -42,9 +52,9 @@ python examples/synthetic/reproduce.py
 
 Everything in the example is invented. It rebuilds all results from saved answers and shows a duplicate record, a paper that was wrongly screened out, found by the audit and included by the revised rule, a missing SD, a failed model answer followed by a retry, and a coding error caught by the audit. [examples/synthetic/](examples/synthetic/README.md) explains what to look for.
 
-**2. Read the method.** [PROTOCOL.md](PROTOCOL.md) expands every stage of the figure below in the same format: who does it, what goes in and comes out, what I do, and what I check before moving on.
+*Read the method.* [PROTOCOL.md](PROTOCOL.md) expands every stage of the figure below in the same format: who does it, what goes in and comes out, what I do, and what I check before moving on.
 
-**3. Start your own project.**
+*Start your own project by hand.*
 
 ```sh
 python tools/new_project.py ../my-evidence-project
@@ -52,16 +62,6 @@ python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eli
 ```
 
 The first command creates a project folder outside the repository, with the templates in the order of the pipeline and three programs of its own: `search/dedupe_records.py`, `screening/screen_rules_template.py` and `run_pipeline.py`. The second command checks the first file you fill in, the eligibility criteria. [templates/](templates/README.md) says what each file is for and at which stage you fill it in; a [field-by-field guide in Chinese](templates/GUIDE.zh-CN.md) explains every entry.
-
-**4. Or let an AI assistant walk you through it.** Install the skill into Claude Code, restart Claude Code, and type `/raes` with a sentence about where you are:
-
-```sh
-python tools/install_skill.py --destination ~/.claude/skills
-```
-
-> /raes I have a research question about structured versus plain feedback and no files yet. Start at S0.
-
-For Codex, use `--destination ~/.agents/skills` and invoke it as `$raes`. After the repository has changed, update the installed copy with the same command plus `--replace`. The skill asks, drafts, checks and records. It does not decide for you, and it never sends a request to a model provider. Other hosts are listed in [skills/](skills/README.md).
 
 ## The pipeline at a glance
 

@@ -12,22 +12,32 @@ RAES 是我为自己的元分析搭建的工作流。当时文献增长的速度
 
 > 我制定规则，AI 执行规则。独立的 AI 审计执行过程。每一个数字都由确定性程序计算，或者直接取自文献；整个运行过程支持离线复现。
 
-这套方法面向元分析、系统综述和类似的证据整合工作。它不是又一个自动筛选工具。给摘要排序或提取字段的工具，自动化的是单个任务；RAES 关注的是整个证据整合流程如何运行，让其他人能够核查。
+这套方法适用于元分析、系统综述和类似的证据整合工作。它并非只是一个用于摘要排序、提取字段的自动筛选工具；RAES 要解决的是整个证据整合过程怎样运行，好让其他人能够核查。
 
 所有领域知识都存放在带版本号的 codebook 中，因此工作流本身并不依赖具体的研究领域。我在一个社会科学项目中开发并完整使用了这套方法，那就是我的工作论文 *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments* 中的元分析。这项元分析研究大语言模型在经典经济博弈中的行为，共纳入 72 项研究，其中 54 项贡献了 757 个效应量。
 
 ## 你能得到什么
 
+- **一个 skill，`raes`**，用于 Claude Code、Codex 和其他支持 Agent Skills 的宿主。它带你逐个阶段跑通工作流：询问当前阶段需要的决定、根据模板生成文件，并运行各项检查。
 - **一份操作手册**，覆盖整个证据整合过程，从研究问题到发布：[PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md)（英文版 [PROTOCOL.md](PROTOCOL.md)）。
 - **一套模板**，方法要求你写的每一份文件都有对应的模板；还有一个起步项目，已经自带三个程序：去重脚本、规则化筛选程序，以及一条重新生成全部结果的命令。
-- **一个 skill，`raes`**，用于 Claude Code、Codex 和其他支持 Agent Skills 的宿主。它带你逐个阶段跑通工作流：询问当前阶段需要的决定、根据模板生成文件，并运行各项检查。
 - **一个编造的小型示例**，在离线状态下运行整条流程。它包含保存好的 AI 回答；一次审计发现了一篇被误排除的论文，随后修订的规则把它纳入；还有一处编码错误，由审计更正。
 
 ## 如何使用本仓库
 
-你只需要 Python 3.10 或更高版本，不需要其他任何东西。无需安装任何包，这里的代码也不调用任何模型、不需要任何密钥。真正的综述项目需要自己接入模型，并准备用于 AI 步骤的运行程序；详见“未包含的内容”。
+你只需要 Python 3.10 或更高版本，不需要其他任何东西。无需安装任何包，这里的代码也不调用任何模型、不需要任何密钥。真正做一项综述时，调用 AI 的步骤（S5、S8、S9）需要自己设置 API；详见“未包含的内容”。
 
-**0. 获取仓库。**
+**1. 装 skill。** 在 Claude Code 或 Codex 里说一句：
+
+> 把 https://github.com/shanbuzaigao/raes 里的 skill `raes` 装上。
+
+助手会取下仓库，把 `skills/raes` 放进它的 skill 文件夹。重启宿主，然后输入 `/raes`（Claude Code）或 `$raes`（Codex），再用一句话说明你现在到了哪一步：
+
+> /raes 我有一个关于结构化反馈和普通反馈的研究问题，还没有任何文件。从 S0 开始。
+
+这个 skill 负责提问、起草、检查和记录。它不会替你做决定，也绝不会向模型厂商发送请求。想自己动手装：clone 仓库，运行 `python tools/install_skill.py --destination ~/.claude/skills`，Codex 用 `~/.agents/skills`。仓库更新之后，同一条命令加上 `--replace`。其他宿主见 [skills/](skills/README.zh-CN.md)。
+
+**2. 看看里面。** 这一步需要仓库：
 
 ```sh
 git clone https://github.com/shanbuzaigao/raes.git
@@ -36,7 +46,7 @@ cd raes
 
 也可以在仓库页面点击“Download ZIP”。
 
-**1. 查看运行效果。**
+*查看运行效果。*
 
 ```sh
 python examples/synthetic/reproduce.py
@@ -44,9 +54,9 @@ python examples/synthetic/reproduce.py
 
 示例中的所有内容都是编造的。它会根据保存的回答重新生成全部结果，并演示以下情况：一条重复的记录、一篇被误排除的论文（审计发现后，由修订的规则纳入）、一处缺失的 SD、一次模型回答失败后的重试，以及一处由审计发现的编码错误。[examples/synthetic/](examples/synthetic/README.zh-CN.md) 说明了重点看什么。
 
-**2. 阅读方法。** [PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md) 以相同的格式展开下图中的每一个阶段：由谁来做、输入和输出是什么、我怎么做，以及进入下一阶段前检查什么。
+*阅读方法。* [PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md) 以相同的格式展开下图中的每一个阶段：由谁来做、输入和输出是什么、我怎么做，以及进入下一阶段前检查什么。
 
-**3. 开始你自己的项目。**
+*自己动手建项目。*
 
 ```sh
 python tools/new_project.py ../my-evidence-project
@@ -54,16 +64,6 @@ python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eli
 ```
 
 第一条命令会在本仓库目录之外创建一个项目文件夹，其中按流程顺序放置了各模板，并自带三个程序：`search/dedupe_records.py`、`screening/screen_rules_template.py` 和 `run_pipeline.py`。第二条命令检查你填写的第一份文件，即纳入标准文件。[templates/](templates/README.zh-CN.md) 说明了每份文件的作用以及应该在哪一个阶段填写；[逐字段中文指南](templates/GUIDE.zh-CN.md) 逐条说明每一项怎么填。
-
-**4. 或者让 AI 助手带你完成。** 将 skill 安装到 Claude Code 中，重启 Claude Code，然后输入 `/raes`，再用一句话说明你现在到了哪一步：
-
-```sh
-python tools/install_skill.py --destination ~/.claude/skills
-```
-
-> /raes 我有一个关于结构化反馈和普通反馈的研究问题，还没有任何文件。从 S0 开始。
-
-如果使用 Codex，请使用 `--destination ~/.agents/skills` 并通过 `$raes` 调用。仓库更新之后，用同一条命令加上 `--replace` 更新已安装的那份。这个 skill 负责提问、起草、检查和记录。它不会替你做决定，也绝不会向模型厂商发送请求。其他宿主见 [skills/](skills/README.zh-CN.md)。
 
 ## 流程总览
 
