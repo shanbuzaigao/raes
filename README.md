@@ -21,6 +21,14 @@ All domain knowledge sits in a versioned codebook, so the workflow itself does n
 - **Templates** for every file the method asks you to write, and a starter project that already contains its programs: a deduplication script, a rule-based screening program, and one command that rebuilds every result.
 - **A small invented example** that runs the whole pipeline offline, with saved AI answers, an audit that finds a wrongly excluded paper, which the revised rule then includes, and a coding error that the audit corrects.
 
+## Who RAES is for
+
+If you want to use AI to help with a literature review, RAES provides a structured workflow. It is designed for meta-analyses and systematic reviews, but it can also support other projects that select studies from a body of literature, extract information, compare findings, or organize evidence.
+
+RAES is especially useful when a project involves a large body of literature and structured information needs to be extracted from papers, while you also want to make clear where AI was used, what rules guided its decisions, how those decisions were checked, and how the overall process can remain auditable and reproducible.
+
+You do not have to adopt the whole workflow at once. Depending on the project, you can start with the templates, the codebook, the audit design, or the reproduction tools, and extend from there.
+
 ## How to use this repository
 
 You need Python 3.10 or newer and nothing else. No package has to be installed, and nothing here calls a model or needs a key. For a real review, the AI steps (S5, S8, S9) need your own API access; see "What is not included".
