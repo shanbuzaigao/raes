@@ -4,7 +4,7 @@
 
 这份指南面向中文读者，按文件和字段逐一说明每个模板该如何填写。模板本身依然保留英文：因为 prompt 和 codebook 是写给模型看的，整个项目只保留这一个英文版本；同时，JSON 里的字段名也需要与检查程序保持一致。因此，项目文件统一使用英文，中文解释都在本指南中说明。
 
-每个字段按同一格式写：**是什么、填什么、例**。例子按我的项目改写（一篇关于大语言模型在经典经济学博弈中行为表现的综述），做了简化，只示意填法，不是必须照做的。
+每个字段都按同一格式说明：**它是什么、该填什么，并给出一个例子**。例子按我的项目改写（一篇关于大语言模型在经典经济学博弈中行为表现的综述），做了简化，只示意填法，不是必须照做的。
 
 各节按[操作手册](../PROTOCOL.zh-CN.md)的阶段排列。不必从头读到尾，做到哪一步查哪一节。
 
@@ -87,7 +87,7 @@ python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eli
 
 （C1：研究至少报告一种经典经济学博弈。澄清里写了纳入、排除、拿不准各一例。）
 
-`mixed_condition_rule` 例：`"Apply the criteria to each experimental condition. Code the eligible conditions and list each skipped condition with the criterion it failed."`（按实验条件逐个判断；符合的编码，不符合的记下来并注明是哪条标准不符合。）
+`mixed_condition_rule` 例子：`"Apply the criteria to each experimental condition. Code the eligible conditions and list each skipped condition with the criterion it failed."`（按实验条件逐个判断；符合的编码，不符合的记下来并注明是哪条标准不符合。）
 
 ## 1b. 去重规则 `search/dedup_rules.json`（去重，S2）
 
@@ -96,7 +96,7 @@ python tools/check_codebook.py --eligibility ../my-evidence-project/codebook/eli
 | 字段 | 是什么 | 填什么 |
 |---|---|---|
 | `version`、`status` | 规则版本和状态 | 起始 `0.1.0-draft`、`draft`；你审过之后改成批准的说明 |
-| `source_precedence` | 同一篇在几个库里都找到时，保留哪个来源的那一条 | 来源名的先后。PubMed 格式的文件叫 `pubmed`，Web of Science 纯文本叫 `wos`，RIS 文件按文件名叫（`scopus.ris` 就是 `scopus`）。例：`["pubmed", "wos", "scopus"]` |
+| `source_precedence` | 同一篇在几个库里都找到时，保留哪个来源的那一条 | 来源名的先后。PubMed 格式的文件叫 `pubmed`，Web of Science 纯文本叫 `wos`，RIS 文件按文件名叫（`scopus.ris` 就是 `scopus`）。例子：`["pubmed", "wos", "scopus"]` |
 | `min_title_words` | 标题至少几个词才按“标题加年份”自动合并 | 默认 6。标题太短容易撞车，短标题只列为待定配对 |
 | `similarity_threshold` | 标题相似到什么程度列为待定配对 | 默认 0.9 |
 | `report_version_labels` | 哪些文献类型标签表示预印本这类非期刊版本 | 默认 `["Preprint", "UNPB"]`：PubMed 把预印本标为 Preprint，RIS 导出的预印本类型是 UNPB。同标题同年的两条记录里恰好一条带这种标签，脚本只把它们列为待定配对（规则 R4），不自动合并 |
@@ -126,21 +126,21 @@ python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/de
 
 | 占位符 | 填什么 |
 |---|---|
-| `{{PROJECT_ID}}` | 项目代号，与 codebook 的 `project.id` 一致。例：`llm-games` |
-| `{{RULES_VERSION}}` | 规则版本，与程序里的 `RULES_VERSION` 一致。例：`0.1.0-draft` |
-| `{{ELIGIBILITY_FILE_AND_SHA256}}` | 纳入标准文件的路径和哈希。例：`codebook/eligibility.json, sha256 7e8512…` |
-| `{{SNAPSHOT_ID}}` | 这次筛选用的检索快照编号。例：`search-2026-09-01` |
+| `{{PROJECT_ID}}` | 项目代号，与 codebook 的 `project.id` 一致。例子：`llm-games` |
+| `{{RULES_VERSION}}` | 规则版本，与程序里的 `RULES_VERSION` 一致。例子：`0.1.0-draft` |
+| `{{ELIGIBILITY_FILE_AND_SHA256}}` | 纳入标准文件的路径和哈希。例子：`codebook/eligibility.json, sha256 7e8512…` |
+| `{{SNAPSHOT_ID}}` | 这次筛选用的检索快照编号。例子：`search-2026-09-01` |
 
 **第 1 节 输入**
 
 | 占位符 | 填什么 |
 |---|---|
-| `{{RECORD_FILE_AND_FORMAT}}` | 去重后的记录文件和格式。例：由 EndNote 导出文件转成的 `records.csv`，三列 `record_id`、`title`、`abstract` |
-| `{{FIELDS}}` | 题目摘要阶段用到的字段。例：`record_id, title, abstract` |
-| `{{EXTRACTION_TOOL_AND_VERSION}}` | 从 PDF 提取全文的工具和版本，全项目只用一个。例：`PyMuPDF 1.27` |
-| `{{NOT_RETRIEVED_FILE_OR_NONE}}` | 取不到全文的记录清单文件，每行一个记录编号，运行全文阶段时用 `--not-retrieved` 传给程序；没有就写 `none`。例：`screening/not_retrieved.txt` |
-| `{{TA_AUDIT_LIST_OR_NONE}}` | 题目摘要审计确认的记录的冻结清单，每行一个记录编号，运行全文阶段时用 `--after-ta-audit` 传给程序；没有就写 `none`。例：`screening/after_ta_audit.txt` |
-| `{{TITLE_PHRASES_OR_NONE}}` | 在文献管理软件里按文献类型去掉的记录（这是 S2 做的事），没有就写 `none`。例：`titles containing "systematic review" or "meta-analysis"` |
+| `{{RECORD_FILE_AND_FORMAT}}` | 去重后的记录文件和格式。例子：由 EndNote 导出文件转成的 `records.csv`，三列 `record_id`、`title`、`abstract` |
+| `{{FIELDS}}` | 题目摘要阶段用到的字段。例子：`record_id, title, abstract` |
+| `{{EXTRACTION_TOOL_AND_VERSION}}` | 从 PDF 提取全文的工具和版本，全项目只用一个。例子：`PyMuPDF 1.27` |
+| `{{NOT_RETRIEVED_FILE_OR_NONE}}` | 取不到全文的记录清单文件，每行一个记录编号，运行全文阶段时用 `--not-retrieved` 传给程序；没有就写 `none`。例子：`screening/not_retrieved.txt` |
+| `{{TA_AUDIT_LIST_OR_NONE}}` | 题目摘要审计确认的记录的冻结清单，每行一个记录编号，运行全文阶段时用 `--after-ta-audit` 传给程序；没有就写 `none`。例子：`screening/after_ta_audit.txt` |
+| `{{TITLE_PHRASES_OR_NONE}}` | 在文献管理软件里按文献类型去掉的记录（这是 S2 做的事），没有就写 `none`。例子：`titles containing "systematic review" or "meta-analysis"` |
 
 **第 2 节 每条标准一条规则**
 
@@ -148,16 +148,16 @@ python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/de
 
 | 列 | 填什么 |
 |---|---|
-| Criterion | 标准编号加简短标签，编号与 `eligibility.json` 一致。例：`C1 classic economic game` |
+| Criterion | 标准编号加简短标签，编号与 `eligibility.json` 一致。例子：`C1 classic economic game` |
 | Checked at | 在哪个阶段检查：`TA, FT`（两个阶段都查）、`TA` 或 `FT only` |
 | Supporting terms or patterns | 出现哪些词或模式就算支持这条标准 |
 | Blocking terms | 出现哪些词就算不符合；没有写 `none` |
-| Supported when | 判定规则。例：`at least one supporting term and no blocking term` |
+| Supported when | 判定规则。例子：`at least one supporting term and no blocking term` |
 | Evidence recorded | 保留模板的写法 `matched term and surrounding text`（命中的词和上下文） |
 
 `{{SAME_AS_ABOVE_OR_LIST_THE_DIFFERENCES}}`：用于填写全文阶段的筛选规则。如果与上面题目摘要阶段的表格完全相同，直接填入 `same as above`；如果存在不同，请逐项列出差异。全文阶段的规则通常会定得比题目摘要阶段更窄，具体设计请参考第 3 节中的 `CRITERIA_FT` 说明。
 
-`{{LIST_OR_NONE}}`：词表判断不了的标准，留给全文阅读，或留给按 codebook 筛选的模型。例：`whether the prompt steered the behaviour`（prompt 是否引导了行为）。
+`{{LIST_OR_NONE}}`：词表判断不了的标准，留给全文阅读，或留给按 codebook 筛选的模型。例子：`whether the prompt steered the behaviour`（prompt 是否引导了行为）。
 
 模板的表格下方已有一个标着 **Example** 的填好的表，来自我的项目，可以对照。
 
@@ -170,12 +170,12 @@ python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/de
 | 占位符 | 填什么 |
 |---|---|
 | `{{SHA256}}` | 记录文件冻结后的哈希 |
-| `{{PILOT_SET_AND_RESULT}}` | 你事先知道应该纳入的论文，以及试跑结果。例：`12 known relevant papers; all kept at TA and FT under rules 0.1.0` |
-| `{{COUNTS}}` | 各阶段的记录数，要能对上 PRISMA 流程图。例：`1,840 records; 312 kept at TA; 58 included at FT` |
+| `{{PILOT_SET_AND_RESULT}}` | 你事先知道应该纳入的论文，以及试跑结果。例子：`12 known relevant papers; all kept at TA and FT under rules 0.1.0` |
+| `{{COUNTS}}` | 各阶段的记录数，要能对上 PRISMA 流程图。例子：`1,840 records; 312 kept at TA; 58 included at FT` |
 
 **第 5 节 版本**
 
-`{{CHANGE_LOG}}`：每次改动写改了什么、为什么、可能影响哪些记录。例：`0.1.1: added "prisoners' dilemma" to C1; can affect the TA decisions of the 2026-09 batch`。
+`{{CHANGE_LOG}}`：每次改动写改了什么、为什么、可能影响哪些记录。例子：`0.1.1: added "prisoners' dilemma" to C1; can affect the TA decisions of the 2026-09 batch`。
 
 ## 3. 筛选程序 `screening/screen_rules_template.py`（筛选，S3、S4）
 
@@ -196,7 +196,7 @@ python search/dedupe_records.py --inputs search/raw/<快照>/* --rules search/de
 | 键 | 填什么 |
 |---|---|
 | `any_of_regex`、`none_of_regex` | 正则表达式，作用分别同 `any_of`、`none_of`，用来写短语，例如 `r"\bwith (?:\S+ ){0,3}depressive symptoms\b"`。在转成小写的文本里搜索 |
-| `title_none_of`、`title_none_of_regex` | 只在标题里生效的阻断词（或正则）。例：`"systematic review"`——很多合格论文的摘要里会提到它，但标题里出现就说明这篇本身是综述 |
+| `title_none_of`、`title_none_of_regex` | 只在标题里生效的阻断词（或正则）。例子：`"systematic review"`——很多合格论文的摘要里会提到它，但标题里出现就说明这篇本身是综述 |
 | `field`、`field_any_of` | 检查 `records.csv` 的某一列（例如 `"language"`）：这一列填了内容、却不含 `field_any_of` 里任何一个词时，这条标准不符合；空着算通过。用到的列必须在 `records.csv` 里 |
 
 没有支持词也没有支持正则的标准，只要没被阻断就算符合。各项的先后有意义：第一条不符合的标准就是 PRISMA 流程图里报告的排除理由，所以关于文献类型的标准（语言、综述、方案）放在最前面。
@@ -255,7 +255,7 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 
 | 占位符 | 填什么 |
 |---|---|
-| `{{STAGE_NAME}}` | 阶段名。例：`Coding` |
+| `{{STAGE_NAME}}` | 阶段名。例子：`Coding` |
 | `{{VERSION}}` | 计划版本 |
 | `{{OWNER}}` | 负责人，就是你 |
 
@@ -264,64 +264,64 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | 占位符 | 填什么 |
 |---|---|
 | `{{QUESTION}}` | 综述的研究问题 |
-| `{{STAGE, e.g. coding audit, S9}}` | 阶段名和编号。例：`coding, S8` |
-| `{{DECISIONS}}` | 这个阶段决定什么。例：`which conditions of each included paper become rows, and the value of every executor column` |
-| `{{OUT_OF_SCOPE}}` | 这个阶段不能决定什么。例：`eligibility; effect sizes` |
+| `{{STAGE, e.g. coding audit, S9}}` | 阶段名和编号。例子：`coding, S8` |
+| `{{DECISIONS}}` | 这个阶段决定什么。例子：`which conditions of each included paper become rows, and the value of every executor column` |
+| `{{OUT_OF_SCOPE}}` | 这个阶段不能决定什么。例子：`eligibility; effect sizes` |
 | `{{FILE_AND_SHA256}}` | 纳入标准文件和哈希 |
 
 **第 2 节 单位与输入**
 
 | 占位符 | 填什么 |
 |---|---|
-| `{{ROW_UNIT}}` | 一行代表什么。例：`one study x condition x arm x outcome` |
-| `{{IDENTITY_FIELDS}}` | 决定一行身份的字段，不含会变的数字。例：`Study_ID, Condition_ID, Arm, Outcome_Metric` |
-| `{{SOURCES}}` | 允许用的来源和先后。例：`journal version, then preprint, then supplement; no external data` |
-| `{{INPUT_MANIFEST}}` | 输入的版本、哈希、全文是否齐全。例：`papers/TRACKER.csv, sha256 …; 58 PDFs, all present` |
-| `{{HANDLING}}` | 证据缺失、拿不到、互相矛盾时怎么办。例：`keep the row, leave the field null, record an unresolved item; never guess` |
+| `{{ROW_UNIT}}` | 一行代表什么。例子：`one study x condition x arm x outcome` |
+| `{{IDENTITY_FIELDS}}` | 决定一行身份的字段，不含会变的数字。例子：`Study_ID, Condition_ID, Arm, Outcome_Metric` |
+| `{{SOURCES}}` | 允许用的来源和先后。例子：`journal version, then preprint, then supplement; no external data` |
+| `{{INPUT_MANIFEST}}` | 输入的版本、哈希、全文是否齐全。例子：`papers/TRACKER.csv, sha256 …; 58 PDFs, all present` |
+| `{{HANDLING}}` | 证据缺失、拿不到、互相矛盾时怎么办。例子：`keep the row, leave the field null, record an unresolved item; never guess` |
 
 **第 3 节 结果与计算**
 
 | 占位符 | 填什么 |
 |---|---|
-| `{{OUTCOMES}}` | 结果指标的定义、方向、量纲。例：`cooperation rate = share of cooperative choices; higher = more cooperative` |
-| `{{PAIRING}}` | 处理组和对照组怎么配对，共用样本怎么处理。例：`the LLM arm is paired with the human arm of the same game and treatment; a shared human baseline pairs with every LLM arm and is flagged` |
-| `{{AGGREGATION}}` | 重复观测怎么合并。例：`repeated rounds of one agent are one observation, not independent units` |
+| `{{OUTCOMES}}` | 结果指标的定义、方向、量纲。例子：`cooperation rate = share of cooperative choices; higher = more cooperative` |
+| `{{PAIRING}}` | 处理组和对照组怎么配对，共用样本怎么处理。例子：`the LLM arm is paired with the human arm of the same game and treatment; a shared human baseline pairs with every LLM arm and is flagged` |
+| `{{AGGREGATION}}` | 重复观测怎么合并。例子：`repeated rounds of one agent are one observation, not independent units` |
 | `{{EXTRACTED_FIELDS}}` | 执行模型提取的字段，即 executor 列 |
-| `{{DERIVED_FIELDS}}` | 由程序计算的字段。例：`Row_UID, g, SE_g, CI95_L, CI95_U` |
-| `{{ESTIMATOR}}` | 效应量的估计方法、假设、算不出的情形。例：`Hedges' g from means and SDs; undefined when either SD is missing` |
+| `{{DERIVED_FIELDS}}` | 由程序计算的字段。例子：`Row_UID, g, SE_g, CI95_L, CI95_U` |
+| `{{ESTIMATOR}}` | 效应量的估计方法、假设、算不出的情形。例子：`Hedges' g from means and SDs; undefined when either SD is missing` |
 
 **第 4 节 角色与信息边界**
 
 | 占位符 | 填什么 |
 |---|---|
-| `{{EXECUTOR}}` | 执行模型及其固定版本和设置。例：`provider X, model snapshot …, temperature 0` |
+| `{{EXECUTOR}}` | 执行模型及其固定版本和设置。例子：`provider X, model snapshot …, temperature 0` |
 | `{{REVIEWERS}}` | 审计角色和各自能看什么，与 `validation/` 里的设计一致 |
-| `{{HIDDEN_FIELDS}}` | 对模型隐藏的东西。例：`the executor's reasoning, other reviewers' answers, computed effects` |
-| `{{HUMAN_BOUNDARY}}` | 什么情况交给人裁决，需要什么证据。例：`only when auditor and adjudicator disagree; the human cites the page` |
+| `{{HIDDEN_FIELDS}}` | 对模型隐藏的东西。例子：`the executor's reasoning, other reviewers' answers, computed effects` |
+| `{{HUMAN_BOUNDARY}}` | 什么情况交给人裁决，需要什么证据。例子：`only when auditor and adjudicator disagree; the human cites the page` |
 
 **第 5 节 试跑与验证**
 
 | 占位符 | 填什么 |
 |---|---|
-| `{{PILOT}}` | 试跑用哪些论文，各自能检验什么。例：`5 papers: 2 clear cases, 1 with a missing SD, 1 with a shared baseline, 1 with many conditions` |
-| `{{TARGET}}` | 验证针对哪种错误。例：`wrong effect-size inputs; wrong pairing` |
-| `{{FRAME}}` | 全查还是抽样；分层、种子、顺序。例：`census of all included papers` |
+| `{{PILOT}}` | 试跑用哪些论文，各自能检验什么。例子：`5 papers: 2 clear cases, 1 with a missing SD, 1 with a shared baseline, 1 with many conditions` |
+| `{{TARGET}}` | 验证针对哪种错误。例子：`wrong effect-size inputs; wrong pairing` |
+| `{{FRAME}}` | 全查还是抽样；分层、种子、顺序。例子：`census of all included papers` |
 | `{{STOPPING}}` | 停止规则和理由；什么情况升级处理 |
-| `{{LIMITS}}` | 这次验证查不出什么。例：`errors shared by executor and auditor; eligibility errors` |
+| `{{LIMITS}}` | 这次验证查不出什么。例子：`errors shared by executor and auditor; eligibility errors` |
 
 **第 6 节 运行与技术失败**
 
 | 占位符 | 填什么 |
 |---|---|
-| `{{PREFLIGHT}}` | 运行前的离线检查。例：`check_codebook.py --ready passes; rendered prompts contain no placeholder; input hashes match` |
-| `{{RETRY_POLICY}}` | 每项最多重试几次；断点续跑怎么做。例：`3 attempts per item, global attempt IDs, resume without resubmitting finished items` |
-| `{{BUDGET_AND_APPROVAL}}` | 预算、允许的服务商、明确的运行批准。例：`USD 40 max; provider X; approved by … on 2026-09-20` |
+| `{{PREFLIGHT}}` | 运行前的离线检查。例子：`check_codebook.py --ready passes; rendered prompts contain no placeholder; input hashes match` |
+| `{{RETRY_POLICY}}` | 每项最多重试几次；断点续跑怎么做。例子：`3 attempts per item, global attempt IDs, resume without resubmitting finished items` |
+| `{{BUDGET_AND_APPROVAL}}` | 预算、允许的服务商、明确的运行批准。例子：`USD 40 max; provider X; approved by … on 2026-09-20` |
 
 **第 7 节 版本与完成**
 
 | 占位符 | 填什么 |
 |---|---|
-| `{{CHANGE_POLICY}}` | 改动后哪些结果要重做、哪些可以沿用。例：`a codebook clarification reruns only the affected papers; the rest keep their version` |
+| `{{CHANGE_POLICY}}` | 改动后哪些结果要重做、哪些可以沿用。例子：`a codebook clarification reruns only the affected papers; the rest keep their version` |
 | `{{DELIVERABLES}}` | 产出文件和路径 |
 | `{{CHECKS}}` | 实际做过的独立检查 |
 | `{{SCOPE}}` | 完成的范围 |
@@ -338,24 +338,24 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 
 | 节 | 占位符 | 填什么 |
 |---|---|---|
-| 1 | `{{TARGET}}` | 审计找哪种错误。例：被筛选程序排除但本应保留的记录 |
-| 2 | `{{ORDER_AND_REASON}}` | 两个审计的先后和理由。例：先审全文筛选，再审题目摘要筛选，因为题目摘要审计给出的“保留”要用冻结的全文筛选来处理 |
-| 3 | `{{WHICH_RECORDS}}` | 全文审计审哪些记录。例：这个快照里全文阶段排除的全部记录 |
+| 1 | `{{TARGET}}` | 审计找哪种错误。例子：被筛选程序排除但本应保留的记录 |
+| 2 | `{{ORDER_AND_REASON}}` | 两个审计的先后和理由。例子：先审全文筛选，再审题目摘要筛选，因为题目摘要审计给出的“保留”要用冻结的全文筛选来处理 |
+| 3 | `{{WHICH_RECORDS}}` | 全文审计审哪些记录。例子：这个快照里全文阶段排除的全部记录 |
 | 3 | `{{FRAME_FILE_AND_SHA256}}`、`{{N}}` | 这份清单的文件、哈希、条数 |
-| 3 | `{{STRATA}}` | 分层。例：差一点纳入（只有一条标准不符合）和其余 |
-| 3 | `{{ROUND_SIZE_ALLOCATION_SEED}}` | 每轮抽多少、按层怎么分配、种子。例：每轮固定数量，按层分配，按种子生成的顺序抽，后续轮次接着抽 |
-| 3 | `{{REVIEWERS_AND_ROUTING}}` | 审计模型和流转。例：两位主审来自不同厂商；两者答案都有效但不一致时才请第三位；多数意见由程序计算 |
-| 3 | `{{INPUTS}}`、`{{HIDDEN}}` | 每位审计模型能看到什么、看不到什么。例：给记录编号、题目、完整 PDF、标准原文；不给程序的决定和理由、逐条标准的结果、层和序号、其他审计模型的答案、下游结果 |
-| 3 | `{{WHEN_AND_WITH_WHAT_EVIDENCE}}` | 什么时候由人裁决，要什么证据。例：只有审计多数认为应纳入时；人同意并给出页码才算确认漏筛 |
+| 3 | `{{STRATA}}` | 分层。例子：差一点纳入（只有一条标准不符合）和其余 |
+| 3 | `{{ROUND_SIZE_ALLOCATION_SEED}}` | 每轮抽多少、按层怎么分配、种子。例子：每轮固定数量，按层分配，按种子生成的顺序抽，后续轮次接着抽 |
+| 3 | `{{REVIEWERS_AND_ROUTING}}` | 审计模型和流转。例子：两位主审来自不同厂商；两者答案都有效但不一致时才请第三位；多数意见由程序计算 |
+| 3 | `{{INPUTS}}`、`{{HIDDEN}}` | 每位审计模型能看到什么、看不到什么。例子：给记录编号、题目、完整 PDF、标准原文；不给程序的决定和理由、逐条标准的结果、层和序号、其他审计模型的答案、下游结果 |
+| 3 | `{{WHEN_AND_WITH_WHAT_EVIDENCE}}` | 什么时候由人裁决，要什么证据。例子：只有审计多数认为应纳入时；人同意并给出页码才算确认漏筛 |
 | 4 | `{{WHICH_RECORDS}}`、`{{FRAME_FILE_AND_SHA256}}`、`{{N}}` | 题目摘要冻结框，同上 |
-| 4 | `{{STRATA_ROUND_SIZE_SEED}}` | 例：按检索批次分层，按比例分配，种子顺序 |
-| 4 | `{{REVIEWERS}}`、`{{INPUTS}}`、`{{HIDDEN}}` | 例：每条记录一位审计模型；给记录编号、题目、完整摘要或 null、标准原文；不给程序的决定、检索批次、任何 PDF、其他答案 |
-| 4 | `{{CANDIDATE_ROUTE}}` | “保留”意味着什么、去哪里。例：保留是候选，不是错误；取全文，跑冻结的全文筛选，筛选纳入的交给第 3 节的全文审计模型读 |
-| 5 | `{{FT_STOPPING_RULE}}` | 全文审计的停止规则。例：一轮没有确认的漏筛，审计结束；确认漏筛后修订全文规则、按新版本冻结新样本、审计继续；每累计若干个确认漏筛就检查是否有系统性错误 |
-| 5 | `{{TA_STOPPING_RULE}}` | 题目摘要审计的停止规则。例：一轮里没有候选通过冻结的全文筛选，审计结束；有候选通过但全被审计模型排除的轮次计入累计；确认漏筛之后审计继续。一轮里每条记录都有有效回答才算完成；缺 PDF、重试用尽、预算暂停都让这一轮停在未完成；未完成的一轮不能算作没有漏筛的一轮 |
-| 6 | `{{RULE_CHANGE_POLICY}}` | 规则怎么改、确认的漏筛改变什么。例：一轮审计期间规则不变，轮次结束后才改；任何记录都不靠手工加入纳入集；全文审计确认的漏筛改全文规则（最小的一般性修订、更新版本、全部重跑、归档当前审计、重新冻结样本）；题目摘要规则保持冻结，该审计确认的记录进入一份冻结清单，用 `--after-ta-audit` 传给筛选程序，作为追加输入读取 |
-| 7 | `{{RETRY_POLICY}}` | 例：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算作排除或投票，也不能使该轮计入停止条件；文件不完整或不可读也是技术失败，换材料重发 |
-| 7 | `{{WHAT_IS_REPORTED}}` | 例：每个阶段的总体大小、分层、轮数、种子、审了多少、候选数、确认漏筛数、触发的停止条件、审计查不出什么 |
+| 4 | `{{STRATA_ROUND_SIZE_SEED}}` | 例子：按检索批次分层，按比例分配，种子顺序 |
+| 4 | `{{REVIEWERS}}`、`{{INPUTS}}`、`{{HIDDEN}}` | 例子：每条记录一位审计模型；给记录编号、题目、完整摘要或 null、标准原文；不给程序的决定、检索批次、任何 PDF、其他答案 |
+| 4 | `{{CANDIDATE_ROUTE}}` | “保留”意味着什么、去哪里。例子：保留是候选，不是错误；取全文，跑冻结的全文筛选，筛选纳入的交给第 3 节的全文审计模型读 |
+| 5 | `{{FT_STOPPING_RULE}}` | 全文审计的停止规则。例子：一轮没有确认的漏筛，审计结束；确认漏筛后修订全文规则、按新版本冻结新样本、审计继续；每累计若干个确认漏筛就检查是否有系统性错误 |
+| 5 | `{{TA_STOPPING_RULE}}` | 题目摘要审计的停止规则。例子：一轮里没有候选通过冻结的全文筛选，审计结束；有候选通过但全被审计模型排除的轮次计入累计；确认漏筛之后审计继续。一轮里每条记录都有有效回答才算完成；缺 PDF、重试用尽、预算暂停都让这一轮停在未完成；未完成的一轮不能算作没有漏筛的一轮 |
+| 6 | `{{RULE_CHANGE_POLICY}}` | 规则怎么改、确认的漏筛改变什么。例子：一轮审计期间规则不变，轮次结束后才改；任何记录都不靠手工加入纳入集；全文审计确认的漏筛改全文规则（最小的一般性修订、更新版本、全部重跑、归档当前审计、重新冻结样本）；题目摘要规则保持冻结，该审计确认的记录进入一份冻结清单，用 `--after-ta-audit` 传给筛选程序，作为追加输入读取 |
+| 7 | `{{RETRY_POLICY}}` | 例子：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算作排除或投票，也不能使该轮计入停止条件；文件不完整或不可读也是技术失败，换材料重发 |
+| 7 | `{{WHAT_IS_REPORTED}}` | 例子：每个阶段的总体大小、分层、轮数、种子、审了多少、候选数、确认漏筛数、触发的停止条件、审计查不出什么 |
 
 ### 5.2 `codebook.json`
 
@@ -364,16 +364,16 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | `version` | 审计 codebook 的版本 |
 | `screening_rules_version` | 被审的筛选规则版本 |
 | `canonical_eligibility.sha256` | 纳入标准的哈希；路径保持 `codebook/eligibility.json` |
-| `target`、`order` | 同 memo 第 1、2 节。`order` 例：`full_text first, then abstract` |
-| `modes.full_text.used_for` | 全文模式用在哪。例：全文排除的审计；题目摘要候选通过冻结全文筛选后的复核 |
+| `target`、`order` | 同 memo 第 1、2 节。`order` 例子：`full_text first, then abstract` |
+| `modes.full_text.used_for` | 全文模式用在哪。例子：全文排除的审计；题目摘要候选通过冻结全文筛选后的复核 |
 | `modes.full_text.reviewers`、`human_adjudication` | 同 memo 第 3 节 |
 | `modes.full_text.inputs`、`hidden`、`response`、`decision_values`、`not_established_rule` | 已按常见设计填好；与 memo 不一致时改这里。`not_established_rule` 写明：未能从论文中确认某项标准得到满足时，就按不满足该标准处理；回答只有 INCLUDE 和 EXCLUDE 两种 |
 | `modes.abstract.used_for`、`reviewers` | 题目摘要模式对应项 |
-| `modes.abstract.retain_rule` | 什么时候保留。例：除非题目和摘要明确显示某条标准不符合，否则保留；保留是候选，不是错误 |
+| `modes.abstract.retain_rule` | 什么时候保留。例子：除非题目和摘要明确显示某条标准不符合，否则保留；保留是候选，不是错误 |
 | `modes.abstract.candidate_route` | 同 memo 第 4 节 |
 | `reason_codes` | 理由代码。`POTENTIALLY_ELIGIBLE` 保留不动；每条标准一个代码，把 `{{CODE_FOR_C1}}` 换成代码名，例如 `NOT_ECONOMIC_GAME`；有几条标准写几行，多余的行删掉 |
 | `technical_failure` | 同 memo 第 7 节 |
-| `evidence_contract.locator` | 证据位置怎么写。例：全文写页码或章节；题目摘要写 `title` 或 `abstract` |
+| `evidence_contract.locator` | 证据位置怎么写。例子：全文写页码或章节；题目摘要写 `title` 或 `abstract` |
 | `evidence_contract.quote` | 保留：来自所给文本的简短引文 |
 
 ### 5.3 `config.json`
@@ -385,7 +385,7 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | `audit_codebook.sha256` | 审计 codebook 定稿后的哈希 |
 | `eligibility_sha256` | 纳入标准的哈希 |
 | `full_text.frame.path`、`sha256`、`size` | 冻结的全文排除清单的路径、哈希、条数（数字） |
-| `full_text.strata` | 例：`near_miss = failed exactly one criterion; other = the rest` |
+| `full_text.strata` | 例子：`near_miss = failed exactly one criterion; other = the rest` |
 | `full_text.sample.round_size`、`allocation`、`seed` | 每轮数量（数字）、分配方式、种子（数字） |
 | `full_text.reviewers` | 每个角色一项：把 `{{ROLE, e.g. auditor_1}}` 换成角色名（如 `auditor_1`）；`provider` 厂商；`model_snapshot` 精确的模型版本号；`settings` 温度等设置 |
 | `full_text.routing`、`stopping_rule` | 同 memo；停止规则填批准后的版本 |
@@ -411,10 +411,10 @@ codebook 告诉执行模型每一列填什么、按什么规则、什么证据�
 | 字段 | 填什么 |
 |---|---|
 | `schema_version` | 保持 `raes-codebook/1` |
-| `project.id` | 项目代号，不带空格。例：`llm-games` |
+| `project.id` | 项目代号，不带空格。例子：`llm-games` |
 | `project.title` | 项目标题 |
 | `project.question` | 研究问题，一句话 |
-| `project.domain` | 领域。例：`behavioural economics; language-model agents` |
+| `project.domain` | 领域。例子：`behavioural economics; language-model agents` |
 | `version` | codebook 版本 |
 | `status` | `draft`；批准后改 `ready` |
 | `approval.by`、`date`、`basis` | 批准人、日期、依据（审过哪些规则、试跑证据、还有什么未决定）。只在真正审核后填，不为通过检查而填 |
@@ -423,10 +423,10 @@ codebook 告诉执行模型每一列填什么、按什么规则、什么证据�
 
 | 字段 | 填什么 |
 |---|---|
-| `record` | 一条检索记录是什么。例：`one record exported from the reference manager` |
-| `study` | 报告和研究怎么对应。例：`one experiment; a preprint and its journal version are one study` |
-| `row` | 一行是什么。例：`one study x condition x arm x outcome` |
-| `independent_unit` | 独立抽样单位。例：`one LLM agent run or one human participant` |
+| `record` | 一条检索记录是什么。例子：`one record exported from the reference manager` |
+| `study` | 报告和研究怎么对应。例子：`one experiment; a preprint and its journal version are one study` |
+| `row` | 一行是什么。例子：`one study x condition x arm x outcome` |
+| `independent_unit` | 独立抽样单位。例子：`one LLM agent run or one human participant` |
 | `identity_fields` | 决定行身份的变量名。必须是 executor 填、不允许为空的字段；不含会变的数字 |
 
 ### 6.3 纳入标准 `eligibility`
@@ -445,8 +445,8 @@ codebook 告诉执行模型每一列填什么、按什么规则、什么证据�
 | `owner` | 谁填：`executor`（执行模型）或 `code`（程序）。`Row_UID`、`g`、`SE_g`、`CI95_L`、`CI95_U` 必须是 `code` |
 | `description` | 一句话说明 |
 | `rule` | 可核对的操作规则。例（N）：`Copy the number of independent agents in this arm, not the combined N of the study.` |
-| `source_rule` | 允许的证据和位置。例：`The supplied paper only; cite an exact table or line for every non-null number.` |
-| `missing_rule` | 缺失时怎么办：null、待定（unresolved）还是不适用（not applicable）。例：`If the path does not apply, null. If a required statistic is absent, null plus an unresolved item.` |
+| `source_rule` | 允许的证据和位置。例子：`The supplied paper only; cite an exact table or line for every non-null number.` |
+| `missing_rule` | 缺失时怎么办：null、待定（unresolved）还是不适用（not applicable）。例子：`If the path does not apply, null. If a required statistic is absent, null plus an unresolved item.` |
 | `example` | 一个符合类型的例子；只有 `nullable` 为 `true` 时可以是 `null` |
 | `counterexample` | 一个看似合理但错误的填法，以及为什么错。例（sd）：`An SE of 1.58 is not an SD of 10.0.` |
 | `minimum`、`maximum`（可选） | 数值范围 |
@@ -459,7 +459,7 @@ codebook 告诉执行模型每一列填什么、按什么规则、什么证据�
 | 字段 | 填什么 |
 |---|---|
 | `columns` | 全部变量名，顺序与 `variables` 完全一致，含 `code` 字段。检查器逐一核对 |
-| `provenance_fields` | 记录证据位置的列，至少一个。例：`["Source_Location"]` |
+| `provenance_fields` | 记录证据位置的列，至少一个。例子：`["Source_Location"]` |
 
 `codebook/columns.csv` 和 `codebook/executor_columns.csv` 是建项目时从 codebook 生成的。变量改了以后要手动同步：各一行，逗号分隔；executor 那份去掉所有 `code` 字段。prompt 生成器直接读 codebook，不读这两个文件。
 
@@ -467,12 +467,12 @@ codebook 告诉执行模型每一列填什么、按什么规则、什么证据�
 
 | 字段 | 填什么 |
 |---|---|
-| `outcome_map[]` | 论文里的指标怎么对应到统一名称。`source_measure` 论文里的写法，例：`share of cooperative choices`；`canonical_outcome` 统一名，例：`cooperation`；`direction` 数值高代表什么，例：`higher = more cooperative`；`scale_rule` 换算规则和分母，例：`proportion in [0, 1]; percentages divided by 100` |
-| `pairing_rule` | 处理组和对照组怎么配对，缺对照怎么办。例：`Match Study_ID, Condition_ID and Outcome_Metric; exactly one llm arm and one human arm; no comparator from another study.` |
-| `aggregation_rule` | 独立单位、重复观测、共用对照怎么处理。例：`Rounds of the same agent are not independent. A human baseline shared by several llm arms is used by each and flagged.` |
-| `direction_rule` | 效应量的方向。例：`llm minus human; the sign convention is fixed before any result is seen.` |
-| `source_precedence[]` | 来源优先级和冲突处理。例：`Journal version over preprint. A contradiction between text and table is unresolved, not overwritten.` |
-| `unresolved_policy` | 待定项怎么记。例：`Keep the row, leave the field null, record the field, the reason and the affected row; never impute.` |
+| `outcome_map[]` | 论文里的指标怎么对应到统一名称。`source_measure` 论文里的写法，例子：`share of cooperative choices`；`canonical_outcome` 统一名，例子：`cooperation`；`direction` 数值高代表什么，例子：`higher = more cooperative`；`scale_rule` 换算规则和分母，例子：`proportion in [0, 1]; percentages divided by 100` |
+| `pairing_rule` | 处理组和对照组怎么配对，缺对照怎么办。例子：`Match Study_ID, Condition_ID and Outcome_Metric; exactly one llm arm and one human arm; no comparator from another study.` |
+| `aggregation_rule` | 独立单位、重复观测、共用对照怎么处理。例子：`Rounds of the same agent are not independent. A human baseline shared by several llm arms is used by each and flagged.` |
+| `direction_rule` | 效应量的方向。例子：`llm minus human; the sign convention is fixed before any result is seen.` |
+| `source_precedence[]` | 来源优先级和冲突处理。例子：`Journal version over preprint. A contradiction between text and table is unresolved, not overwritten.` |
+| `unresolved_policy` | 待定项怎么记。例子：`Keep the row, leave the field null, record the field, the reason and the affected row; never impute.` |
 | `worked_cases[]` | 三个写出来的例子：`case_include` 正例、`case_missing` 符合但算不出、`case_boundary` 边界或冲突。`id` 可以自己起名；`description` 写情形和期望的编码。检查器只看它们存不存在，内容靠试跑检验 |
 
 ### 6.7 检查
@@ -497,7 +497,7 @@ python tools/check_codebook.py ../my-evidence-project/codebook/codebook.json --r
 python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codebook.json --template templates/prompts/coding_system.md --context ../my-evidence-project/context.json --output ../my-evidence-project/coding_system_rendered.md
 ```
 
-`context.json` 只提供模板额外需要的字段。system prompt 用 `{}`；paper prompt 例：
+`context.json` 只提供模板额外需要的字段。system prompt 用 `{}`；paper prompt 例子：
 
 ```json
 {"PAPER_ID": "S017", "SOURCES_JSON": {"files": ["S017-journal.txt"], "note": "supplement table S2 included"}}
@@ -517,20 +517,20 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 
 | 节 | 占位符 | 填什么 |
 |---|---|---|
-| 1 | `{{TARGET}}` | 审计找哪种错误。例：效应量输入错；与对照行配对错或计算路径错；调节变量错 |
-| 1 | `{{OUT_OF_SCOPE}}` | 不再重审什么。例：纳入资格 |
-| 2 | `{{WHICH_ROWS}}` | 审哪些行。例：将进入分析的全部行，审计前冻结，效应量字段留空并隐藏 |
+| 1 | `{{TARGET}}` | 审计找哪种错误。例子：效应量输入错；与对照行配对错或计算路径错；调节变量错 |
+| 1 | `{{OUT_OF_SCOPE}}` | 不再重审什么。例子：纳入资格 |
+| 2 | `{{WHICH_ROWS}}` | 审哪些行。例子：将进入分析的全部行，审计前冻结，效应量字段留空并隐藏 |
 | 2 | `{{FRAME_FILE_AND_SHA256}}`、`{{N_ROWS}}`、`{{N_PAPERS}}` | 这份行清单的文件、哈希、行数、论文数 |
-| 2 | `{{UNIT}}` | 每次请求的单位。例：一篇论文；这篇的每一行都查 |
+| 2 | `{{UNIT}}` | 每次请求的单位。例子：一篇论文；这篇的每一行都查 |
 | 2 | `{{DESIGN_AND_JUSTIFICATION}}`、`{{FIXED_BEFORE_REVIEW}}` | 全查还是抽样，及理由；抽样时的分层、种子和顺序在审计开始前固定 |
-| 3 | 审计模型 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给来源、编码 codebook、这份审计 codebook、这篇论文的编码行；不给执行模型的推理、之前的审计答案、抽样信息、任何算出的效应 |
-| 3 | 裁决者 `{{INPUTS}}`、`{{HIDDEN}}` | 例：给同样的来源和规则、原始行、被质疑的字段及其当前值；不给审计模型提出的值、证据、理由、置信度。当前值必须提供，因为它正是核对对象；建议值则不得提供 |
-| 4 | `{{DOMAINS}}` | 查什么。例：1. 效应量输入及出处；2. 每行与对照行的配对和计算路径；3. 需要判断的调节变量 |
-| 5 | `{{ROUTING}}` | 流转。例：审计模型返回通过，或一条质疑（行、字段、建议值、规则、证据），或待定项；每条质疑交裁决者，裁决者返回三种结果之一：现有编码成立（驳回质疑，不需要人）；更正成立（与审计模型的隐藏建议完全一致才确认，有差异交人裁决）；来源或规则有歧义（交人裁决） |
-| 5 | `{{PROHIBITED}}` | 审计模型不能做什么。例：增行、删行、拆行、合并行；重审纳入资格 |
-| 6 | `{{CORRECTION_POLICY}}` | 例：审计从不改原始行；属于单篇、规则本来清楚的错误，写进单独的核对与更正记录（保留改前改后的值），由程序生成新版本的表；如果错误暴露出规则不清或规则本身有误，改 codebook、更新版本、受影响的论文重新编码；规则不变时，重跑编码模型只用于技术失败；作者更正的数值和已发表的勘误也通过这份核对与更正记录进入，注明来源；codebook 澄清后只重审受影响的论文，之前的通过结果保留当时的 codebook 版本 |
-| 7 | `{{RETRY_POLICY}}` | 例：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算通过 |
-| 7 | `{{WHAT_IS_REPORTED}}` | 例：总体的行数和论文数、查了多少、质疑数、确认改正数、待定项、人裁决数、审计不覆盖什么 |
+| 3 | 审计模型 `{{INPUTS}}`、`{{HIDDEN}}` | 例子：给来源、编码 codebook、这份审计 codebook、这篇论文的编码行；不给执行模型的推理、之前的审计答案、抽样信息、任何算出的效应 |
+| 3 | 裁决者 `{{INPUTS}}`、`{{HIDDEN}}` | 例子：给同样的来源和规则、原始行、被质疑的字段及其当前值；不给审计模型提出的值、证据、理由、置信度。当前值必须提供，因为它正是核对对象；建议值则不得提供 |
+| 4 | `{{DOMAINS}}` | 查什么。例子：1. 效应量输入及出处；2. 每行与对照行的配对和计算路径；3. 需要判断的调节变量 |
+| 5 | `{{ROUTING}}` | 流转。例子：审计模型返回通过，或一条质疑（行、字段、建议值、规则、证据），或待定项；每条质疑交裁决者，裁决者返回三种结果之一：现有编码成立（驳回质疑，不需要人）；更正成立（与审计模型的隐藏建议完全一致才确认，有差异交人裁决）；来源或规则有歧义（交人裁决） |
+| 5 | `{{PROHIBITED}}` | 审计模型不能做什么。例子：增行、删行、拆行、合并行；重审纳入资格 |
+| 6 | `{{CORRECTION_POLICY}}` | 例子：审计从不改原始行；属于单篇、规则本来清楚的错误，写进单独的核对与更正记录（保留改前改后的值），由程序生成新版本的表；如果错误暴露出规则不清或规则本身有误，改 codebook、更新版本、受影响的论文重新编码；规则不变时，重跑编码模型只用于技术失败；作者更正的数值和已发表的勘误也通过这份核对与更正记录进入，注明来源；codebook 澄清后只重审受影响的论文，之前的通过结果保留当时的 codebook 版本 |
+| 7 | `{{RETRY_POLICY}}` | 例子：拒答、格式错误、缺字段、身份不符，用同一请求重试，不算通过 |
+| 7 | `{{WHAT_IS_REPORTED}}` | 例子：总体的行数和论文数、查了多少、质疑数、确认改正数、待定项、人裁决数、审计不覆盖什么 |
 
 ### 8.2 `codebook.json`
 
@@ -539,13 +539,13 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 | `version` | 审计 codebook 的版本 |
 | `production_codebook_version` | 被审的编码 codebook 版本 |
 | `canonical_eligibility.sha256` | 纳入标准的哈希 |
-| `scope.frame` | 总体的编号。例：`frame-2026-09-17-v1` |
-| `scope.units` | 审哪些行。例：`all Row_UIDs in the frame` |
+| `scope.frame` | 总体的编号。例子：`frame-2026-09-17-v1` |
+| `scope.units` | 审哪些行。例子：`all Row_UIDs in the frame` |
 | `scope.allowed_domains`、`prohibited_actions` | 同 memo 第 4、5 节 |
 | `modes.coding_audit.*`、`modes.coding_adjudication.*` | 两个角色各自的输入、隐藏项、返回字段。已按常见设计填好；与 memo 不一致时改这里。裁决者的 `outcomes` 是三种结果：现有编码成立、更正成立、来源或规则有歧义 |
-| `pass_rule` | 什么算通过。例：`Every checked Row_UID is covered in every allowed domain and no unresolved evidence remains.` |
-| `challenge_rule` | 一条质疑要包含什么。例：行和字段、有来源支持的替代值、规则编号、能找到的位置 |
-| `conflict_rule` | 来源冲突怎么办。例：按 `source_precedence`；否则人裁决；从不编造值 |
+| `pass_rule` | 什么算通过。例子：`Every checked Row_UID is covered in every allowed domain and no unresolved evidence remains.` |
+| `challenge_rule` | 一条质疑要包含什么。例子：行和字段、有来源支持的替代值、规则编号、能找到的位置 |
+| `conflict_rule` | 来源冲突怎么办。例子：按 `source_precedence`；否则人裁决；从不编造值 |
 | `error_taxonomy` | 错误分类，一般保留 |
 | `evidence_contract.source_id`、`locator`、`quote_or_data_reference` | 证据怎么写：来源文件名或稳定编号；页、表、行、格；引文或数据引用 |
 
@@ -555,7 +555,7 @@ python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codeboo
 |---|---|
 | `status`、`live_enabled` | 同筛选审计，保持不变直到批准 |
 | `frame.path`、`sha256`、`unit` | 冻结的行文件、哈希、单位 |
-| `rules.production_codebook` | 编码 codebook 的路径。例：`codebook/codebook.json` |
+| `rules.production_codebook` | 编码 codebook 的路径。例子：`codebook/codebook.json` |
 | `rules.eligibility_sha256` | 纳入标准的哈希 |
 | `reviewers.executor`、`auditor`、`adjudicator` | 三个角色的厂商、精确模型版本、设置。审计模型尽量用与执行模型不同的厂商 |
 | `sampling.mode` | `census`（全查）或说明抽样设计；抽样时填 `strata`、`seed`、`round_size` |
