@@ -60,7 +60,7 @@ Put the digest into the `eligibility.sha256` field of the codebook. Screening, c
 
 ## Render a prompt
 
-The renderer reads the codebook, the eligibility file and the executor columns itself, so the prompt carries the exact text of those files and the context file cannot override them. Freeze the rendered prompt with its hash before the run: a later edit of the rendered file is then detected, which the renderer itself cannot prevent. A context file supplies only the fields a template asks for, such as `PAPER_ID` and `SOURCES_JSON`; for the system prompt it is `{}`.
+The renderer reads the codebook and the eligibility file verbatim and derives the executor column list from the codebook; it inserts these into the template's placeholders, and the context file cannot override them. Freeze the rendered prompt with its hash before the run: a later edit of the rendered file is then detected, which the renderer itself cannot prevent. A context file supplies only the fields a template asks for, such as `PAPER_ID` and `SOURCES_JSON`; for the system prompt it is `{}`.
 
 ```sh
 python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codebook.json --template templates/prompts/coding_system.md --context ../my-evidence-project/context.json --output ../my-evidence-project/coding_system_rendered.md

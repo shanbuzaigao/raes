@@ -16,7 +16,7 @@
 | `raes/assets/search/dedupe_records.py` | 复制进每个新项目。不用文献管理软件时做 S2：对 PubMed、Web of Science 或 RIS 格式的导出文件去重，写出记录表、台账、拿不准的记录对和各项数量 |
 | `raes/scripts/check_codebook.py` | 检查 codebook，草稿模式或 `--ready` 模式 |
 | `raes/scripts/check_dispersion.py` | 编码审计进入裁决之前，标出那些看起来像标准误的标准差 |
-| `raes/scripts/release.py` | 把项目的一次发布写成就地文件的哈希清单，指定当前生效的发布包，并对照它核验工作副本 |
+| `raes/scripts/release.py` | 为一次项目发布生成文件哈希清单（文件保留在原位置），指定当前生效的发布包，并据此核验工作副本 |
 | `raes/scripts/run_offline.py` | 运行一条命令（比如重建全部结果的命令），它启动的 Python 进程都不能联网 |
 
 ## 安装

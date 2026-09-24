@@ -60,7 +60,7 @@ python -c "import hashlib,pathlib; print(hashlib.sha256(pathlib.Path('../my-evid
 
 ## 生成 prompt
 
-生成器会自行读取 codebook、纳入标准文件以及执行模型的列名清单，因此生成的 prompt 带有这些文件的原文，context 文件无法覆盖它们。运行前把生成好的 prompt 连同哈希一起冻结：这样可以检测之后对生成文件的修改；生成器本身无法阻止这类修改。context 文件只提供模板所要求的字段（例如 `PAPER_ID` 和 `SOURCES_JSON`）；system prompt 的 context 文件就是 `{}`。
+生成器直接读取 codebook 和纳入标准文件的原文，并根据 codebook 中的字段归属生成执行模型的列名清单；这些内容代入模板的占位符，context 文件不能覆盖它们。运行前把生成好的 prompt 连同哈希一起冻结：这样可以检测之后对生成文件的修改；生成器本身无法阻止这类修改。context 文件只提供模板所要求的字段（例如 `PAPER_ID` 和 `SOURCES_JSON`）；system prompt 的 context 文件就是 `{}`。
 
 ```sh
 python tools/render_prompt.py --codebook ../my-evidence-project/codebook/codebook.json --template templates/prompts/coding_system.md --context ../my-evidence-project/context.json --output ../my-evidence-project/coding_system_rendered.md

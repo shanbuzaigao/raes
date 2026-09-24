@@ -28,7 +28,7 @@ The command verifies `FROZEN_INPUTS.json`, switches off network access, rebuilds
 | SYN002 has one malformed answer before a valid retry | A failed attempt is not an exclusion, a pass or a new observation |
 | SYN003 has no SDs | The study and both arm rows stay coded; the comparison is recorded as not computable |
 
-The counts: 8 search records, 7 after deduplication, 6 full texts, 5 included reports, 4 studies, 8 coded arm rows. Three comparisons can be computed; they give 6 audited rows and 3 effect sizes; one comparison stays uncomputed. Fourteen requests have 15 saved attempts. One screening exclusion is confirmed as a miss and included by the revised rule, and one coding error is confirmed and corrected.
+The counts: 8 search records, 7 after deduplication, 6 full texts, 5 included reports, 4 studies, 8 coded arm rows. Three comparisons can be computed; they give 6 audited rows and 3 effect sizes; one comparison stays uncomputed. Fourteen requests have 15 saved attempts. One excluded record is confirmed as a miss and then included by the revised rule, and one coding error is confirmed and corrected.
 
 The effects are 0.495177 (SYN001), 0.443659 (SYN002) and 0.393717 (SYN006); the second comes from a log odds ratio, the other two from pooled standard deviations. They are not pooled: the example shows the records, not a result. [NUMERICAL_METHODS.md](NUMERICAL_METHODS.md) gives the formulas.
 

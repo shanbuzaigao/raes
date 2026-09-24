@@ -217,7 +217,7 @@ python screen_rules_template.py ta records.csv --output out/ta_v0.1
 python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.csv --texts fulltext/ --output out/ft_v0.1
 ```
 
-全文阶段只筛选题目摘要阶段保留的记录，名单从 `--after-ta` 指定的结果文件里读；程序会核对那次运行是否恰好覆盖了这份记录文件的全部编号，并核对它 `summary.json` 里记的输入哈希，即使少一行，程序也不会将缺失记录默认为排除；`summary.json` 必须和 `decisions.csv` 在同一个文件夹里，缺了就停，所以不要把决定文件单独复制到别处再传给程序。`--after-ta-audit <清单文件>` 追加审计确认的记录；`--not-retrieved <清单文件>` 跳过取不到全文的记录。两者都只用于全文阶段，见上面的输入。加 `--expect-sha256 <哈希>` 时，记录文件和冻结时不一致就拒绝运行。`--help` 显示全部选项。
+全文阶段筛选题目摘要阶段保留的记录（审计确认的记录另用 `--after-ta-audit` 追加，见下文），名单从 `--after-ta` 指定的结果文件里读；程序会核对那次运行是否恰好覆盖了这份记录文件的全部编号，并核对它 `summary.json` 里记的输入哈希，即使少一行，程序也不会将缺失记录默认为排除；`summary.json` 必须和 `decisions.csv` 在同一个文件夹里，缺了就停，所以不要把决定文件单独复制到别处再传给程序。`--after-ta-audit <清单文件>` 追加审计确认的记录；`--not-retrieved <清单文件>` 跳过取不到全文的记录。两者都只用于全文阶段，见上面的输入。加 `--expect-sha256 <哈希>` 时，记录文件和冻结时不一致就拒绝运行。`--help` 显示全部选项。
 
 **输出**（所有结果都会输出到一个全新的目录中，绝不会覆盖已有内容）
 
@@ -367,7 +367,7 @@ python screen_rules_template.py ft records.csv --after-ta out/ta_v0.1/decisions.
 | `target`、`order` | 同 memo 第 1、2 节。`order` 例：`full_text first, then abstract` |
 | `modes.full_text.used_for` | 全文模式用在哪。例：全文排除的审计；题目摘要候选通过冻结全文筛选后的复核 |
 | `modes.full_text.reviewers`、`human_adjudication` | 同 memo 第 3 节 |
-| `modes.full_text.inputs`、`hidden`、`response`、`decision_values`、`not_established_rule` | 已按常见设计填好；与 memo 不一致时改这里。`not_established_rule` 写明：论文没有建立起的标准就是不满足，回答只有 INCLUDE 和 EXCLUDE 两种 |
+| `modes.full_text.inputs`、`hidden`、`response`、`decision_values`、`not_established_rule` | 已按常见设计填好；与 memo 不一致时改这里。`not_established_rule` 写明：未能从论文中确认某项标准得到满足时，就按不满足该标准处理；回答只有 INCLUDE 和 EXCLUDE 两种 |
 | `modes.abstract.used_for`、`reviewers` | 题目摘要模式对应项 |
 | `modes.abstract.retain_rule` | 什么时候保留。例：除非题目和摘要明确显示某条标准不符合，否则保留；保留是候选，不是错误 |
 | `modes.abstract.candidate_route` | 同 memo 第 4 节 |
