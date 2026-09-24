@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-[![Checks](https://github.com/shanbuzaigao/raes/actions/workflows/check.yml/badge.svg)](https://github.com/shanbuzaigao/raes/actions/workflows/check.yml)
+[![Checks](https://github.com/shanbuzaigao/raes/actions/workflows/check.yml/badge.svg)](https://github.com/shanbuzaigao/raes/actions/workflows/check.yml) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22928356.svg)](https://doi.org/10.5281/zenodo.22928356)
 
 本文件是英文版 `README.md` 的翻译。两者不一致时以英文为准。
 
@@ -165,9 +165,9 @@ flowchart TD
 
 ## 如何引用
 
-如果你使用了 RAES、本仓库的模板或 skill，请引用本仓库。如果你基于这套方法开展进一步工作，也请一并引用它所源自的工作论文。GitHub 页面上的“Cite this repository”按钮给出同一条引用的其他格式；它读取的是 [CITATION.cff](CITATION.cff)。
+如果你使用了 RAES、本仓库的模板或 skill，请引用本仓库。如果你基于这套方法开展进一步工作，也请一并引用它所源自的工作论文。GitHub 页面上的“Cite this repository”按钮给出同一条引用的其他格式；它读取的是 [CITATION.cff](CITATION.cff)。每个 release 都由 Zenodo 存档：上方徽章里的 DOI 永远指向最新版本，下面引用里的 DOI 是 0.5.1 这一版的。
 
-> Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.5.1) [Computer software]. https://github.com/shanbuzaigao/raes
+> Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.5.1) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.22928357
 
 ```bibtex
 @software{zhu_raes_2026,
@@ -175,6 +175,8 @@ flowchart TD
   title   = {{RAES}: Reproducible {AI}-assisted Evidence Synthesis},
   year    = {2026},
   version = {0.5.1},
+  publisher = {Zenodo},
+  doi     = {10.5281/zenodo.22928357},
   url     = {https://github.com/shanbuzaigao/raes}
 }
 ```

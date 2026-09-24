@@ -4,6 +4,7 @@
 
 Documentation only; the programs, templates and tests are unchanged from 0.5.0. This is the version the repository is published with. The version constant in `raes_core` is a frozen input of the synthetic example, so its manifest is regenerated; the expected outputs are unchanged.
 
+- Zenodo archives the releases. DOI for all versions: 10.5281/zenodo.22928356; for 0.5.1: 10.5281/zenodo.22928357. Both are in `CITATION.cff`.
 - Chinese README and protocol retranslated from the English and checked paragraph by paragraph against the source. Terms settled for the Chinese files: 元分析 for meta-analysis, 工作论文 for working paper, 审计模型 for auditor, 虚构 for invented; the flowcharts and the folder list carry Chinese labels; prose uses Chinese quotation marks. The Chinese README links to the Chinese subpages. The Chinese templates, example and skill READMEs retranslated the same way; the Chinese field-by-field guide keeps its text with sixteen paragraphs reworded and the same terms.
 - README, both languages: "How to use this repository" now starts with the skill, installed by asking Claude Code or Codex to fetch it from the repository; the example, the protocol and the templates follow for readers who want to look inside.
 - Protocol 5.5 is a sentence with its order words, in both languages, instead of a bare list.

@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-[![Checks](https://github.com/shanbuzaigao/raes/actions/workflows/check.yml/badge.svg)](https://github.com/shanbuzaigao/raes/actions/workflows/check.yml)
+[![Checks](https://github.com/shanbuzaigao/raes/actions/workflows/check.yml/badge.svg)](https://github.com/shanbuzaigao/raes/actions/workflows/check.yml) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22928356.svg)](https://doi.org/10.5281/zenodo.22928356)
 
 **Status:** version 0.5.1. I have used the method from start to finish in my own meta-analysis. The skill has been tried three times, once through every stage on a topic from another field. The repository is still changing; the [changelog](CHANGELOG.md) says what changed.
 
@@ -163,9 +163,9 @@ I used AI coding and writing assistants while preparing the code and documentati
 
 ## How to cite
 
-If you use RAES, its templates or its skill, please cite this repository. If you build on the method, please also cite the working paper it comes from. GitHub's "Cite this repository" button gives the same reference in other formats; it reads [CITATION.cff](CITATION.cff).
+If you use RAES, its templates or its skill, please cite this repository. If you build on the method, please also cite the working paper it comes from. GitHub's "Cite this repository" button gives the same reference in other formats; it reads [CITATION.cff](CITATION.cff). Zenodo archives every release: the DOI in the badge above always resolves to the latest version, and the DOI in the reference below is the one for 0.5.1.
 
-> Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.5.1) [Computer software]. https://github.com/shanbuzaigao/raes
+> Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.5.1) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.22928357
 
 ```bibtex
 @software{zhu_raes_2026,
@@ -173,6 +173,8 @@ If you use RAES, its templates or its skill, please cite this repository. If you
   title   = {{RAES}: Reproducible {AI}-assisted Evidence Synthesis},
   year    = {2026},
   version = {0.5.1},
+  publisher = {Zenodo},
+  doi     = {10.5281/zenodo.22928357},
   url     = {https://github.com/shanbuzaigao/raes}
 }
 ```
