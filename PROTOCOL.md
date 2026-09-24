@@ -1,6 +1,6 @@
 # RAES Protocol
 
-Version 0.4, draft. 2026-09-23. Distributed with RAES 0.5.0. The protocol and the software are numbered separately: this number changes when the text of the method changes, the software's when the templates, scripts or skill change.
+Version 0.4, draft. 2026-09-23. Distributed with RAES 0.5.1. The protocol and the software are numbered separately: this number changes when the text of the method changes, the software's when the templates, scripts or skill change.
 
 [English](PROTOCOL.md) | [简体中文](PROTOCOL.zh-CN.md)
 

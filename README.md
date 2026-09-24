@@ -2,7 +2,9 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-**Status:** version 0.5.0. I have used the method from start to finish in my own meta-analysis. The skill has been tried three times, once through every stage on a topic from another field. The repository is still changing; the [changelog](CHANGELOG.md) says what changed.
+[![Checks](https://github.com/shanbuzaigao/raes/actions/workflows/check.yml/badge.svg)](https://github.com/shanbuzaigao/raes/actions/workflows/check.yml)
+
+**Status:** version 0.5.1. I have used the method from start to finish in my own meta-analysis. The skill has been tried three times, once through every stage on a topic from another field. The repository is still changing; the [changelog](CHANGELOG.md) says what changed.
 
 ## What this is
 
@@ -163,14 +165,14 @@ I used AI coding and writing assistants while preparing the code and documentati
 
 If you use RAES, its templates or its skill, please cite this repository. If you build on the method, please also cite the working paper it comes from. GitHub's "Cite this repository" button gives the same reference in other formats; it reads [CITATION.cff](CITATION.cff).
 
-> Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.5.0) [Computer software]. https://github.com/shanbuzaigao/raes
+> Zhu, Q. (2026). *RAES: Reproducible AI-assisted Evidence Synthesis* (Version 0.5.1) [Computer software]. https://github.com/shanbuzaigao/raes
 
 ```bibtex
 @software{zhu_raes_2026,
   author  = {Zhu, Qijun},
   title   = {{RAES}: Reproducible {AI}-assisted Evidence Synthesis},
   year    = {2026},
-  version = {0.5.0},
+  version = {0.5.1},
   url     = {https://github.com/shanbuzaigao/raes}
 }
 ```
