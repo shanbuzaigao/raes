@@ -6,6 +6,7 @@
 - README, both languages: "How to use this repository" now starts with the skill, installed by asking Claude Code or Codex to fetch it from the repository; the example, the protocol and the templates follow for readers who want to look inside.
 - Protocol 5.5 is a sentence with its order words, in both languages, instead of a bare list.
 - README, both languages: a short section "Who RAES is for" after "What you get".
+- Protocol 5.3 says that coding audit prompts also carry the coded rows to be checked, as S9 and section 7 already did; the screening audit prompt carries the sources and the rules.
 
 ## 0.5.0 (2026-09-23)
 

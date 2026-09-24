@@ -160,7 +160,7 @@ Prompts are built from the codebook and contain no rule that is not in it.
 
 For coding, the system prompt states the role, says that the codebook and template are the only source of truth, forbids invented values, reserves the deterministic fields for code, and lists the self-check. The paper prompt supplies the metadata, the inputs, the eligibility criteria verbatim, the task, the distinction between creating a row and being able to compute an effect, the required notes, the output structure, and guidance on how many rows to expect.
 
-For an audit, the prompt gives the auditor the source material and the rules and nothing else. What it must not contain is listed in Section 7.
+Screening audit prompts provide the source material and the rules; coding audit prompts also include the coded rows to be checked. Section 7 specifies what must be withheld from each audit role.
 
 ### 5.4 Operate
 
