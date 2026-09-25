@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Chinese term for evidence synthesis is 证据合成, the usual rendering in the Chinese evidence-based-medicine literature, instead of 证据整合; the README lists literature reviews among the uses, in both languages.
+
 ## 0.5.1 (2026-09-23)
 
 Documentation only; the programs, templates and tests are unchanged from 0.5.0. This is the version the repository is published with. The version constant in `raes_core` is a frozen input of the synthetic example, so its manifest is regenerated; the expected outputs are unchanged.

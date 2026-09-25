@@ -1,4 +1,4 @@
-# RAES：可复现的 AI 辅助证据整合
+# RAES：可复现的 AI 辅助证据合成
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
@@ -14,14 +14,14 @@ RAES 是我为自己的元分析搭建的工作流。当时文献增长的速度
 
 > 我制定规则，AI 执行规则。独立的 AI 对执行过程进行审计。每一个数字都由确定性程序计算，或者直接取自文献；整个运行过程支持离线复现。
 
-这套方法适用于元分析、系统综述和类似的证据整合工作。它并非只是一个用于摘要排序、提取字段的自动筛选工具；RAES 关注的是整个证据整合过程应当如何运行，使其他人能够核查。
+这套方法适用于元分析、系统综述、文献综述和类似的证据合成工作。它并非只是一个用于摘要排序、提取字段的自动筛选工具；RAES 关注的是整个证据合成过程应当如何运行，使其他人能够核查。
 
 所有领域知识都存放在带版本号的 codebook 中，因此工作流本身并不依赖具体的研究领域。我在一个社会科学项目中开发并完整使用了这套方法，那就是我的工作论文 *Whose Welfare Does AI Maximize? Decision Perspectives in Economic Games: Evidence from a Meta-Analysis and LLM Experiments* 中的元分析。这项元分析研究大语言模型在经典经济博弈中的行为，共纳入 72 项研究，其中 54 项贡献了 757 个效应量。
 
 ## 你能得到什么
 
 - **一个 skill，`raes`**，用于 Claude Code、Codex 和其他支持 Agent Skills 的宿主。它带你逐个阶段跑通工作流：询问当前阶段需要的决定、根据模板生成文件，并运行各项检查。
-- **一份操作手册**，覆盖整个证据整合过程，从研究问题到发布：[PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md)（英文版 [PROTOCOL.md](PROTOCOL.md)）。
+- **一份操作手册**，覆盖整个证据合成过程，从研究问题到发布：[PROTOCOL.zh-CN.md](PROTOCOL.zh-CN.md)（英文版 [PROTOCOL.md](PROTOCOL.md)）。
 - **一套模板**，方法要求你写的每一份文件都有对应的模板；还有一个起步项目，已经自带三个程序：去重脚本、规则化筛选程序，以及一条重新生成全部结果的命令。
 - **一个虚构的小型示例**，在离线状态下运行整条流程。它包含保存好的 AI 回答；一次审计发现了一篇被误排除的论文，随后修订的规则把它纳入；还有一处编码错误，由审计更正。
 
@@ -123,7 +123,7 @@ flowchart TD
 
 ## 为什么我认为需要这套方法
 
-证据整合领域的主要机构如今要求使用 AI 的作者保持人工监督，并能说明 AI 的使用不会损害方法的严谨性。这也是 RAISE 建议（Thomas et al., 2025）以及 Cochrane、Campbell Collaboration、JBI 和环境证据协作组织（Collaboration for Environmental Evidence）在 2025 年联合发表的立场声明（Flemyng et al., 2025）中的重点。这些文件明确说明了相关要求。RAES 则是我的一次尝试：给出一种具体、可执行的做法来满足这些要求。
+证据合成领域的主要机构如今要求使用 AI 的作者保持人工监督，并能说明 AI 的使用不会损害方法的严谨性。这也是 RAISE 建议（Thomas et al., 2025）以及 Cochrane、Campbell Collaboration、JBI 和环境证据协作组织（Collaboration for Environmental Evidence）在 2025 年联合发表的立场声明（Flemyng et al., 2025）中的重点。这些文件明确说明了相关要求。RAES 则是我的一次尝试：给出一种具体、可执行的做法来满足这些要求。
 
 ## 本方法的基础
 
